@@ -6,7 +6,7 @@ project AXMPP is
    for Library_Name use "axmpp";
    for Library_Kind use "dynamic";
    for Source_Dirs use ("../source/");
-   for Library_Dir use "../libs";
+   for Library_Dir use "../.libs";
    for Object_Dir use "../.objs";
 
    package Compiler is
