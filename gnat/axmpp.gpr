@@ -1,0 +1,22 @@
+with "matreshka_xml";
+
+project AXMPP is
+
+   for Languages use ("Ada");
+   for Library_Name use "axmpp";
+   for Library_Kind use "dynamic";
+   for Source_Dirs use ("../source/");
+   for Library_Dir use "../libs";
+   for Object_Dir use "../.objs";
+
+   package Compiler is
+      for Default_Switches ("ada")
+         use ("-O0",
+	      "-g",
+	      "-fPIC",
+	      "-gnaty3aAbceghiIklmnorsSuxy",
+	      "-gnat05");
+
+   end Compiler;
+
+end AXMPP;
