@@ -45,10 +45,10 @@ package body XMPP.Sessions is
    use League.Strings;
 
    JID      : Universal_String := To_Universal_String ("uim-test");
-
    Host     : Universal_String := To_Universal_String ("zion");
-
    Password : Universal_String := To_Universal_String ("123");
+
+   Parser   : SAX_Parser;
 
    procedure Close (Self : in out XMPP_Session) is
    begin
@@ -85,6 +85,7 @@ package body XMPP.Sessions is
              & "' >";
 
    begin
+      --  After we connected, initialize parser.
       Self.Send
         (XMPP.Networks.To_Stream_Element_Array
            (Ada.Characters.Conversions.To_String
@@ -122,7 +123,7 @@ package body XMPP.Sessions is
       Success : in out Boolean)
    is
    begin
-      raise Program_Error with "Not yet implemented";
+      Put_Line ("*** Text = " & Text);
    end Characters;
 
    -------------------
@@ -136,7 +137,7 @@ package body XMPP.Sessions is
       Success        : in out Boolean)
    is
    begin
-      raise Program_Error with "Not yet implemented";
+      Put_Line ("<<< End_Element_QN = " & Qualified_Name);
    end End_Element;
 
    --------------------
@@ -161,7 +162,8 @@ package body XMPP.Sessions is
       Success        : in out Boolean)
    is
    begin
-      raise Program_Error with "Not yet implemented";
+      Put_Line (">>> Start_Element_QN = " & Qualified_Name);
+      Success := True;
    end Start_Element;
 
    overriding procedure Warning
