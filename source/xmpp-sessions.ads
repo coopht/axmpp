@@ -70,9 +70,7 @@ package XMPP.Sessions is
    procedure Set_Raw_Handler
     (Self    : XMPP_Session;
      Handler : not null access XMPP.Raw_Handlers.XMPP_Raw_Handler'Class)
-       is null;
-
-private
+   is null;
 
    type SAX_Parser is limited
      new XML.SAX.Content_Handlers.SAX_Content_Handler
@@ -80,10 +78,7 @@ private
        and XML.SAX.DTD_Handlers.SAX_DTD_Handler
        and XML.SAX.Entity_Resolvers.SAX_Entity_Resolver
        and XML.SAX.Error_Handlers.SAX_Error_Handler
-       and XML.SAX.Lexical_Handlers.SAX_Lexical_Handler with
-   record
-     Locator : XML.SAX.Locators.SAX_Locator;
-   end record;
+       and XML.SAX.Lexical_Handlers.SAX_Lexical_Handler with private;
 
    overriding procedure Characters
      (Self    : in out SAX_Parser;
@@ -173,8 +168,21 @@ private
 
    procedure Put_Line (Item : League.Strings.Universal_String);
 
+private
+
+   type SAX_Parser is limited
+     new XML.SAX.Content_Handlers.SAX_Content_Handler
+       and XML.SAX.Declaration_Handlers.SAX_Declaration_Handler
+       and XML.SAX.DTD_Handlers.SAX_DTD_Handler
+       and XML.SAX.Entity_Resolvers.SAX_Entity_Resolver
+       and XML.SAX.Error_Handlers.SAX_Error_Handler
+       and XML.SAX.Lexical_Handlers.SAX_Lexical_Handler with
+   record
+     Locator : XML.SAX.Locators.SAX_Locator;
+   end record;
+
    type XMPP_Session is limited new XMPP.Networks.Network with record
-      Is_Opened : Boolean := False;
+     Is_Opened : Boolean := False;
    end record;
 
    overriding
