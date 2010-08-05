@@ -35,9 +35,22 @@
 ------------------------------------------------------------------------------
 with Ada.Streams;
 
+with League.Strings;
+
 with XMPP.Networks;
 with XMPP.Stream_Handlers;
 with XMPP.Raw_Handlers;
+
+with XML.SAX.Attributes;
+with XML.SAX.Content_Handlers;
+with XML.SAX.Declaration_Handlers;
+with XML.SAX.DTD_Handlers;
+with XML.SAX.Entity_Resolvers;
+with XML.SAX.Error_Handlers;
+with XML.SAX.Input_Sources;
+with XML.SAX.Lexical_Handlers;
+with XML.SAX.Locators;
+with XML.SAX.Parse_Exceptions;
 
 package XMPP.Sessions is
 
@@ -60,6 +73,105 @@ package XMPP.Sessions is
        is null;
 
 private
+
+   type SAX_Parser is limited
+     new XML.SAX.Content_Handlers.SAX_Content_Handler
+       and XML.SAX.Declaration_Handlers.SAX_Declaration_Handler
+       and XML.SAX.DTD_Handlers.SAX_DTD_Handler
+       and XML.SAX.Entity_Resolvers.SAX_Entity_Resolver
+       and XML.SAX.Error_Handlers.SAX_Error_Handler
+       and XML.SAX.Lexical_Handlers.SAX_Lexical_Handler with
+   record
+     Locator : XML.SAX.Locators.SAX_Locator;
+   end record;
+
+   overriding procedure Characters
+     (Self    : in out SAX_Parser;
+      Text    : League.Strings.Universal_String;
+      Success : in out Boolean);
+
+   --  overriding procedure Comment
+   --   (Self    : in out SAX_Parser;
+   --    Text    : League.Strings.Universal_String;
+   --    Success : in out Boolean);
+
+   overriding procedure End_Element
+     (Self           : in out SAX_Parser;
+      Namespace_URI  : League.Strings.Universal_String;
+      Local_Name     : League.Strings.Universal_String;
+      Qualified_Name : League.Strings.Universal_String;
+      Success        : in out Boolean);
+
+   --  overriding procedure Error
+   --   (Self       : in out SAX_Parser;
+   --    Occurrence : XML.SAX.Parse_Exceptions.SAX_Parse_Exception;
+   --    Success    : in out Boolean);
+
+   overriding function Error_String (Self : SAX_Parser)
+      return League.Strings.Universal_String;
+
+   --  overriding procedure External_Entity_Declaration
+   --   (Self      : in out SAX_Parser;
+   --    Name      : League.Strings.Universal_String;
+   --    Public_Id : League.Strings.Universal_String;
+   --    System_Id : League.Strings.Universal_String;
+   --    Success   : in out Boolean);
+
+   --  overriding procedure Fatal_Error
+   --   (Self       : in out SAX_Parser;
+   --    Occurrence : XML.SAX.Parse_Exceptions.SAX_Parse_Exception;
+   --    Success    : in out Boolean);
+
+   --  overriding procedure Ignorable_Whitespace
+   --   (Self    : in out SAX_Parser;
+   --    Text    : League.Strings.Universal_String;
+   --    Success : in out Boolean);
+
+   --  overriding procedure Internal_Entity_Declaration
+   --   (Self    : in out SAX_Parser;
+   --    Name    : League.Strings.Universal_String;
+   --    Value   : League.Strings.Universal_String;
+   --    Success : in out Boolean);
+
+   --  overriding procedure Processing_Instruction
+   --   (Self    : in out SAX_Parser;
+   --    Target  : League.Strings.Universal_String;
+   --    Data    : League.Strings.Universal_String;
+   --    Success : in out Boolean);
+
+   --  overriding procedure Resolve_Entity
+   --   (Self      : in out SAX_Parser;
+   --    Public_Id : League.Strings.Universal_String;
+   --    System_Id : League.Strings.Universal_String;
+   --    Source    : out XML.SAX.Input_Sources.SAX_Input_Source_Access;
+   --    Success   : in out Boolean);
+
+   --  overriding procedure Set_Document_Locator
+   --   (Self    : in out SAX_Parser;
+   --    Locator : XML.SAX.Locators.SAX_Locator);
+
+   overriding procedure Start_Element
+     (Self           : in out SAX_Parser;
+      Namespace_URI  : League.Strings.Universal_String;
+      Local_Name     : League.Strings.Universal_String;
+      Qualified_Name : League.Strings.Universal_String;
+      Attributes     : XML.SAX.Attributes.SAX_Attributes;
+      Success        : in out Boolean);
+
+   --  overriding procedure Unparsed_Entity_Declaration
+   --   (Self          : in out SAX_Parser;
+   --    Name          : League.Strings.Universal_String;
+   --    Public_Id     : League.Strings.Universal_String;
+   --    System_Id     : League.Strings.Universal_String;
+   --    Notation_Name : League.Strings.Universal_String;
+   --    Success       : in out Boolean);
+
+   overriding procedure Warning
+     (Self       : in out SAX_Parser;
+      Occurrence : XML.SAX.Parse_Exceptions.SAX_Parse_Exception;
+      Success    : in out Boolean);
+
+   procedure Put_Line (Item : League.Strings.Universal_String);
 
    type XMPP_Session is limited new XMPP.Networks.Network with record
       Is_Opened : Boolean := False;

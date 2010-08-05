@@ -41,13 +41,14 @@ with XMPP.Networks;
 
 package body XMPP.Sessions is
 
-   use Ada.Wide_Wide_Text_IO;
    use type Ada.Streams.Stream_Element_Offset;
    use League.Strings;
 
-   JID      : Wide_Wide_String := "uim-test";
-   Host     : Wide_Wide_String := "zion";
-   Password : Wide_Wide_String := "123";
+   JID      : Universal_String := To_Universal_String ("uim-test");
+
+   Host     : Universal_String := To_Universal_String ("zion");
+
+   Password : Universal_String := To_Universal_String ("123");
 
    procedure Close (Self : in out XMPP_Session) is
    begin
@@ -65,16 +66,16 @@ package body XMPP.Sessions is
    procedure Open (Self : in out XMPP_Session) is
    begin
       if not Self.Is_Opened then
-         Put_Line ("Connecting");
+         Ada.Wide_Wide_Text_IO.Put_Line ("Connecting");
          Self.Connect ("127.0.0.1", 5222);
-         Put_Line ("Starting idle");
+         Ada.Wide_Wide_Text_IO.Put_Line ("Starting idle");
          Self.Idle;
       end if;
    end Open;
 
    overriding
    procedure On_Connect (Self : not null access XMPP_Session) is
-      Open_Stream : Wide_Wide_String
+      Open_Stream : Universal_String
         := "<stream:stream "
              & "xmlns:stream='http://etherx.jabber.org/streams' "
              & "version='1.0' "
@@ -86,7 +87,8 @@ package body XMPP.Sessions is
    begin
       Self.Send
         (XMPP.Networks.To_Stream_Element_Array
-           (Ada.Characters.Conversions.To_String (Open_Stream)));
+           (Ada.Characters.Conversions.To_String
+              (Open_Stream.To_Wide_Wide_String)));
    end On_Connect;
 
    overriding
@@ -103,12 +105,77 @@ package body XMPP.Sessions is
       Result : Wide_Wide_String (1 .. Integer (Offset));
 
    begin
-      Put_Line (" >>> On_Recieve : ");
+      Ada.Wide_Wide_Text_IO.Put_Line (" >>> On_Recieve : ");
       for J in 1 .. Offset loop
          Result (Integer (J)) := Wide_Wide_Character'Val (Data (J));
       end loop;
 
-      Put_Line (" >>> Result : "  & Result);
+      Ada.Wide_Wide_Text_IO.Put_Line (" >>> Result : "  & Result);
    end On_Recieve;
+
+   ------------------
+   --  Characters  --
+   ------------------
+   overriding procedure Characters
+     (Self    : in out SAX_Parser;
+      Text    : League.Strings.Universal_String;
+      Success : in out Boolean)
+   is
+   begin
+      raise Program_Error with "Not yet implemented";
+   end Characters;
+
+   -------------------
+   --  End_Element  --
+   -------------------
+   overriding procedure End_Element
+     (Self           : in out SAX_Parser;
+      Namespace_URI  : League.Strings.Universal_String;
+      Local_Name     : League.Strings.Universal_String;
+      Qualified_Name : League.Strings.Universal_String;
+      Success        : in out Boolean)
+   is
+   begin
+      raise Program_Error with "Not yet implemented";
+   end End_Element;
+
+   --------------------
+   --  Error_String  --
+   --------------------
+   overriding function Error_String (Self : SAX_Parser)
+                 return League.Strings.Universal_String
+   is
+   begin
+      return X : League.Strings.Universal_String;
+   end Error_String;
+
+   ---------------------
+   --  Start_Element  --
+   ---------------------
+   overriding procedure Start_Element
+     (Self           : in out SAX_Parser;
+      Namespace_URI  : League.Strings.Universal_String;
+      Local_Name     : League.Strings.Universal_String;
+      Qualified_Name : League.Strings.Universal_String;
+      Attributes     : XML.SAX.Attributes.SAX_Attributes;
+      Success        : in out Boolean)
+   is
+   begin
+      raise Program_Error with "Not yet implemented";
+   end Start_Element;
+
+   overriding procedure Warning
+     (Self       : in out SAX_Parser;
+      Occurrence : XML.SAX.Parse_Exceptions.SAX_Parse_Exception;
+      Success    : in out Boolean)
+   is
+   begin
+      raise Program_Error with "Not yet implemented";
+   end Warning;
+
+   procedure Put_Line (Item : League.Strings.Universal_String) is
+   begin
+      Ada.Wide_Wide_Text_IO.Put_Line (Item.To_Wide_Wide_String);
+   end Put_Line;
 
 end XMPP.Sessions;
