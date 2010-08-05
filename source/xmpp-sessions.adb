@@ -33,47 +33,82 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with Ada.Streams;
+with Ada.Characters.Conversions;
+with Ada.Wide_Wide_Text_IO;
 
+with League.Strings;
 with XMPP.Networks;
-with XMPP.Stream_Handlers;
-with XMPP.Raw_Handlers;
 
-package XMPP.Sessions is
+package body XMPP.Sessions is
 
-   type XMPP_Session is limited new XMPP.Networks.Network with private;
+   use Ada.Wide_Wide_Text_IO;
+   use type Ada.Streams.Stream_Element_Offset;
+   use League.Strings;
 
-   procedure Open (Self : in out XMPP_Session);
+   JID      : Wide_Wide_String := "uim-test";
+   Host     : Wide_Wide_String := "zion";
+   Password : Wide_Wide_String := "123";
 
-   procedure Close (Self : in out XMPP_Session);
+   procedure Close (Self : in out XMPP_Session) is
+   begin
+      null;
+   end Close;
 
-   function Is_Opened (Self : XMPP_Session) return Boolean;
+   function Is_Opened (Self : XMPP_Session) return Boolean is
+   begin
+      return Self.Is_Opened;
+   end Is_Opened;
 
-   procedure Set_Stream_Handler
-    (Self    : XMPP_Session;
-     Handler : not null access XMPP.Stream_Handlers.XMPP_Stream_Handler'Class)
-       is null;
-
-   procedure Set_Raw_Handler
-    (Self    : XMPP_Session;
-     Handler : not null access XMPP.Raw_Handlers.XMPP_Raw_Handler'Class)
-       is null;
-
-private
-
-   type XMPP_Session is limited new XMPP.Networks.Network with record
-      Is_Opened : Boolean := False;
-   end record;
+   ------------
+   --  Open  --
+   ------------
+   procedure Open (Self : in out XMPP_Session) is
+   begin
+      if not Self.Is_Opened then
+         Put_Line ("Connecting");
+         Self.Connect ("127.0.0.1", 5222);
+         Put_Line ("Starting idle");
+         Self.Idle;
+      end if;
+   end Open;
 
    overriding
-   procedure On_Connect (Self : not null access XMPP_Session);
+   procedure On_Connect (Self : not null access XMPP_Session) is
+      Open_Stream : Wide_Wide_String
+        := "<stream:stream "
+             & "xmlns:stream='http://etherx.jabber.org/streams' "
+             & "version='1.0' "
+             & "xmlns='jabber:client' "
+             & "to='"
+             & Host
+             & "' >";
+
+   begin
+      Self.Send
+        (XMPP.Networks.To_Stream_Element_Array
+           (Ada.Characters.Conversions.To_String (Open_Stream)));
+   end On_Connect;
 
    overriding
-   procedure On_Disconnect (Self : not null access XMPP_Session);
+   procedure On_Disconnect (Self : not null access XMPP_Session) is
+   begin
+      null;
+   end On_Disconnect;
 
    overriding
    procedure On_Recieve (Self   : not null access XMPP_Session;
                          Data   : Ada.Streams.Stream_Element_Array;
-                         Offset : Ada.Streams.Stream_Element_Count);
+                         Offset : Ada.Streams.Stream_Element_Count) is
+
+      Result : Wide_Wide_String (1 .. Integer (Offset));
+
+   begin
+      Put_Line (" >>> On_Recieve : ");
+      for J in 1 .. Offset loop
+         Result (Integer (J)) := Wide_Wide_Character'Val (Data (J));
+      end loop;
+
+      Put_Line (" >>> Result : "  & Result);
+   end On_Recieve;
 
 end XMPP.Sessions;
