@@ -3,6 +3,8 @@ package XMPP.Stream_Handlers is
 
    type XMPP_Stream_Handler is limited interface;
 
+   type XMPP_Stream_Handler_Access is access all XMPP_Stream_Handler;
+
    not overriding procedure Start_Stream
      (Self : in out XMPP_Stream_Handler) is null;
 
