@@ -43,79 +43,78 @@ with XMPP.Raw_Handlers;
 
 with XML.SAX.Attributes;
 with XML.SAX.Content_Handlers;
-with XML.SAX.Declaration_Handlers;
 with XML.SAX.DTD_Handlers;
+with XML.SAX.Declaration_Handlers;
 with XML.SAX.Entity_Resolvers;
 with XML.SAX.Error_Handlers;
+with XML.SAX.Input_Sources.Strings;
 with XML.SAX.Input_Sources;
 with XML.SAX.Lexical_Handlers;
 with XML.SAX.Locators;
 with XML.SAX.Parse_Exceptions;
+with XML.SAX.Simple_Readers;
 
 package XMPP.Sessions is
 
-   type XMPP_Session is limited new XMPP.Networks.Network with private;
+   type XMPP_Session is limited new XMPP.Networks.Network
+     and XML.SAX.Content_Handlers.SAX_Content_Handler with
+   record
+     Session_Opened : Boolean := False;
+     Stream_Handler : XMPP.Stream_Handlers.XMPP_Stream_Handler_Access;
 
-   procedure Open (Self : in out XMPP_Session);
+     Source  : aliased XML.SAX.Input_Sources.Strings.String_Input_Source;
+     Reader  : aliased XML.SAX.Simple_Readers.SAX_Simple_Reader;
+   end record;
+
+   type XMPP_Session_Access is access all XMPP_Session;
+
+   --  XMPP Session API
+
+   procedure Open (Self : not null access XMPP_Session);
 
    procedure Close (Self : in out XMPP_Session);
 
    function Is_Opened (Self : XMPP_Session) return Boolean;
 
    procedure Set_Stream_Handler
-    (Self    : XMPP_Session;
-     Handler : not null access XMPP.Stream_Handlers.XMPP_Stream_Handler'Class)
-       is null;
+    (Self    : in out XMPP_Session;
+     Handler : XMPP.Stream_Handlers.XMPP_Stream_Handler_Access);
 
    procedure Set_Raw_Handler
     (Self    : XMPP_Session;
      Handler : not null access XMPP.Raw_Handlers.XMPP_Raw_Handler'Class)
    is null;
 
-private
+   --  End XMPP Session API
 
-   type SAX_Parser is limited
-     new XML.SAX.Content_Handlers.SAX_Content_Handler
-       and XML.SAX.Error_Handlers.SAX_Error_Handler with
-   record
-     Locator : XML.SAX.Locators.SAX_Locator;
-   end record;
-
+   --  Private API
+   --  Private API should not be used by application
    overriding procedure Characters
-     (Self    : in out SAX_Parser;
+     (Self    : in out XMPP_Session;
       Text    : League.Strings.Universal_String;
       Success : in out Boolean);
 
    overriding procedure End_Element
-     (Self           : in out SAX_Parser;
+     (Self           : in out XMPP_Session;
       Namespace_URI  : League.Strings.Universal_String;
       Local_Name     : League.Strings.Universal_String;
       Qualified_Name : League.Strings.Universal_String;
       Success        : in out Boolean);
 
-   overriding function Error_String (Self : SAX_Parser)
+   overriding function Error_String (Self : XMPP_Session)
       return League.Strings.Universal_String;
 
-
    overriding procedure Start_Element
-     (Self           : in out SAX_Parser;
+     (Self           : in out XMPP_Session;
       Namespace_URI  : League.Strings.Universal_String;
       Local_Name     : League.Strings.Universal_String;
       Qualified_Name : League.Strings.Universal_String;
       Attributes     : XML.SAX.Attributes.SAX_Attributes;
       Success        : in out Boolean);
 
-   overriding procedure Warning
-     (Self       : in out SAX_Parser;
-      Occurrence : XML.SAX.Parse_Exceptions.SAX_Parse_Exception;
-      Success    : in out Boolean);
-
    procedure Put_Line (Item : League.Strings.Universal_String);
 
-   type XMPP_Session is limited new XMPP.Networks.Network with record
-     Is_Opened : Boolean := False;
-   end record;
-
+   --  Overriding functions from XMPP_Network
    overriding
    procedure On_Connect (Self : not null access XMPP_Session);
 

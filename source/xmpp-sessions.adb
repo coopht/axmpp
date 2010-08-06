@@ -37,6 +37,8 @@ with Ada.Characters.Conversions;
 with Ada.Wide_Wide_Text_IO;
 
 with League.Strings;
+with XML.SAX.Readers;
+
 with XMPP.Networks;
 
 package body XMPP.Sessions is
@@ -45,34 +47,44 @@ package body XMPP.Sessions is
    use League.Strings;
 
    JID      : Universal_String := To_Universal_String ("uim-test");
-   Host     : Universal_String := To_Universal_String ("zion");
-   Password : Universal_String := To_Universal_String ("123");
+   Host     : Universal_String := To_Universal_String ("jabber.ru");
+   Password : Universal_String := To_Universal_String ("123456");
 
-   Parser   : SAX_Parser;
-
+   -------------
+   --  Close  --
+   -------------
    procedure Close (Self : in out XMPP_Session) is
    begin
       null;
    end Close;
 
+   -----------------
+   --  Is_Opened  --
+   -----------------
    function Is_Opened (Self : XMPP_Session) return Boolean is
    begin
-      return Self.Is_Opened;
+      return Self.Session_Opened;
    end Is_Opened;
 
    ------------
    --  Open  --
    ------------
-   procedure Open (Self : in out XMPP_Session) is
+   procedure Open (Self : not null access XMPP_Session) is
    begin
       if not Self.Is_Opened then
          Ada.Wide_Wide_Text_IO.Put_Line ("Connecting");
-         Self.Connect ("127.0.0.1", 5222);
+         Self.Connect ("77.88.57.177", 5222);
          Ada.Wide_Wide_Text_IO.Put_Line ("Starting idle");
          Self.Idle;
+
+         --  After we connected, initialize parser.
+         XML.SAX.Simple_Readers.Put_Line := Put_Line'Access;
       end if;
    end Open;
 
+   ------------------
+   --  On_Connect  --
+   ------------------
    overriding
    procedure On_Connect (Self : not null access XMPP_Session) is
       Open_Stream : Universal_String
@@ -85,19 +97,25 @@ package body XMPP.Sessions is
              & "' >";
 
    begin
-      --  After we connected, initialize parser.
+      --  Sending open stream stanza
       Self.Send
         (XMPP.Networks.To_Stream_Element_Array
            (Ada.Characters.Conversions.To_String
               (Open_Stream.To_Wide_Wide_String)));
    end On_Connect;
 
+   ---------------------
+   --  On_Disconnect  --
+   ---------------------
    overriding
    procedure On_Disconnect (Self : not null access XMPP_Session) is
    begin
       null;
    end On_Disconnect;
 
+   ------------------
+   --  On_Recieve  --
+   ------------------
    overriding
    procedure On_Recieve (Self   : not null access XMPP_Session;
                          Data   : Ada.Streams.Stream_Element_Array;
@@ -106,19 +124,36 @@ package body XMPP.Sessions is
       Result : Wide_Wide_String (1 .. Integer (Offset));
 
    begin
-      Ada.Wide_Wide_Text_IO.Put_Line (" >>> On_Recieve : ");
+      Ada.Wide_Wide_Text_IO.Put (" >>> On_Recieve : ");
       for J in 1 .. Offset loop
          Result (Integer (J)) := Wide_Wide_Character'Val (Data (J));
       end loop;
 
-      Ada.Wide_Wide_Text_IO.Put_Line (" >>> Result : "  & Result);
+      Ada.Wide_Wide_Text_IO.Put_Line (Result);
+      Self.Reader.Set_Content_Handler
+       (XML.SAX.Readers.SAX_Content_Handler_Access (Self));
+      Self.Source.Set_String (To_Universal_String (Result));
+      Self.Reader.Parse (Self.Source'Access);
    end On_Recieve;
+
+   --------------------------
+   --  Set_Stream_Handler  --
+   --------------------------
+   procedure Set_Stream_Handler
+    (Self    : in out XMPP_Session;
+     Handler : XMPP.Stream_Handlers.XMPP_Stream_Handler_Access)
+   is
+   begin
+      Self.Stream_Handler := Handler;
+   end Set_Stream_Handler;
+
+   --  XML SAX Parser implementation  --
 
    ------------------
    --  Characters  --
    ------------------
    overriding procedure Characters
-     (Self    : in out SAX_Parser;
+     (Self    : in out XMPP_Session;
       Text    : League.Strings.Universal_String;
       Success : in out Boolean)
    is
@@ -130,7 +165,7 @@ package body XMPP.Sessions is
    --  End_Element  --
    -------------------
    overriding procedure End_Element
-     (Self           : in out SAX_Parser;
+     (Self           : in out XMPP_Session;
       Namespace_URI  : League.Strings.Universal_String;
       Local_Name     : League.Strings.Universal_String;
       Qualified_Name : League.Strings.Universal_String;
@@ -143,7 +178,7 @@ package body XMPP.Sessions is
    --------------------
    --  Error_String  --
    --------------------
-   overriding function Error_String (Self : SAX_Parser)
+   overriding function Error_String (Self : XMPP_Session)
                  return League.Strings.Universal_String
    is
    begin
@@ -154,7 +189,7 @@ package body XMPP.Sessions is
    --  Start_Element  --
    ---------------------
    overriding procedure Start_Element
-     (Self           : in out SAX_Parser;
+     (Self           : in out XMPP_Session;
       Namespace_URI  : League.Strings.Universal_String;
       Local_Name     : League.Strings.Universal_String;
       Qualified_Name : League.Strings.Universal_String;
@@ -166,15 +201,9 @@ package body XMPP.Sessions is
       Success := True;
    end Start_Element;
 
-   overriding procedure Warning
-     (Self       : in out SAX_Parser;
-      Occurrence : XML.SAX.Parse_Exceptions.SAX_Parse_Exception;
-      Success    : in out Boolean)
-   is
-   begin
-      raise Program_Error with "Not yet implemented";
-   end Warning;
-
+   ----------------
+   --  Put_Line  --
+   ----------------
    procedure Put_Line (Item : League.Strings.Universal_String) is
    begin
       Ada.Wide_Wide_Text_IO.Put_Line (Item.To_Wide_Wide_String);
