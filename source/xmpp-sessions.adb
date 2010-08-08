@@ -34,12 +34,15 @@
 --  $Date$
 ------------------------------------------------------------------------------
 with Ada.Characters.Conversions;
+with Ada.Text_IO;
 with Ada.Wide_Wide_Text_IO;
 
 with League.Strings;
 with XML.SAX.Readers;
 
 with XMPP.Networks;
+with XMPP.Objects;
+with XMPP.Null_Objects;
 
 package body XMPP.Sessions is
 
@@ -47,8 +50,12 @@ package body XMPP.Sessions is
    use League.Strings;
 
    JID      : Universal_String := To_Universal_String ("uim-test");
-   Host     : Universal_String := To_Universal_String ("jabber.ru");
-   Password : Universal_String := To_Universal_String ("123456");
+   Host     : Universal_String := To_Universal_String ("zion");
+   Password : Universal_String := To_Universal_String ("123");
+
+   Null_X   : XMPP.Null_Objects.XMPP_Null_Object;
+
+   X : XMPP.Objects.XMPP_Object'Class := Null_X;
 
    -------------
    --  Close  --
@@ -73,7 +80,7 @@ package body XMPP.Sessions is
    begin
       if not Self.Is_Opened then
          Ada.Wide_Wide_Text_IO.Put_Line ("Connecting");
-         Self.Connect ("77.88.57.177", 5222);
+         Self.Connect ("127.0.0.1", 5222);
          Ada.Wide_Wide_Text_IO.Put_Line ("Starting idle");
          Self.Idle;
 
@@ -102,6 +109,9 @@ package body XMPP.Sessions is
         (XMPP.Networks.To_Stream_Element_Array
            (Ada.Characters.Conversions.To_String
               (Open_Stream.To_Wide_Wide_String)));
+
+      Self.Reader.Set_Content_Handler
+        (XML.SAX.Readers.SAX_Content_Handler_Access (Self));
    end On_Connect;
 
    ---------------------
@@ -118,21 +128,35 @@ package body XMPP.Sessions is
    ------------------
    overriding
    procedure On_Recieve (Self   : not null access XMPP_Session;
-                         Data   : Ada.Streams.Stream_Element_Array;
-                         Offset : Ada.Streams.Stream_Element_Count) is
+                         Data   : Ada.Streams.Stream_Element_Array) is
 
-      Result : Wide_Wide_String (1 .. Integer (Offset));
+      Result : Wide_Wide_String (Integer (Data'First) .. Integer (Data'Last));
 
    begin
+      Ada.Text_IO.Put_Line (" Data'First = " & Data'First'Img);
+      Ada.Text_IO.Put_Line (" Data'Last = " & Data'Last'Img);
+
       Ada.Wide_Wide_Text_IO.Put (" >>> On_Recieve : ");
-      for J in 1 .. Offset loop
+      for J in Data'Range  loop
          Result (Integer (J)) := Wide_Wide_Character'Val (Data (J));
       end loop;
 
-      Ada.Wide_Wide_Text_IO.Put_Line (Result);
-      Self.Reader.Set_Content_Handler
-       (XML.SAX.Readers.SAX_Content_Handler_Access (Self));
-      Self.Source.Set_String (To_Universal_String (Result));
+      if not Self.Is_Opened then
+         declare
+            Tmp : Wide_Wide_String :=  Result & "</stream:stream>";
+
+         begin
+            Ada.Wide_Wide_Text_IO.Put_Line (Tmp);
+
+            Self.Source.Set_String (To_Universal_String (Tmp));
+         end;
+
+         Self.Session_Opened := True;
+      else
+         Ada.Wide_Wide_Text_IO.Put_Line (Result);
+         Self.Source.Set_String (To_Universal_String (Result));
+      end if;
+
       Self.Reader.Parse (Self.Source'Access);
    end On_Recieve;
 
@@ -173,6 +197,7 @@ package body XMPP.Sessions is
    is
    begin
       Put_Line ("<<< End_Element_QN = " & Qualified_Name);
+      Success := True;
    end End_Element;
 
    --------------------
@@ -199,7 +224,20 @@ package body XMPP.Sessions is
    begin
       Put_Line (">>> Start_Element_QN = " & Qualified_Name);
       Success := True;
+      --  if (Qualified_Name = "stream:stream") then
+      --     null;
+      --  end if;
    end Start_Element;
+
+   overriding procedure Error
+    (Self       : in out XMPP_Session;
+     Occurrence : XML.SAX.Parse_Exceptions.SAX_Parse_Exception;
+     Success    : in out Boolean)
+   is
+   begin
+      Put_Line
+       ("EEE (Error) " & Occurrence.Message & "'");
+   end Error;
 
    ----------------
    --  Put_Line  --

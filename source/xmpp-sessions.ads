@@ -57,10 +57,17 @@ with XML.SAX.Simple_Readers;
 package XMPP.Sessions is
 
    type XMPP_Session is limited new XMPP.Networks.Network
-     and XML.SAX.Content_Handlers.SAX_Content_Handler with
+     and XML.SAX.Content_Handlers.SAX_Content_Handler
+     and XML.SAX.Declaration_Handlers.SAX_Declaration_Handler
+     and XML.SAX.DTD_Handlers.SAX_DTD_Handler
+     and XML.SAX.Entity_Resolvers.SAX_Entity_Resolver
+     and XML.SAX.Error_Handlers.SAX_Error_Handler
+     and XML.SAX.Lexical_Handlers.SAX_Lexical_Handler with
    record
      Session_Opened : Boolean := False;
      Stream_Handler : XMPP.Stream_Handlers.XMPP_Stream_Handler_Access;
+
+     Locator : XML.SAX.Locators.SAX_Locator;
 
      Source  : aliased XML.SAX.Input_Sources.Strings.String_Input_Source;
      Reader  : aliased XML.SAX.Simple_Readers.SAX_Simple_Reader;
@@ -112,6 +119,11 @@ package XMPP.Sessions is
       Attributes     : XML.SAX.Attributes.SAX_Attributes;
       Success        : in out Boolean);
 
+   overriding procedure Error
+    (Self       : in out XMPP_Session;
+     Occurrence : XML.SAX.Parse_Exceptions.SAX_Parse_Exception;
+     Success    : in out Boolean);
+
    procedure Put_Line (Item : League.Strings.Universal_String);
 
    --  Overriding functions from XMPP_Network
@@ -123,7 +135,6 @@ package XMPP.Sessions is
 
    overriding
    procedure On_Recieve (Self   : not null access XMPP_Session;
-                         Data   : Ada.Streams.Stream_Element_Array;
-                         Offset : Ada.Streams.Stream_Element_Count);
+                         Data   : Ada.Streams.Stream_Element_Array);
 
 end XMPP.Sessions;
