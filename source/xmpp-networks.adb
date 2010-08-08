@@ -113,6 +113,8 @@ package body XMPP.Networks is
                       Host : in Wide_Wide_String;
                       Port : in Natural)
    is
+      No_Block : GNAT.Sockets.Request_Type (GNAT.Sockets.Non_Blocking_IO);
+
    begin
       Create_Socket (Self.Sock);
       Self.Addr :=
@@ -129,6 +131,12 @@ package body XMPP.Networks is
       Self.Channel := Stream (Self.Sock);
 
       delay 0.2;
+
+      No_Block.Enabled := True;
+
+      --  Setting non-blocking IO
+      GNAT.Sockets.Control_Socket (Self.Get_Socket, No_Block);
+
       Self.On_Connect;
 
    exception
@@ -184,7 +192,7 @@ package body XMPP.Networks is
 
             if Is_Set (Self.RSet, Self.Sock) then
                --  XXX : think about more correct threading model
-               Self.Read_Data;
+               Self.On_Recieve (Self.Read_Data);
             end if;
 
          when Expired =>
@@ -231,29 +239,32 @@ package body XMPP.Networks is
    -----------------
    --  Read_Data  --
    -----------------
-   procedure Read_Data (Self : not null access Network'Class) is
-      X : GNAT.Sockets.Request_Type (GNAT.Sockets.N_Bytes_To_Read);
+   not overriding
+   function Read_Data (Self : not null access Network)
+      return Ada.Streams.Stream_Element_Array
+   is
+      Buffer : Ada.Streams.Stream_Element_Array (1 .. 4096);
+      Last   : Ada.Streams.Stream_Element_Count := 0;
 
+     --  for debug
+     --  X      : GNAT.Sockets.Request_Type (GNAT.Sockets.N_Bytes_To_Read);
    begin
-      --  Getting how much data available in Socket
-      GNAT.Sockets.Control_Socket (Self.Get_Socket, X);
-
       delay (0.1);
+      --  for debug
+      --  Getting how much data available in Socket
+      --  GNAT.Sockets.Control_Socket (Self.Get_Socket, X);
+      --  Ada.Text_IO.Put_Line ("Data_Size for reading :" & X.Size'Img);
 
-      --  debug
-      Ada.Text_IO.Put_Line ("Data_Size for reading :" & X.Size'Img);
+      GNAT.Sockets.Receive_Socket (Self.Sock, Buffer, Last);
 
-      declare
-         SEA :  Ada.Streams.Stream_Element_Array
-           (1 .. Ada.Streams.Stream_Element_Offset (X.Size));
-         Offset : Ada.Streams.Stream_Element_Count;
+      Ada.Text_IO.Put_Line ("Offset : " & Last'Img);
 
-      begin
-         Ada.Streams.Read (Self.Channel.all, SEA, Offset);
-         Ada.Text_IO.Put_Line ("Offset : " & Offset'Img);
-         Self.On_Recieve (SEA, Offset);
-      end;
-
+      return Buffer (1 .. Last);
+   exception
+      when E : others =>
+         Ada.Text_IO.Put_Line
+           ("Gotcha : " & Exception_Name (E) & " : " & Exception_Message (E));
+         return Buffer (1 .. 1);
    end Read_Data;
 
    -------------------------------

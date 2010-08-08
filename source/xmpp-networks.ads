@@ -45,14 +45,20 @@ package XMPP.Networks is
    type Network_Access is access all Network;
 
    --  functions, which should be overriden
+   not overriding
    procedure On_Connect (Self : not null access Network) is abstract;
 
+   not overriding
    procedure On_Disconnect (Self : not null access Network) is abstract;
 
+   not overriding
    procedure On_Recieve (Self   : not null access Network;
-                         Data   : Ada.Streams.Stream_Element_Array;
-                         Offset : Ada.Streams.Stream_Element_Count)
+                         Data   : Ada.Streams.Stream_Element_Array)
       is abstract;
+
+   not overriding
+   function Read_Data (Self : not null access Network)
+     return Ada.Streams.Stream_Element_Array;
 
    --  end of functions, which should be overriden
 
@@ -76,8 +82,6 @@ package XMPP.Networks is
    --  XXX: this function must be removed.
    function Get_Channel (Self : not null access Network'Class)
       return Stream_Access;
-
-   procedure Read_Data (Self : not null access Network'Class);
 
    function To_Stream_Element_Array (Value : String)
       return Ada.Streams.Stream_Element_Array;
