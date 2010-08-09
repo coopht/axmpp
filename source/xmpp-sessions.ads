@@ -47,8 +47,7 @@ with XML.SAX.DTD_Handlers;
 with XML.SAX.Declaration_Handlers;
 with XML.SAX.Entity_Resolvers;
 with XML.SAX.Error_Handlers;
-with XML.SAX.Input_Sources.Strings;
-with XML.SAX.Input_Sources;
+with XML.SAX.Input_Sources.Streams.Sockets;
 with XML.SAX.Lexical_Handlers;
 with XML.SAX.Locators;
 with XML.SAX.Parse_Exceptions;
@@ -69,7 +68,8 @@ package XMPP.Sessions is
 
      Locator : XML.SAX.Locators.SAX_Locator;
 
-     Source  : aliased XML.SAX.Input_Sources.Strings.String_Input_Source;
+     Source  :
+       aliased XML.SAX.Input_Sources.Streams.Sockets.Socket_Input_Source;
      Reader  : aliased XML.SAX.Simple_Readers.SAX_Simple_Reader;
    end record;
 
@@ -136,5 +136,8 @@ package XMPP.Sessions is
    overriding
    procedure On_Recieve (Self   : not null access XMPP_Session;
                          Data   : Ada.Streams.Stream_Element_Array);
+
+   overriding
+   procedure Read_Data (Self   : not null access XMPP_Session);
 
 end XMPP.Sessions;

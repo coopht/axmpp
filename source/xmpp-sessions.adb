@@ -52,6 +52,8 @@ package body XMPP.Sessions is
    JID      : Universal_String := To_Universal_String ("uim-test");
    Host     : Universal_String := To_Universal_String ("zion");
    Password : Universal_String := To_Universal_String ("123");
+   --  Host     : Universal_String := To_Universal_String ("jabber.ru");
+   --  Password : Universal_String := To_Universal_String ("123456");
 
    Null_X   : XMPP.Null_Objects.XMPP_Null_Object;
 
@@ -81,6 +83,7 @@ package body XMPP.Sessions is
       if not Self.Is_Opened then
          Ada.Wide_Wide_Text_IO.Put_Line ("Connecting");
          Self.Connect ("127.0.0.1", 5222);
+         -- Self.Connect ("77.88.57.177", 5222);
          Ada.Wide_Wide_Text_IO.Put_Line ("Starting idle");
          Self.Idle;
 
@@ -112,6 +115,8 @@ package body XMPP.Sessions is
 
       Self.Reader.Set_Content_Handler
         (XML.SAX.Readers.SAX_Content_Handler_Access (Self));
+      Self.Source.Set_Socket (Self.Get_Socket);
+      Self.Reader.Set_Input_Source (Self.Source'Access);
    end On_Connect;
 
    ---------------------
@@ -141,23 +146,23 @@ package body XMPP.Sessions is
          Result (Integer (J)) := Wide_Wide_Character'Val (Data (J));
       end loop;
 
-      if not Self.Is_Opened then
-         declare
-            Tmp : Wide_Wide_String :=  Result & "</stream:stream>";
+      --  if not Self.Is_Opened then
+      --     declare
+      --        Tmp : Wide_Wide_String :=  Result & "</stream:stream>";
 
-         begin
-            Ada.Wide_Wide_Text_IO.Put_Line (Tmp);
+      --     begin
+      --        Ada.Wide_Wide_Text_IO.Put_Line (Tmp);
 
-            Self.Source.Set_String (To_Universal_String (Tmp));
-         end;
 
-         Self.Session_Opened := True;
-      else
-         Ada.Wide_Wide_Text_IO.Put_Line (Result);
-         Self.Source.Set_String (To_Universal_String (Result));
-      end if;
+      --     end;
 
-      Self.Reader.Parse (Self.Source'Access);
+      --     Self.Session_Opened := True;
+      --  else
+      Ada.Wide_Wide_Text_IO.Put_Line (Result);
+      --     Self.Source.Set_String (To_Universal_String (Result));
+      --  end if;
+
+      --  Self.Reader.Parse (Self.Source'Access);
    end On_Recieve;
 
    --------------------------
@@ -246,5 +251,15 @@ package body XMPP.Sessions is
    begin
       Ada.Wide_Wide_Text_IO.Put_Line (Item.To_Wide_Wide_String);
    end Put_Line;
+
+   -----------------
+   --  Read_Data  --
+   -----------------
+   overriding
+   procedure Read_Data (Self   : not null access XMPP_Session)
+   is
+   begin
+      Self.Reader.Parse;
+   end Read_Data;
 
 end XMPP.Sessions;
