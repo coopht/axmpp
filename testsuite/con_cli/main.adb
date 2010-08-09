@@ -36,7 +36,7 @@
 with Con_Cli;
 
 procedure Main is
-   S : Con_Cli.Session_Access := new Con_Cli.Session;
+   S : not null Con_Cli.Session_Access := new Con_Cli.Session;
 
 begin
    S.Open;
