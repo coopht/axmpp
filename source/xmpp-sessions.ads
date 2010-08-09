@@ -134,10 +134,6 @@ package XMPP.Sessions is
    procedure On_Disconnect (Self : not null access XMPP_Session);
 
    overriding
-   procedure On_Recieve (Self   : not null access XMPP_Session;
-                         Data   : Ada.Streams.Stream_Element_Array);
-
-   overriding
    procedure Read_Data (Self   : not null access XMPP_Session);
 
 end XMPP.Sessions;
