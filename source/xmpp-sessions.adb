@@ -50,10 +50,14 @@ package body XMPP.Sessions is
    use League.Strings;
 
    JID      : Universal_String := To_Universal_String ("uim-test");
-   Host     : Universal_String := To_Universal_String ("zion");
-   Password : Universal_String := To_Universal_String ("123");
-   --  Host     : Universal_String := To_Universal_String ("jabber.ru");
-   --  Password : Universal_String := To_Universal_String ("123456");
+   --  Host     : Universal_String := To_Universal_String ("zion");
+   --  Password : Universal_String := To_Universal_String ("123");
+   --  Addr     : Universal_String := To_Universal_String ("127.0.0.1");
+
+   --  Connection to Jabber.ru
+   Host     : Universal_String := To_Universal_String ("jabber.ru");
+   Password : Universal_String := To_Universal_String ("123456");
+   Addr     : Universal_String := To_Universal_String ("77.88.57.177");
 
    Null_X   : XMPP.Null_Objects.XMPP_Null_Object;
 
@@ -82,13 +86,9 @@ package body XMPP.Sessions is
    begin
       if not Self.Is_Opened then
          Ada.Wide_Wide_Text_IO.Put_Line ("Connecting");
-         Self.Connect ("127.0.0.1", 5222);
-         -- Self.Connect ("77.88.57.177", 5222);
+         Self.Connect (Addr.To_Wide_Wide_String, 5222);
          Ada.Wide_Wide_Text_IO.Put_Line ("Starting idle");
          Self.Idle;
-
-         --  After we connected, initialize parser.
-         XML.SAX.Simple_Readers.Put_Line := Put_Line'Access;
       end if;
    end Open;
 
@@ -107,16 +107,20 @@ package body XMPP.Sessions is
              & "' >";
 
    begin
+      --  After we connected, initialize parser.
+
+      Self.Reader.Set_Content_Handler
+        (XML.SAX.Readers.SAX_Content_Handler_Access (Self));
+      XML.SAX.Simple_Readers.Put_Line := Put_Line'Access;
+
+      Self.Source.Set_Socket (Self.Get_Socket);
+      Self.Reader.Set_Input_Source (Self.Source'Access);
+
       --  Sending open stream stanza
       Self.Send
         (XMPP.Networks.To_Stream_Element_Array
            (Ada.Characters.Conversions.To_String
               (Open_Stream.To_Wide_Wide_String)));
-
-      Self.Reader.Set_Content_Handler
-        (XML.SAX.Readers.SAX_Content_Handler_Access (Self));
-      Self.Source.Set_Socket (Self.Get_Socket);
-      Self.Reader.Set_Input_Source (Self.Source'Access);
    end On_Connect;
 
    ---------------------
