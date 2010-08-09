@@ -54,11 +54,15 @@ package XMPP.Networks is
    not overriding
    procedure On_Recieve (Self   : not null access Network;
                          Data   : Ada.Streams.Stream_Element_Array)
-      is abstract;
+      is null;
 
    not overriding
-   function Read_Data (Self : not null access Network)
-     return Ada.Streams.Stream_Element_Array;
+   procedure Read_Data (Self : not null access Network);
+   --  If this function is not reimplemented, than default implementation is
+   --  used. By default, Read_Data reads data from socket in non-blocking mode
+   --  end notifies user with read data using On_Recieve function. So, if you
+   --  do not plan reimplementation of read_data function, you should
+   --  reimplement On_Recieve function to be able to receive data from socket.
 
    --  end of functions, which should be overriden
 
