@@ -35,6 +35,10 @@
 ------------------------------------------------------------------------------
 package body XMPP.Null_Objects is
 
+   -----------------
+   --  Serialize  --
+   -----------------
+   overriding
    function Serialize (Self : in XMPP_Null_Object)
       return League.Strings.Universal_String
    is
@@ -44,11 +48,16 @@ package body XMPP.Null_Objects is
       return X : League.Strings.Universal_String;
    end Serialize;
 
-   function Get_Type (Self : in XMPP_Null_Object)
-      return XMPP.Objects.XMPP_Object_Type
+   -------------------
+   --  Set_Content  --
+   -------------------
+   overriding
+   procedure Set_Content (Self      : in out XMPP_Null_Object;
+                          Parameter : League.Strings.Universal_String;
+                          Value     : League.Strings.Universal_String)
    is
    begin
-      return XMPP.Objects.Null_Object;
-   end Get_Type;
+      raise Program_Error with "Unable to set content for XMPP_Null_Object";
+   end Set_Content;
 
 end XMPP.Null_Objects;
