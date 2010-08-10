@@ -38,8 +38,13 @@ with League.Strings;
 
 package XMPP.Null_Objects is
 
-   type XMPP_Null_Object is
-     new XMPP.Objects.XMPP_Object (XMPP.Objects.Null_Object) with private;
+   type XMPP_Null_Object is new XMPP.Objects.XMPP_Object with private;
+
+   ----------------
+   --  Set_Kind  --
+   ----------------
+   overriding
+   function Get_Kind (Self : XMPP_Null_Object) return XMPP.Objects.Object_Kind;
 
    -----------------
    --  Serialize  --
@@ -58,7 +63,6 @@ package XMPP.Null_Objects is
 
 private
 
-   type XMPP_Null_Object is
-     new XMPP.Objects.XMPP_Object (XMPP.Objects.Null_Object) with null record;
+   type XMPP_Null_Object is new XMPP.Objects.XMPP_Object with null record;
 
 end XMPP.Null_Objects;

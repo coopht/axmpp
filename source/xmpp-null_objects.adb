@@ -35,6 +35,16 @@
 ------------------------------------------------------------------------------
 package body XMPP.Null_Objects is
 
+   ----------------
+   --  Set_Kind  --
+   ----------------
+   overriding
+   function Get_Kind (Self : XMPP_Null_Object) return XMPP.Objects.Object_Kind
+   is
+   begin
+      return XMPP.Objects.Null_Object;
+   end Get_Kind;
+
    -----------------
    --  Serialize  --
    -----------------

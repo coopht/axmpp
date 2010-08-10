@@ -37,20 +37,27 @@ with League.Strings;
 
 package XMPP.Objects is
 
-   type XMPP_Object_Type is (Null_Object,
-                             Stream,
-                             Stream_Features);
+   type Object_Kind is
+     (Null_Object,
+      Stream,
+      Stream_Features);
 
-   type XMPP_Object (Object_Type : XMPP_Object_Type)
-      is abstract tagged private;
+   type XMPP_Object is limited interface;
 
+   type XMPP_Object_Access is access all XMPP_Object'Class;
+
+   ----------------
+   --  Get_Kind  --
+   ----------------
+   not overriding
+   function Get_Kind (Self : XMPP_Object) return XMPP.Objects.Object_Kind
+      is abstract;
    -----------------
    --  Serialize  --
    -----------------
    not overriding
    function Serialize (Self : in XMPP_Object)
-      return League.Strings.Universal_String
-      is abstract;
+      return League.Strings.Universal_String is abstract;
 
    -------------------
    --  Set_Content  --
@@ -60,10 +67,5 @@ package XMPP.Objects is
                           Parameter : League.Strings.Universal_String;
                           Value     : League.Strings.Universal_String)
       is abstract;
-
-private
-
-   type XMPP_Object (Object_Type : XMPP_Object_Type) is
-     abstract tagged null record;
 
 end XMPP.Objects;

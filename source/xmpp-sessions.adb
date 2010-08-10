@@ -43,11 +43,14 @@ with XML.SAX.Readers;
 with XMPP.Networks;
 with XMPP.Objects;
 with XMPP.Null_Objects;
+with XMPP.Streams;
 
 package body XMPP.Sessions is
 
-   use type Ada.Streams.Stream_Element_Offset;
    use League.Strings;
+
+   use type Ada.Streams.Stream_Element_Offset;
+   use type XMPP.Objects.Object_Kind;
 
    JID      : Universal_String := To_Universal_String ("uim-test");
    --  Host     : Universal_String := To_Universal_String ("zion");
@@ -58,10 +61,6 @@ package body XMPP.Sessions is
    Host     : Universal_String := To_Universal_String ("jabber.ru");
    Password : Universal_String := To_Universal_String ("123456");
    Addr     : Universal_String := To_Universal_String ("77.88.57.177");
-
-   Null_X   : XMPP.Null_Objects.XMPP_Null_Object;
-
-   X : XMPP.Objects.XMPP_Object'Class := Null_X;
 
    -------------
    --  Close  --
@@ -183,6 +182,19 @@ package body XMPP.Sessions is
    end Error_String;
 
    ---------------------
+   --  Create_Object  --
+   ---------------------
+   procedure Create_Object (Self : in out XMPP_Session; Tag : Wide_Wide_String)
+   is
+   begin
+      if Tag = "stream:stream" then
+         Self.X := new XMPP.Streams.XMPP_Stream;
+      else
+         raise Program_Error;
+      end if;
+   end Create_Object;
+
+   ---------------------
    --  Start_Element  --
    ---------------------
    overriding procedure Start_Element
@@ -195,10 +207,18 @@ package body XMPP.Sessions is
    is
    begin
       Put_Line (">>> Start_Element_QN = " & Qualified_Name);
+
       Success := True;
-      --  if (Qualified_Name = "stream:stream") then
-      --     null;
-      --  end if;
+
+      --  If Object not yet created, then create it
+      if Self.X.Get_Kind = XMPP.Objects.Null_Object then
+         Self.Create_Object (Qualified_Name.To_Wide_Wide_String);
+
+      --  If object was created, then fill it
+      else
+         Self.X.Set_Content (Local_Name, Qualified_Name);
+      end if;
+
    end Start_Element;
 
    overriding procedure Error

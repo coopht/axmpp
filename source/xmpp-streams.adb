@@ -38,6 +38,15 @@ with League.Strings;
 
 package body XMPP.Streams is
 
+   ----------------
+   --  Get_Kind  --
+   ----------------
+   overriding
+   function Get_Kind (Self : XMPP_Stream) return XMPP.Objects.Object_Kind is
+   begin
+      return XMPP.Objects.Stream;
+   end Get_Kind;
+
    -----------------
    --  Serialize  --
    -----------------

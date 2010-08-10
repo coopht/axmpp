@@ -53,6 +53,9 @@ with XML.SAX.Locators;
 with XML.SAX.Parse_Exceptions;
 with XML.SAX.Simple_Readers;
 
+with XMPP.Objects;
+with XMPP.Null_Objects;
+
 package XMPP.Sessions is
 
    type XMPP_Session is limited new XMPP.Networks.Network
@@ -71,6 +74,10 @@ package XMPP.Sessions is
      Source  :
        aliased XML.SAX.Input_Sources.Streams.Sockets.Socket_Input_Source;
      Reader  : aliased XML.SAX.Simple_Readers.SAX_Simple_Reader;
+
+     X : XMPP.Objects.XMPP_Object_Access
+       := new XMPP.Null_Objects.XMPP_Null_Object;
+
    end record;
 
    type XMPP_Session_Access is access all XMPP_Session;
@@ -135,5 +142,8 @@ package XMPP.Sessions is
 
    overriding
    procedure Read_Data (Self   : not null access XMPP_Session);
+
+   procedure Create_Object (Self : in out XMPP_Session;
+                            Tag : Wide_Wide_String);
 
 end XMPP.Sessions;

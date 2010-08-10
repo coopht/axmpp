@@ -38,8 +38,13 @@ with League.Strings;
 
 package XMPP.Streams is
 
-   type XMPP_Stream is new XMPP.Objects.XMPP_Object (XMPP.Objects.Stream)
-     with private;
+   type XMPP_Stream is new XMPP.Objects.XMPP_Object with private;
+
+   ----------------
+   --  Get_Kind  --
+   ----------------
+   overriding
+   function Get_Kind (Self : XMPP_Stream) return XMPP.Objects.Object_Kind;
 
    -----------------
    --  Serialize  --
@@ -58,9 +63,6 @@ package XMPP.Streams is
 
 private
 
-   type XMPP_Stream is new XMPP.Objects.XMPP_Object (XMPP.Objects.Stream) with
-   record
-      Id : League.Strings.Universal_String;
-   end record;
+   type XMPP_Stream is new XMPP.Objects.XMPP_Object with null record;
 
 end XMPP.Streams;
