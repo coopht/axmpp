@@ -26,7 +26,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --
---  <Unit> XMPP.Networks
+--  <Unit> XMPP.Sessions
 --  <ImplementationNotes>
 --
 ------------------------------------------------------------------------------
@@ -41,9 +41,10 @@ with League.Strings;
 with XML.SAX.Readers;
 
 with XMPP.Networks;
-with XMPP.Objects;
 with XMPP.Null_Objects;
+with XMPP.Objects;
 with XMPP.Streams;
+with XMPP.Stream_Features;
 
 package body XMPP.Sessions is
 
@@ -53,14 +54,14 @@ package body XMPP.Sessions is
    use type XMPP.Objects.Object_Kind;
 
    JID      : Universal_String := To_Universal_String ("uim-test");
-   --  Host     : Universal_String := To_Universal_String ("zion");
-   --  Password : Universal_String := To_Universal_String ("123");
-   --  Addr     : Universal_String := To_Universal_String ("127.0.0.1");
+   Host     : Universal_String := To_Universal_String ("zion");
+   Password : Universal_String := To_Universal_String ("123");
+   Addr     : Universal_String := To_Universal_String ("127.0.0.1");
 
    --  Connection to Jabber.ru
-   Host     : Universal_String := To_Universal_String ("jabber.ru");
-   Password : Universal_String := To_Universal_String ("123456");
-   Addr     : Universal_String := To_Universal_String ("77.88.57.177");
+   --  Host     : Universal_String := To_Universal_String ("jabber.ru");
+   --  Password : Universal_String := To_Universal_String ("123456");
+   --  Addr     : Universal_String := To_Universal_String ("77.88.57.177");
 
    -------------
    --  Close  --
@@ -154,6 +155,9 @@ package body XMPP.Sessions is
    is
    begin
       Put_Line ("*** Text = " & Text);
+      if Self.Current.Get_Kind /= XMPP.Objects.Null_Object then
+         Self.Current.Set_Content (Self.Tag, Text);
+      end if;
    end Characters;
 
    -------------------
@@ -184,14 +188,29 @@ package body XMPP.Sessions is
    ---------------------
    --  Create_Object  --
    ---------------------
-   procedure Create_Object (Self : in out XMPP_Session; Tag : Wide_Wide_String)
+   procedure Create_Object (Self          : in out XMPP_Session;
+                            Namespace_URI : Wide_Wide_String;
+                            Local_Name    : Wide_Wide_String)
    is
    begin
-      if Tag = "stream:stream" then
-         Self.X := new XMPP.Streams.XMPP_Stream;
-      else
-         raise Program_Error;
+      if Namespace_URI = "http://etherx.jabber.org/streams" then
+         if Local_Name = "stream" then
+            Self.Current := new XMPP.Streams.XMPP_Stream;
+            return;
+
+         elsif Local_Name = "features" then
+            Self.Current := new XMPP.Stream_Features.XMPP_Stream_Feature;
+            return;
+         end if;
       end if;
+
+      --  Creating Null_Object, if actual object cannot be created.
+
+      Self.Current := Null_X;
+      Ada.Wide_Wide_Text_IO.Put_Line
+        ("Don't know what kind of element should be crated : "
+           & "Namespace_URI : " & Namespace_URI
+           & " Local_Name : " & Local_Name);
    end Create_Object;
 
    ---------------------
@@ -207,20 +226,29 @@ package body XMPP.Sessions is
    is
    begin
       Put_Line (">>> Start_Element_QN = " & Qualified_Name);
-
-      Success := True;
+      Self.Tag := Local_Name;
 
       --  If Object not yet created, then create it
-      if Self.X.Get_Kind = XMPP.Objects.Null_Object then
-         Self.Create_Object (Qualified_Name.To_Wide_Wide_String);
+      if Self.Current.Get_Kind = XMPP.Objects.Null_Object then
+         Self.Create_Object (Namespace_URI.To_Wide_Wide_String,
+                             Local_Name.To_Wide_Wide_String);
+
+         for J in 1 .. Attributes.Length loop
+            Self.Current.Set_Content
+              (Attributes.Local_Name (J), Attributes.Value (J));
+         end loop;
 
       --  If object was created, then fill it
       else
-         Self.X.Set_Content (Local_Name, Qualified_Name);
+
+         Self.Current.Set_Content (Local_Name, Qualified_Name);
       end if;
 
    end Start_Element;
 
+   -------------
+   --  Error  --
+   -------------
    overriding procedure Error
     (Self       : in out XMPP_Session;
      Occurrence : XML.SAX.Parse_Exceptions.SAX_Parse_Exception;

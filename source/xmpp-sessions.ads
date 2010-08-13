@@ -58,6 +58,9 @@ with XMPP.Null_Objects;
 
 package XMPP.Sessions is
 
+   Null_X : XMPP.Objects.XMPP_Object_Access
+     := new XMPP.Null_Objects.XMPP_Null_Object;
+
    type XMPP_Session is limited new XMPP.Networks.Network
      and XML.SAX.Content_Handlers.SAX_Content_Handler
      and XML.SAX.Declaration_Handlers.SAX_Declaration_Handler
@@ -70,14 +73,13 @@ package XMPP.Sessions is
      Stream_Handler : XMPP.Stream_Handlers.XMPP_Stream_Handler_Access;
 
      Locator : XML.SAX.Locators.SAX_Locator;
+     Tag     : League.Strings.Universal_String;
 
      Source  :
        aliased XML.SAX.Input_Sources.Streams.Sockets.Socket_Input_Source;
      Reader  : aliased XML.SAX.Simple_Readers.SAX_Simple_Reader;
 
-     X : XMPP.Objects.XMPP_Object_Access
-       := new XMPP.Null_Objects.XMPP_Null_Object;
-
+     Current : XMPP.Objects.XMPP_Object_Access := Null_X;
    end record;
 
    type XMPP_Session_Access is access all XMPP_Session;
@@ -143,7 +145,8 @@ package XMPP.Sessions is
    overriding
    procedure Read_Data (Self   : not null access XMPP_Session);
 
-   procedure Create_Object (Self : in out XMPP_Session;
-                            Tag : Wide_Wide_String);
+   procedure Create_Object (Self          : in out XMPP_Session;
+                            Namespace_URI : Wide_Wide_String;
+                            Local_Name    : Wide_Wide_String);
 
 end XMPP.Sessions;
