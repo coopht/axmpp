@@ -33,10 +33,15 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with XMPP.Objects;
+with Ada.Wide_Wide_Text_IO;
+
 with League.Strings;
 
+with XMPP.Objects;
+
 package body XMPP.Streams is
+
+   use type League.Strings.Universal_String;
 
    ----------------
    --  Get_Kind  --
@@ -54,7 +59,6 @@ package body XMPP.Streams is
       return League.Strings.Universal_String
    is
    begin
-      raise Program_Error with "Not yet implemented";
       return League.Strings.To_Universal_String ("");
    end Serialize;
 
@@ -67,7 +71,63 @@ package body XMPP.Streams is
                           Value     : League.Strings.Universal_String)
    is
    begin
-      raise Program_Error with "Not yet implemented";
+      if Parameter.To_Wide_Wide_String = "id" then
+         Self.Set_Id (Value);
+      elsif Parameter.To_Wide_Wide_String = "from" then
+         Self.Set_From (Value);
+      elsif Parameter.To_Wide_Wide_String = "lang" then
+         Self.Set_Lang (Value);
+      elsif Parameter.To_Wide_Wide_String = "version" then
+         Self.Set_Version (Value);
+      else
+         Ada.Wide_Wide_Text_IO.Put_Line
+           ("Unknonw Parameter : " & Parameter.To_Wide_Wide_String);
+      end if;
    end Set_Content;
+
+   ----------------
+   --  Set_From  --
+   ----------------
+   procedure Set_From (Self  : in out XMPP_Stream;
+                       Value : League.Strings.Universal_String) is
+   begin
+      Self.From := Value;
+   end Set_From;
+
+   --------------
+   --  Set_Id  --
+   --------------
+   procedure Set_Id (Self  : in out XMPP_Stream;
+                     Value : League.Strings.Universal_String) is
+   begin
+      Self.Id := Value;
+   end Set_Id;
+
+   --------------
+   --  Set_Id  --
+   --------------
+   procedure Set_Id (Self : in out XMPP_Stream; Value : Integer) is
+   begin
+      Self.Id := League.Strings.To_Universal_String
+                  (Integer'Wide_Wide_Image (Value));
+   end Set_Id;
+
+   ----------------
+   --  Set_Lang  --
+   ----------------
+   procedure Set_Lang (Self  : in out XMPP_Stream;
+                       Value : League.Strings.Universal_String) is
+   begin
+      Self.Lang := Value;
+   end Set_Lang;
+
+   -------------------
+   --  Set_Version  --
+   -------------------
+   procedure Set_Version (Self  : in out XMPP_Stream;
+                          Value : League.Strings.Universal_String) is
+   begin
+      Self.Version := Value;
+   end Set_Version;
 
 end XMPP.Streams;

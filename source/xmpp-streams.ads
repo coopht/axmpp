@@ -61,8 +61,42 @@ package XMPP.Streams is
                           Parameter : League.Strings.Universal_String;
                           Value     : League.Strings.Universal_String);
 
+   ----------------
+   --  Set_From  --
+   ----------------
+   procedure Set_From (Self  : in out XMPP_Stream;
+                       Value : League.Strings.Universal_String);
+
+   --------------
+   --  Set_Id  --
+   --------------
+   procedure Set_Id (Self  : in out XMPP_Stream;
+                     Value : League.Strings.Universal_String);
+
+   --------------
+   --  Set_Id  --
+   --------------
+   procedure Set_Id (Self : in out XMPP_Stream; Value : Integer);
+
+   ----------------
+   --  Set_Lang  --
+   ----------------
+   procedure Set_Lang (Self  : in out XMPP_Stream;
+                       Value : League.Strings.Universal_String);
+
+   -------------------
+   --  Set_Version  --
+   -------------------
+   procedure Set_Version (Self  : in out XMPP_Stream;
+                          Value : League.Strings.Universal_String);
+
 private
 
-   type XMPP_Stream is new XMPP.Objects.XMPP_Object with null record;
-
+   type XMPP_Stream is new XMPP.Objects.XMPP_Object with
+   record
+      Id      : League.Strings.Universal_String;
+      From    : League.Strings.Universal_String;
+      Lang    : League.Strings.Universal_String;
+      Version : League.Strings.Universal_String;
+   end record;
 end XMPP.Streams;
