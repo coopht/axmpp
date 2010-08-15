@@ -225,7 +225,19 @@ package body XMPP.Sessions is
       Success        : in out Boolean)
    is
    begin
-      Put_Line (">>> Start_Element_QN = " & Qualified_Name);
+      Ada.Wide_Wide_Text_IO.Put (">>> Start_Element_QN = "
+                                   & Qualified_Name.To_Wide_Wide_String & " (");
+
+      for J in 1 .. Attributes.Length loop
+         Ada.Wide_Wide_Text_IO.Put
+           (Attributes.Local_Name (J).To_Wide_Wide_String
+              & "="
+              & Attributes.Value (J).To_Wide_Wide_String
+              & " ");
+      end loop;
+
+      Ada.Wide_Wide_Text_IO.Put_Line (")");
+
       Self.Tag := Local_Name;
 
       --  If Object not yet created, then create it
