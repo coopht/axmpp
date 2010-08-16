@@ -48,6 +48,7 @@ project AXMPP is
       for Default_Switches ("ada")
          use ("-O0",
 	      "-g",
+	      "-ggdb3",
 	      "-fPIC",
 	      "-gnaty3aAbceghiIklmnorsSuxy",
 	      "-gnat05",
