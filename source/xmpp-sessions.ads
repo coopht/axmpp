@@ -80,7 +80,7 @@ package XMPP.Sessions is
          XML.SAX.Input_Sources.Streams.Sockets.Debug.Debug_Socket_Input_Source;
      Reader  : aliased XML.SAX.Simple_Readers.SAX_Simple_Reader;
 
-     Current     : XMPP.Objects.XMPP_Object_Access := Null_X;
+     Current : XMPP.Objects.XMPP_Object_Access := Null_X;
    end record;
 
    type XMPP_Session_Access is access all XMPP_Session;
@@ -94,12 +94,12 @@ package XMPP.Sessions is
    function Is_Opened (Self : XMPP_Session) return Boolean;
 
    procedure Set_Stream_Handler
-    (Self    : in out XMPP_Session;
-     Handler : XMPP.Stream_Handlers.XMPP_Stream_Handler_Access);
+    (Self    : not null XMPP_Session_Access;
+     Handler : not null XMPP.Stream_Handlers.XMPP_Stream_Handler_Access);
 
    procedure Set_Raw_Handler
     (Self    : XMPP_Session;
-     Handler : not null access XMPP.Raw_Handlers.XMPP_Raw_Handler'Class)
+     Handler : not null access XMPP.Raw_Handlers.XMPP_Raw_Handler)
    is null;
 
    --  End XMPP Session API

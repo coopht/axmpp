@@ -136,8 +136,8 @@ package body XMPP.Sessions is
    --  Set_Stream_Handler  --
    --------------------------
    procedure Set_Stream_Handler
-    (Self    : in out XMPP_Session;
-     Handler : XMPP.Stream_Handlers.XMPP_Stream_Handler_Access)
+    (Self    : not null XMPP_Session_Access;
+     Handler : not null XMPP.Stream_Handlers.XMPP_Stream_Handler_Access)
    is
    begin
       Self.Stream_Handler := Handler;
@@ -234,9 +234,11 @@ package body XMPP.Sessions is
 
       elsif Namespace_URI = "http://etherx.jabber.org/streams"
         and Local_Name = "features" then
+         Self.Stream_Handler.Stream_Features
+           (XMPP.Stream_Features.XMPP_Stream_Feature_Access (Self.Current));
+         Self.Current := Null_X;
          --  TODO:
          --  Free (Self.Current);
-         Self.Current := Null_X;
          return;
       end if;
    end Delete_Object;
@@ -311,7 +313,8 @@ package body XMPP.Sessions is
                  (Attributes.Local_Name (J), Attributes.Value (J));
             end loop;
 
-            --  Self.Stream_Handler (Self.Current);
+            Self.Stream_Handler.Start_Stream
+              (XMPP.Streams.XMPP_Stream_Access (Self.Current));
             Self.Current := Null_X;
             return;
          end if;
