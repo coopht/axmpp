@@ -73,12 +73,16 @@ package body XMPP.Streams is
    begin
       if Parameter.To_Wide_Wide_String = "id" then
          Self.Set_Id (Value);
+
       elsif Parameter.To_Wide_Wide_String = "from" then
          Self.Set_From (Value);
+
       elsif Parameter.To_Wide_Wide_String = "lang" then
          Self.Set_Lang (Value);
+
       elsif Parameter.To_Wide_Wide_String = "version" then
          Self.Set_Version (Value);
+
       else
          Ada.Wide_Wide_Text_IO.Put_Line
            ("Unknonw Parameter : " & Parameter.To_Wide_Wide_String);
