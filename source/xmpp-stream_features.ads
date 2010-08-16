@@ -33,12 +33,26 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with XMPP.Objects;
+with Ada.Containers.Vectors;
+
 with League.Strings;
+
+with XMPP.Objects;
 
 package XMPP.Stream_Features is
 
    type XMPP_Stream_Feature is new XMPP.Objects.XMPP_Object with private;
+
+   type Mechanism is (PLAIN, DIGEST_MD5);
+
+   package Mechanisms_Vectors is
+      new Ada.Containers.Vectors (Natural, Mechanism);
+
+   ---------------------
+   --  Add_Mechanism  --
+   ---------------------
+   procedure Add_Mechanism (Self  : in out XMPP_Stream_Feature;
+                            Value : Wide_Wide_String);
 
    ----------------
    --  Get_Kind  --
@@ -55,6 +69,12 @@ package XMPP.Stream_Features is
       return League.Strings.Universal_String;
 
    -------------------
+   --  Set_Has_TLS  --
+   -------------------
+   procedure Set_Has_TLS (Self  : in out XMPP_Stream_Feature;
+                          Value : Boolean := True);
+
+   -------------------
    --  Set_Content  --
    -------------------
    overriding
@@ -66,6 +86,7 @@ private
 
    type XMPP_Stream_Feature is new XMPP.Objects.XMPP_Object with
    record
-      null;
+      Has_TLS    : Boolean := False;
+      Mechanisms : Mechanisms_Vectors.Vector;
    end record;
 end XMPP.Stream_Features;
