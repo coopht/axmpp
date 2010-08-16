@@ -172,7 +172,9 @@ package body XMPP.Sessions is
    is
    begin
       Put_Line ("<<< End_Element_QN = " & Qualified_Name);
-      Success := True;
+      Put_Line ("<<< End_Element_URI = " & Namespace_URI);
+      Self.Delete_Object (Namespace_URI.To_Wide_Wide_String,
+                          Local_Name.To_Wide_Wide_String);
    end End_Element;
 
    --------------------
@@ -193,25 +195,51 @@ package body XMPP.Sessions is
                             Local_Name    : Wide_Wide_String)
    is
    begin
-      if Namespace_URI = "http://etherx.jabber.org/streams" then
-         if Local_Name = "stream" then
-            Self.Current := new XMPP.Streams.XMPP_Stream;
-            return;
+      if Namespace_URI = "http://etherx.jabber.org/streams"
+        and Local_Name = "stream" then
 
-         elsif Local_Name = "features" then
-            Self.Current := new XMPP.Stream_Features.XMPP_Stream_Feature;
-            return;
-         end if;
+         Self.Current := new XMPP.Streams.XMPP_Stream;
+         return;
+
+      elsif Namespace_URI = "http://etherx.jabber.org/streams"
+        and Local_Name = "features" then
+         Self.Current := new XMPP.Stream_Features.XMPP_Stream_Feature;
+         return;
       end if;
 
       --  Creating Null_Object, if actual object cannot be created.
 
       Self.Current := Null_X;
       Ada.Wide_Wide_Text_IO.Put_Line
-        ("Don't know what kind of element should be crated : "
-           & "Namespace_URI : " & Namespace_URI
-           & " Local_Name : " & Local_Name);
+        ("Don't know what kind of element should be created : ");
+      Ada.Wide_Wide_Text_IO.Put_Line ("Namespace_URI : " & Namespace_URI);
+      Ada.Wide_Wide_Text_IO.Put_Line ("Local_Name : " & Local_Name);
    end Create_Object;
+
+   ---------------------
+   --  Delete_Object  --
+   ---------------------
+   procedure Delete_Object (Self          : in out XMPP_Session;
+                            Namespace_URI : Wide_Wide_String;
+                            Local_Name    : Wide_Wide_String)
+   is
+   begin
+      if Namespace_URI = "http://etherx.jabber.org/streams"
+        and Local_Name = "stream" then
+
+         --  TODO:
+         --  Free (Self.Current);
+         Self.Current := Null_X;
+         return;
+
+      elsif Namespace_URI = "http://etherx.jabber.org/streams"
+        and Local_Name = "features" then
+         --  TODO:
+         --  Free (Self.Current);
+         Self.Current := Null_X;
+         return;
+      end if;
+   end Delete_Object;
 
    ---------------------
    --  Start_Element  --
@@ -225,8 +253,13 @@ package body XMPP.Sessions is
       Success        : in out Boolean)
    is
    begin
-      Ada.Wide_Wide_Text_IO.Put (">>> Start_Element_QN = "
-                                   & Qualified_Name.To_Wide_Wide_String & " (");
+      --  DEBUG  --
+      Ada.Wide_Wide_Text_IO.Put
+        (">>> Start_Element_QN = "
+           & Qualified_Name.To_Wide_Wide_String & " (");
+
+      Ada.Wide_Wide_Text_IO.Put
+        ("Namespace_URI = " & Namespace_URI.To_Wide_Wide_String & " ");
 
       for J in 1 .. Attributes.Length loop
          Ada.Wide_Wide_Text_IO.Put
@@ -238,23 +271,56 @@ package body XMPP.Sessions is
 
       Ada.Wide_Wide_Text_IO.Put_Line (")");
 
+      --  DEBUG  --
+
       Self.Tag := Local_Name;
 
+      --  If object was created, then fill it
+      if Self.Current.Get_Kind /= XMPP.Objects.Null_Object then
+
+         --  For XMPP_Stream_Feature
+         if Namespace_URI.To_Wide_Wide_String
+           = "urn:ietf:params:xml:ns:xmpp-tls"
+           and Local_Name.To_Wide_Wide_String = "starttls"
+         then
+            Self.Current.Set_Content (Local_Name, Local_Name);
+
+         --  For XMPP_Stream_Feature
+         elsif Namespace_URI.To_Wide_Wide_String
+           = "urn:ietf:params:xml:ns:xmpp-sasl"
+           and Local_Name.To_Wide_Wide_String = "mechanisms" then
+            null; --  we can safety skip mechanisms tag here.
+
+         --  For XMPP_Stream_Feature
+         elsif Namespace_URI.To_Wide_Wide_String
+           = "urn:ietf:params:xml:ns:xmpp-sasl"
+           and Local_Name.To_Wide_Wide_String = "mechanism" then
+            --  We add mechanism parameter in Characters procedure
+            Self.Tag := Local_Name;
+         end if;
+
       --  If Object not yet created, then create it
-      if Self.Current.Get_Kind = XMPP.Objects.Null_Object then
+      else
          Self.Create_Object (Namespace_URI.To_Wide_Wide_String,
                              Local_Name.To_Wide_Wide_String);
 
-         for J in 1 .. Attributes.Length loop
-            Self.Current.Set_Content
-              (Attributes.Local_Name (J), Attributes.Value (J));
-         end loop;
+         --  Hack for stream:stream stanza, which does not have close tag
+         if Self.Current.Get_Kind = XMPP.Objects.Stream then
+            for J in 1 .. Attributes.Length loop
+               Self.Current.Set_Content
+                 (Attributes.Local_Name (J), Attributes.Value (J));
+            end loop;
 
-      --  If object was created, then fill it
-      else
-
-         Self.Current.Set_Content (Local_Name, Qualified_Name);
+            --  Self.Stream_Handler (Self.Current);
+            Self.Current := Null_X;
+            return;
+         end if;
       end if;
+
+      for J in 1 .. Attributes.Length loop
+         Self.Current.Set_Content
+           (Attributes.Local_Name (J), Attributes.Value (J));
+      end loop;
 
    end Start_Element;
 

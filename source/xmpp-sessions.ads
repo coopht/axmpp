@@ -79,7 +79,7 @@ package XMPP.Sessions is
        aliased XML.SAX.Input_Sources.Streams.Sockets.Socket_Input_Source;
      Reader  : aliased XML.SAX.Simple_Readers.SAX_Simple_Reader;
 
-     Current : XMPP.Objects.XMPP_Object_Access := Null_X;
+     Current     : XMPP.Objects.XMPP_Object_Access := Null_X;
    end record;
 
    type XMPP_Session_Access is access all XMPP_Session;
@@ -146,6 +146,10 @@ package XMPP.Sessions is
    procedure Read_Data (Self   : not null access XMPP_Session);
 
    procedure Create_Object (Self          : in out XMPP_Session;
+                            Namespace_URI : Wide_Wide_String;
+                            Local_Name    : Wide_Wide_String);
+
+   procedure Delete_Object (Self          : in out XMPP_Session;
                             Namespace_URI : Wide_Wide_String;
                             Local_Name    : Wide_Wide_String);
 
