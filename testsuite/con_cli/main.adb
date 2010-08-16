@@ -36,7 +36,7 @@
 with Con_Cli;
 with Con_Cli_Handlers;
 
-with XMPP.Sessions;
+with XMPP.Stream_Handlers;
 
 procedure Main is
    S : not null Con_Cli.Session_Access := new Con_Cli.Session;
@@ -44,6 +44,6 @@ procedure Main is
      := new Con_Cli_Handlers.Con_Cli_Handler;
 
 begin
-   S.Set_Stream_Handler (H);
+   S.Set_Stream_Handler (XMPP.Stream_Handlers.XMPP_Stream_Handler_Access (H));
    S.Open;
 end Main;
