@@ -40,6 +40,8 @@ package XMPP.Streams is
 
    type XMPP_Stream is new XMPP.Objects.XMPP_Object with private;
 
+   type XMPP_Stream_Access is access all XMPP_Stream'Class;
+
    ----------------
    --  Get_Kind  --
    ----------------
