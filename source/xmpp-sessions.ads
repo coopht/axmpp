@@ -47,7 +47,7 @@ with XML.SAX.DTD_Handlers;
 with XML.SAX.Declaration_Handlers;
 with XML.SAX.Entity_Resolvers;
 with XML.SAX.Error_Handlers;
-with XML.SAX.Input_Sources.Streams.Sockets;
+with XML.SAX.Input_Sources.Streams.Sockets.Debug;
 with XML.SAX.Lexical_Handlers;
 with XML.SAX.Locators;
 with XML.SAX.Parse_Exceptions;
@@ -76,7 +76,8 @@ package XMPP.Sessions is
      Tag     : League.Strings.Universal_String;
 
      Source  :
-       aliased XML.SAX.Input_Sources.Streams.Sockets.Socket_Input_Source;
+       aliased
+         XML.SAX.Input_Sources.Streams.Sockets.Debug.Debug_Socket_Input_Source;
      Reader  : aliased XML.SAX.Simple_Readers.SAX_Simple_Reader;
 
      Current     : XMPP.Objects.XMPP_Object_Access := Null_X;
