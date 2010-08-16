@@ -136,7 +136,7 @@ package body XMPP.Sessions is
    --  Set_Stream_Handler  --
    --------------------------
    procedure Set_Stream_Handler
-    (Self    : not null XMPP_Session_Access;
+    (Self    : not null access XMPP_Session;
      Handler : not null XMPP.Stream_Handlers.XMPP_Stream_Handler_Access)
    is
    begin

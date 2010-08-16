@@ -94,7 +94,7 @@ package XMPP.Sessions is
    function Is_Opened (Self : XMPP_Session) return Boolean;
 
    procedure Set_Stream_Handler
-    (Self    : not null XMPP_Session_Access;
+    (Self    : not null access XMPP_Session;
      Handler : not null XMPP.Stream_Handlers.XMPP_Stream_Handler_Access);
 
    procedure Set_Raw_Handler
