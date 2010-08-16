@@ -34,10 +34,16 @@
 --  $Date$
 ------------------------------------------------------------------------------
 with Con_Cli;
+with Con_Cli_Handlers;
+
+with XMPP.Sessions;
 
 procedure Main is
    S : not null Con_Cli.Session_Access := new Con_Cli.Session;
+   H : not null Con_Cli_Handlers.Con_Cli_Handler_Access
+     := new Con_Cli_Handlers.Con_Cli_Handler;
 
 begin
+   S.Set_Stream_Handler (H);
    S.Open;
 end Main;
