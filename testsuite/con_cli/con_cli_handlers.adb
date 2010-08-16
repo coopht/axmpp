@@ -39,6 +39,9 @@ with XMPP.Stream_Handlers;
 
 package body Con_Cli_Handlers is
 
+   --------------------
+   --  Start_Stream  --
+   --------------------
    overriding procedure Start_Stream
      (Self   : in out Con_Cli_Handler;
       Object : not null XMPP.Streams.XMPP_Stream_Access)
@@ -47,6 +50,9 @@ package body Con_Cli_Handlers is
       Ada.Wide_Wide_Text_IO.Put_Line ("Start_Stream called");
    end Start_Stream;
 
+   -----------------------
+   --  Stream_Features  --
+   -----------------------
    overriding procedure Stream_Features
      (Self   : in out Con_Cli_Handler;
       Object : not null XMPP.Stream_Features.XMPP_Stream_Feature_Access)
