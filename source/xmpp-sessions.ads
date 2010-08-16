@@ -95,7 +95,7 @@ package XMPP.Sessions is
 
    procedure Set_Stream_Handler
     (Self    : not null access XMPP_Session;
-     Handler : not null XMPP.Stream_Handlers.XMPP_Stream_Handler_Access);
+     Handler : not null access XMPP.Stream_Handlers.XMPP_Stream_Handler'Class);
 
    procedure Set_Raw_Handler
     (Self    : XMPP_Session;

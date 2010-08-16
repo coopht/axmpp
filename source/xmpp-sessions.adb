@@ -137,10 +137,11 @@ package body XMPP.Sessions is
    --------------------------
    procedure Set_Stream_Handler
     (Self    : not null access XMPP_Session;
-     Handler : not null XMPP.Stream_Handlers.XMPP_Stream_Handler_Access)
+     Handler : not null access XMPP.Stream_Handlers.XMPP_Stream_Handler'Class)
    is
    begin
-      Self.Stream_Handler := Handler;
+      Self.Stream_Handler
+        := XMPP.Stream_Handlers.XMPP_Stream_Handler_Access (Handler);
    end Set_Stream_Handler;
 
    --  XML SAX Parser implementation  --
