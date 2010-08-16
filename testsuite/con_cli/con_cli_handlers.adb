@@ -49,7 +49,7 @@ package body Con_Cli_Handlers is
 
    overriding procedure Stream_Features
      (Self   : in out Con_Cli_Handler;
-      Object : XMPP.Stream_Features.XMPP_Stream_Feature_Access)
+      Object : not null XMPP.Stream_Features.XMPP_Stream_Feature_Access)
    is
    begin
       Ada.Wide_Wide_Text_IO.Put_Line ("Stream_Features called");
