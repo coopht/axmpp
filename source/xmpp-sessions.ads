@@ -35,6 +35,8 @@
 ------------------------------------------------------------------------------
 with Ada.Streams;
 
+with GNUTLS;
+
 with League.Strings;
 
 with XMPP.Networks;
@@ -82,7 +84,10 @@ package XMPP.Sessions is
 
      Current : XMPP.Objects.XMPP_Object_Access := Null_X;
 
-
+     TLS_Session     : GNUTLS.Session;
+     Credential      : GNUTLS.Certificate_Client_Credentials;
+     TLS_Established : Boolean := False;
+     Authenticated   : Boolean := False;
    end record;
 
    type XMPP_Session_Access is access all XMPP_Session;
@@ -155,5 +160,8 @@ package XMPP.Sessions is
    procedure Delete_Object (Self          : in out XMPP_Session;
                             Namespace_URI : Wide_Wide_String;
                             Local_Name    : Wide_Wide_String);
+
+   procedure Send_Wide_Wide_String (Self : in out XMPP_Session;
+                                    Str  : Wide_Wide_String);
 
 end XMPP.Sessions;

@@ -237,6 +237,15 @@ package body XMPP.Sessions is
         and Local_Name = "features" then
          Self.Stream_Handler.Stream_Features
            (XMPP.Stream_Features.XMPP_Stream_Feature_Access (Self.Current));
+
+         --  if tls session was not established, than send command to server
+         --  to start tls negotiation
+         --  XXX: may be XMPP object for xmpp-tls name space should be created
+         if not Self.TLS_Established then
+            Self.Send_Wide_Wide_String
+              ("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
+         end if;
+
          Self.Current := Null_X;
          --  TODO:
          --  Free (Self.Current);
@@ -358,5 +367,14 @@ package body XMPP.Sessions is
    begin
       Self.Reader.Parse;
    end Read_Data;
+
+   procedure Send_Wide_Wide_String (Self : in out XMPP_Session;
+                                    Str  : Wide_Wide_String) is
+   begin
+      Self.Send
+        (XMPP.Networks.To_Stream_Element_Array
+           (Ada.Characters.Conversions.To_String (Str)),
+        Self.TLS_Established);
+   end Send_Wide_Wide_String;
 
 end XMPP.Sessions;
