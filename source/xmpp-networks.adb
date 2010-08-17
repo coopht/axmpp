@@ -37,6 +37,7 @@ with Ada.Characters.Conversions;
 with Ada.Exceptions;
 with Ada.Text_IO;
 with Ada.Unchecked_Conversion;
+with GNUTLS;
 
 package body XMPP.Networks is
 
@@ -96,10 +97,32 @@ package body XMPP.Networks is
    --  Send  --
    ------------
    procedure Send (Self   : not null access Network'Class;
-                   Data   : Ada.Streams.Stream_Element_Array)
+                   Data   : Ada.Streams.Stream_Element_Array;
+                   Via_TLS : Boolean := False)
    is
    begin
-      Self.Channel.Write (Data);
+      if not Via_TLS then
+         Self.Channel.Write (Data);
+
+      else
+         Ada.Text_IO.Put_Line ("Sendinging data via TLS");
+
+         declare
+            Tmp : Ada.Streams.Stream_Element_Array := Data;
+
+            E   : GNAT.Sockets.Vector_Element :=
+              (Base   => Tmp (Tmp'First)'Unchecked_Access,
+               Length => Tmp'Length);
+
+            P : GNAT.Sockets.Vector_Type (0 .. 0);
+            L : Ada.Streams.Stream_Element_Count := 1;
+
+         begin
+            P (0) := E;
+            GNUTLS.Record_Send (Self.TLS_Session, P, L);
+         end;
+      end if;
+
    exception
       when E : others =>
          Ada.Text_IO.Put_Line
@@ -245,8 +268,8 @@ package body XMPP.Networks is
       Buffer : Ada.Streams.Stream_Element_Array (1 .. 4096);
       Last   : Ada.Streams.Stream_Element_Count := 0;
 
-     --  for debug
-     --  X      : GNAT.Sockets.Request_Type (GNAT.Sockets.N_Bytes_To_Read);
+      --  for debug
+      --  X      : GNAT.Sockets.Request_Type (GNAT.Sockets.N_Bytes_To_Read);
    begin
       delay (0.1);
       --  for debug
@@ -282,5 +305,12 @@ package body XMPP.Networks is
    begin
       return To_Array (Value);
    end To_Stream_Element_Array;
+
+   procedure Set_TLS_Session (Self : not null access Network'Class;
+                              S    : GNUTLS.Session)
+   is
+   begin
+      Self.TLS_Session := S;
+   end Set_TLS_Session;
 
 end XMPP.Networks;

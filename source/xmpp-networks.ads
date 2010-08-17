@@ -33,8 +33,11 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with GNAT.Sockets;
 with Ada.Streams;
+
+with GNAT.Sockets;
+
+with GNUTLS;
 
 package XMPP.Networks is
 
@@ -72,8 +75,9 @@ package XMPP.Networks is
 
    procedure Disconnect (Self : not null access Network'Class);
 
-   procedure Send (Self   : not null access Network'Class;
-                   Data   : Ada.Streams.Stream_Element_Array);
+   procedure Send (Self    : not null access Network'Class;
+                   Data    : Ada.Streams.Stream_Element_Array;
+                   Via_TLS : Boolean := False);
 
    procedure Idle (Self : in out Network);
 
@@ -90,6 +94,9 @@ package XMPP.Networks is
    function To_Stream_Element_Array (Value : String)
       return Ada.Streams.Stream_Element_Array;
 
+   procedure Set_TLS_Session (Self : not null access Network'Class;
+                              S    : GNUTLS.Session);
+
 private
 
    type Network is abstract tagged limited record
@@ -101,6 +108,7 @@ private
       WSet         : Socket_Set_Type;
       RSet         : Socket_Set_Type;
       Status       : Selector_Status;
+      TLS_Session  : GNUTLS.Session;
    end record;
 
 end XMPP.Networks;
