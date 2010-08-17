@@ -47,7 +47,7 @@ with XML.SAX.DTD_Handlers;
 with XML.SAX.Declaration_Handlers;
 with XML.SAX.Entity_Resolvers;
 with XML.SAX.Error_Handlers;
-with XML.SAX.Input_Sources.Streams.Sockets.Debug;
+with XML.SAX.Input_Sources.Streams.Sockets.TLS;
 with XML.SAX.Lexical_Handlers;
 with XML.SAX.Locators;
 with XML.SAX.Parse_Exceptions;
@@ -77,10 +77,12 @@ package XMPP.Sessions is
 
      Source  :
        aliased
-         XML.SAX.Input_Sources.Streams.Sockets.Debug.Debug_Socket_Input_Source;
+         XML.SAX.Input_Sources.Streams.Sockets.TLS.TLS_Socket_Input_Source;
      Reader  : aliased XML.SAX.Simple_Readers.SAX_Simple_Reader;
 
      Current : XMPP.Objects.XMPP_Object_Access := Null_X;
+
+
    end record;
 
    type XMPP_Session_Access is access all XMPP_Session;
