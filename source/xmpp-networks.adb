@@ -38,10 +38,10 @@ with Ada.Exceptions;
 with Ada.Text_IO;
 with Ada.Unchecked_Conversion;
 
-use Ada.Exceptions;
-use Ada.Text_IO;
-
 package body XMPP.Networks is
+
+   use Ada.Exceptions;
+   use Ada.Text_IO;
 
    use type Ada.Streams.Stream_Element_Offset;
 
