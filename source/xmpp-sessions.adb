@@ -55,16 +55,16 @@ package body XMPP.Sessions is
    use type XMPP.Objects.Object_Kind;
 
    JID      : Universal_String := To_Universal_String ("uim-test");
-   Host     : Universal_String := To_Universal_String ("zion");
-   Password : Universal_String := To_Universal_String ("123");
-   Addr     : Universal_String := To_Universal_String ("127.0.0.1");
+--   Host     : Universal_String := To_Universal_String ("zion");
+--   Password : Universal_String := To_Universal_String ("123");
+--   Addr     : Universal_String := To_Universal_String ("127.0.0.1");
 
    Do_Read_Data : Boolean := True;
 
    --  Connection to Jabber.ru
-   --  Host     : Universal_String := To_Universal_String ("jabber.ru");
-   --  Password : Universal_String := To_Universal_String ("123456");
-   --  Addr     : Universal_String := To_Universal_String ("77.88.57.177");
+   Host     : Universal_String := To_Universal_String ("jabber.ru");
+   Password : Universal_String := To_Universal_String ("123456");
+   Addr     : Universal_String := To_Universal_String ("77.88.57.177");
 
    -------------
    --  Close  --
@@ -421,18 +421,29 @@ package body XMPP.Sessions is
       GNUTLS.Transport_Set_Ptr (Self.TLS_Session, Self.Get_Socket);
 
       Ada.Text_IO.Put_Line ("GNUTLS.Handshake");
-      GNUTLS.Handshake (Self.TLS_Session);
-      Ada.Text_IO.Put_Line ("End of GNUTLS.Handshake");
-
-      Self.TLS_Established := True;
+--        begin
+--           GNUTLS.Handshake (Self.TLS_Session);
+--
+--        exception
+--           when others =>
+--              Ada.Text_IO.Put_Line
+--                (GNUTLS.IO_Direction'Image
+--                   (GNUTLS.Get_Direction (Self.TLS_Session)));
+--        end;
+--        Ada.Text_IO.Put_Line ("End of GNUTLS.Handshake");
+--
+--        Self.TLS_Established := True;
       Self.Set_TLS_Session (Self.TLS_Session);
       Self.Source.Set_TLS_Session (Self.TLS_Session);
+      Self.Source.Object := Self.all'Unchecked_Access;
+
+      Self.Source.Start_Handshake;
 
       --  On Success handshake,
       --  we should reopen stream via TLS session.
 
-      Ada.Wide_Wide_Text_IO.Put_Line
-        ("TLS Session established. Sending Stream");
+--        Ada.Wide_Wide_Text_IO.Put_Line
+--          ("TLS Session established. Sending Stream");
       --  Self.On_Connect;
       Do_Read_Data := True;
    exception

@@ -228,6 +228,10 @@ package GNUTLS is
    procedure Certificate_Allocate_Credentials
      (SC : out Certificate_Client_Credentials);
 
+   type IO_Direction is (Read, Write);
+
+   function Get_Direction (S : Session) return IO_Direction;
+
 private
 
    type Session_Int is null record;

@@ -52,7 +52,7 @@ package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
    function Is_TLS_Established (Self : TLS_Socket_Input_Source) return Boolean
    is
    begin
-      return Self.TLS_Established;
+      return Self.TLS_State = TLS;
    end Is_TLS_Established;
 
    ----------
@@ -98,39 +98,56 @@ package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
       --  Getting how much data available in Socket
       GNAT.Sockets.Control_Socket (Self.Socket, X);
       if X.Size > 0 then
-         if Self.TLS_Established then
-            declare
-               E : GNAT.Sockets.Vector_Element :=
-                 (Base => Buffer (Buffer'First)'Unchecked_Access,
-                  Length => Buffer'Length);
+         case Self.TLS_State is
+            when Raw =>
+               GNAT.Sockets.Receive_Socket (Self.Socket, Buffer, Last);
 
-               Vector : GNAT.Sockets.Vector_Type (0 .. 0);
+            when Handshake =>
+               begin
+                  GNUTLS.Handshake (Self.TLS_Session);
+                  Self.TLS_State := Handshake;
+                  Ada.Text_IO.Put_Line ("Handshake complete");
+                  Self.Object.On_Connect;
 
-            begin
-               Vector (0) := E;
+               exception
+                  when others =>
+                     null;
+            Ada.Text_IO.Put_Line
+              (GNUTLS.IO_Direction'Image
+                 (GNUTLS.Get_Direction (Self.TLS_Session)));
+               end;
 
-               GNUTLS.Record_Recv (Self.TLS_Session, Vector, Last);
-
-               Ada.Text_IO.Put_Line
-                 ("Data of "
-                    & Ada.Streams.Stream_Element_Offset'Image (Last)
-                    & " received from GNUTLS.Record_Recv");
-
+            when TLS =>
                declare
-                  Result : String (1 .. Integer (Last));
+                  E : GNAT.Sockets.Vector_Element :=
+                    (Base => Buffer (Buffer'First)'Unchecked_Access,
+                     Length => Buffer'Length);
+
+                  Vector : GNAT.Sockets.Vector_Type (0 .. 0);
 
                begin
-                  for J in 1 .. Last loop
-                     Result (Integer (J)) := Character'Val (Buffer (J - 1));
-                  end loop;
+                  Vector (0) := E;
+
+                  GNUTLS.Record_Recv (Self.TLS_Session, Vector, Last);
 
                   Ada.Text_IO.Put_Line
-                    ("Recieved from GNUTLS.Record_Recv : " & Result);
+                    ("Data of "
+                     & Ada.Streams.Stream_Element_Offset'Image (Last)
+                     & " received from GNUTLS.Record_Recv");
+
+                  declare
+                     Result : String (1 .. Integer (Last));
+
+                  begin
+                     for J in 1 .. Last loop
+                        Result (Integer (J)) := Character'Val (Buffer (J - 1));
+                     end loop;
+
+                     Ada.Text_IO.Put_Line
+                       ("Recieved from GNUTLS.Record_Recv : " & Result);
+                  end;
                end;
-            end;
-         else
-            GNAT.Sockets.Receive_Socket (Self.Socket, Buffer, Last);
-         end if;
+         end case;
 
       else
          Last := Buffer'First - 1;
@@ -139,14 +156,32 @@ package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
       End_Of_Data := False;
    end Read;
 
+   -----------------------
+   --  Start_Handshake  --
+   -----------------------
+
+   procedure Start_Handshake (Self : in out TLS_Socket_Input_Source) is
+   begin
+      Self.TLS_State := Handshake;
+      GNUTLS.Handshake (Self.TLS_Session);
+      Self.TLS_State := TLS;
+
+   exception
+      when others =>
+            Ada.Text_IO.Put_Line
+              (GNUTLS.IO_Direction'Image
+                 (GNUTLS.Get_Direction (Self.TLS_Session)));
+         null;
+   end Start_Handshake;
+
    ---------------------------
    --  Set_TLS_Established  --
    ---------------------------
-   procedure Set_TLS_Established (Self  : in out TLS_Socket_Input_Source;
-                                  Value : Boolean) is
-   begin
-      Self.TLS_Established := Value;
-   end Set_TLS_Established;
+--     procedure Set_TLS_Established (Self  : in out TLS_Socket_Input_Source;
+--                                    Value : Boolean) is
+--     begin
+--        Self.TLS_Established := Value;
+--     end Set_TLS_Established;
 
    -----------------------
    --  Set_TLS_Session  --

@@ -186,6 +186,10 @@ package body GNUTLS is
                   gnutls_mac_set_priority,
                   "gnutls_mac_set_priority");
 
+   function gnutls_record_get_direction (S : Session) return Interfaces.C.int;
+   pragma Import
+     (C, gnutls_record_get_direction, "gnutls_record_get_direction");
+
    -------------------
    --  Global_Init  --
    -------------------
@@ -537,5 +541,19 @@ package body GNUTLS is
          raise GNUTLS_Error with "Mac_Set_Priority failed";
       end if;
    end Mac_Set_Priority;
+
+   ---------------------
+   --  Get_Direction  --
+   ---------------------
+
+   function Get_Direction (S : Session) return IO_Direction is
+   begin
+      if gnutls_record_get_direction (S) = 0 then
+         return Read;
+
+      else
+         return Write;
+      end if;
+   end Get_Direction;
 
 end GNUTLS;
