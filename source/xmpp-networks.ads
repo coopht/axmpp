@@ -108,7 +108,7 @@ private
       WSet         : Socket_Set_Type;
       RSet         : Socket_Set_Type;
       Status       : Selector_Status;
-      TLS_Session  : GNUTLS.Session;
+      TLS          : GNUTLS.Session;
    end record;
 
 end XMPP.Networks;

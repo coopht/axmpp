@@ -119,7 +119,7 @@ package body XMPP.Networks is
 
          begin
             P (0) := E;
-            GNUTLS.Record_Send (Self.TLS_Session, P, L);
+            GNUTLS.Record_Send (Self.TLS, P, L);
          end;
       end if;
 
@@ -306,11 +306,14 @@ package body XMPP.Networks is
       return To_Array (Value);
    end To_Stream_Element_Array;
 
+   -----------------------
+   --  Set_TLS_Session  --
+   -----------------------
    procedure Set_TLS_Session (Self : not null access Network'Class;
                               S    : GNUTLS.Session)
    is
    begin
-      Self.TLS_Session := S;
+      Self.TLS := S;
    end Set_TLS_Session;
 
 end XMPP.Networks;
