@@ -164,4 +164,6 @@ package XMPP.Sessions is
    procedure Send_Wide_Wide_String (Self : in out XMPP_Session;
                                     Str  : Wide_Wide_String);
 
+   procedure Proceed_TLS_Auth (Self : not null access XMPP_Session);
+
 end XMPP.Sessions;

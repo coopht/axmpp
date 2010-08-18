@@ -34,6 +34,7 @@
 --  $Date$
 ------------------------------------------------------------------------------
 with Ada.Characters.Conversions;
+with Ada.Exceptions;
 with Ada.Text_IO;
 with Ada.Wide_Wide_Text_IO;
 
@@ -57,6 +58,8 @@ package body XMPP.Sessions is
    Host     : Universal_String := To_Universal_String ("zion");
    Password : Universal_String := To_Universal_String ("123");
    Addr     : Universal_String := To_Universal_String ("127.0.0.1");
+
+   Do_Read_Data : Boolean := True;
 
    --  Connection to Jabber.ru
    --  Host     : Universal_String := To_Universal_String ("jabber.ru");
@@ -206,6 +209,13 @@ package body XMPP.Sessions is
         and Local_Name = "features" then
          Self.Current := new XMPP.Stream_Features.XMPP_Stream_Feature;
          return;
+
+      --  proceed tls connection establishment
+      --  nothing todo here, just send required data to server in
+      --  End_Element callback
+      elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-tls"
+        and Local_Name = "proceed" then
+         return;
       end if;
 
       --  Creating Null_Object, if actual object cannot be created.
@@ -231,7 +241,6 @@ package body XMPP.Sessions is
          --  TODO:
          --  Free (Self.Current);
          Self.Current := Null_X;
-         return;
 
       elsif Namespace_URI = "http://etherx.jabber.org/streams"
         and Local_Name = "features" then
@@ -249,7 +258,12 @@ package body XMPP.Sessions is
          Self.Current := Null_X;
          --  TODO:
          --  Free (Self.Current);
-         return;
+
+      elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-tls"
+        and Local_Name = "proceed" then
+         if not Self.TLS_Established then
+            Self.Proceed_TLS_Auth;
+         end if;
       end if;
    end Delete_Object;
 
@@ -309,6 +323,7 @@ package body XMPP.Sessions is
            and Local_Name.To_Wide_Wide_String = "mechanism" then
             --  We add mechanism parameter in Characters procedure
             Self.Tag := Local_Name;
+
          end if;
 
       --  If Object not yet created, then create it
@@ -350,6 +365,85 @@ package body XMPP.Sessions is
        ("EEE (Error) " & Occurrence.Message & "'");
    end Error;
 
+   ------------------------
+   --  Proceed_TLS_Auth  --
+   ------------------------
+   procedure Proceed_TLS_Auth (Self : not null access XMPP_Session) is
+      KX_Priority     : GNUTLS.KX_Algorithm_Array := (GNUTLS.GNUTLS_KX_RSA, 0);
+
+      Proto_Priority  : GNUTLS.Protocol_Array
+        := (GNUTLS.GNUTLS_TLS1, GNUTLS.GNUTLS_SSL3, 0);
+
+      Cipher_Priority : GNUTLS.Cipher_Algorithm_Array
+        := (GNUTLS.GNUTLS_CIPHER_3DES_CBC, GNUTLS.GNUTLS_CIPHER_ARCFOUR, 0);
+
+      Comp_Priority   : GNUTLS.Compression_Method_Array
+        := (GNUTLS.GNUTLS_COMP_ZLIB, GNUTLS.GNUTLS_COMP_NULL, 0);
+
+      Mac_Priority    : GNUTLS.Mac_Algorithm_Array
+        := (GNUTLS.GNUTLS_MAC_SHA, GNUTLS.GNUTLS_MAC_MD5, 0);
+
+   begin
+      Do_Read_Data := False;
+      --  Initializing gnutls
+      GNUTLS.Global_Set_Log_Level (65537);
+
+      GNUTLS.Global_Init;
+
+      Ada.Text_IO.Put_Line ("GNUTLS.Anon_Allocate_Client_Credentials");
+
+      GNUTLS.Certificate_Allocate_Credentials (Self.Credential);
+      --  GNUTLS.Anon_Allocate_Client_Credentials (Self.Cred);
+
+      --  Initialize TLS session
+      Ada.Text_IO.Put_Line ("Init");
+      GNUTLS.Init (Self.TLS_Session, GNUTLS.GNUTLS_CLIENT);
+
+      GNUTLS.Protocol_Set_Priority (Self.TLS_Session, Proto_Priority);
+      GNUTLS.Cipher_Set_Priority (Self.TLS_Session, Cipher_Priority);
+
+      --  GNUTLS.Compression_Set_Priority (Self.TLS_Session, Comp_Priority);
+
+      --  GNUTLS.Mac_Set_Priority (Self.TLS_Session, Mac_Priority);
+
+      GNUTLS.Credentials_Set (Self.TLS_Session,
+                              GNUTLS.GNUTLS_CRD_CERTIFICATE,
+                              Self.Credential);
+
+      GNUTLS.Set_Default_Priority (Self.TLS_Session);
+      GNUTLS.KX_Set_Priority (Self.TLS_Session, KX_Priority);
+
+      --  GNUTLS.Credentials_Set (Self.TLS_Session,
+      --                          GNUTLS.GNUTLS_CRD_ANON,
+      --                          Self.Cred);
+
+      Ada.Wide_Wide_Text_IO.Put_Line ("GNUTLS.Transport_Set_Ptr");
+      GNUTLS.Transport_Set_Ptr (Self.TLS_Session, Self.Get_Socket);
+
+      Ada.Text_IO.Put_Line ("GNUTLS.Handshake");
+      GNUTLS.Handshake (Self.TLS_Session);
+      Ada.Text_IO.Put_Line ("End of GNUTLS.Handshake");
+
+      Self.TLS_Established := True;
+      Self.Set_TLS_Session (Self.TLS_Session);
+      Self.Source.Set_TLS_Session (Self.TLS_Session);
+
+      --  On Success handshake,
+      --  we should reopen stream via TLS session.
+
+      Ada.Wide_Wide_Text_IO.Put_Line
+        ("TLS Session established. Sending Stream");
+      --  Self.On_Connect;
+      Do_Read_Data := True;
+   exception
+      when E : others =>
+         Ada.Text_IO.Put_Line
+           (Ada.Exceptions.Exception_Name (E) &
+              ": " & Ada.Exceptions.Exception_Message (E));
+         Self.TLS_Established := False;
+         Self.Disconnect;
+   end Proceed_TLS_Auth;
+
    ----------------
    --  Put_Line  --
    ----------------
@@ -365,9 +459,14 @@ package body XMPP.Sessions is
    procedure Read_Data (Self   : not null access XMPP_Session)
    is
    begin
-      Self.Reader.Parse;
+      if Do_Read_Data then
+         Self.Reader.Parse;
+      end if;
    end Read_Data;
 
+   -----------------------------
+   --  Send_Wide_Wide_String  --
+   -----------------------------
    procedure Send_Wide_Wide_String (Self : in out XMPP_Session;
                                     Str  : Wide_Wide_String) is
    begin
