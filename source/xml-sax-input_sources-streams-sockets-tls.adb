@@ -105,16 +105,15 @@ package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
             when Handshake =>
                begin
                   GNUTLS.Handshake (Self.TLS_Session);
-                  Self.TLS_State := Handshake;
+                  Self.TLS_State := TLS;
                   Ada.Text_IO.Put_Line ("Handshake complete");
                   Self.Object.On_Connect;
 
                exception
                   when others =>
-                     null;
-            Ada.Text_IO.Put_Line
-              (GNUTLS.IO_Direction'Image
-                 (GNUTLS.Get_Direction (Self.TLS_Session)));
+                     Ada.Text_IO.Put_Line
+                       (GNUTLS.IO_Direction'Image
+                          (GNUTLS.Get_Direction (Self.TLS_Session)));
                end;
 
             when TLS =>
@@ -168,10 +167,9 @@ package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
 
    exception
       when others =>
-            Ada.Text_IO.Put_Line
-              (GNUTLS.IO_Direction'Image
-                 (GNUTLS.Get_Direction (Self.TLS_Session)));
-         null;
+         Ada.Text_IO.Put_Line
+           (GNUTLS.IO_Direction'Image
+              (GNUTLS.Get_Direction (Self.TLS_Session)));
    end Start_Handshake;
 
    ---------------------------
