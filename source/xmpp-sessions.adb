@@ -112,6 +112,8 @@ package body XMPP.Sessions is
    begin
       --  After we connected, initialize parser.
 
+      Ada.Text_IO.Put_Line ("On_Connect");
+
       Self.Reader.Set_Content_Handler
         (XML.SAX.Readers.SAX_Content_Handler_Access (Self));
       XML.SAX.Simple_Readers.Put_Line := Put_Line'Access;
@@ -123,7 +125,8 @@ package body XMPP.Sessions is
       Self.Send
         (XMPP.Networks.To_Stream_Element_Array
            (Ada.Characters.Conversions.To_String
-              (Open_Stream.To_Wide_Wide_String)));
+              (Open_Stream.To_Wide_Wide_String)),
+         Self.Source.Is_TLS_Established);
    end On_Connect;
 
    ---------------------
