@@ -103,6 +103,8 @@ package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
                GNAT.Sockets.Receive_Socket (Self.Socket, Buffer, Last);
 
             when Handshake =>
+               Last := Buffer'First - 1;
+
                begin
                   GNUTLS.Handshake (Self.TLS_Session);
                   Self.TLS_State := TLS;
@@ -118,33 +120,33 @@ package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
 
             when TLS =>
                declare
-                  E : GNAT.Sockets.Vector_Element :=
+                  E      : GNAT.Sockets.Vector_Element :=
                     (Base => Buffer (Buffer'First)'Unchecked_Access,
                      Length => Buffer'Length);
-
+                  Length : Ada.Streams.Stream_Element_Offset;
                   Vector : GNAT.Sockets.Vector_Type (0 .. 0);
 
                begin
                   Vector (0) := E;
 
-                  GNUTLS.Record_Recv (Self.TLS_Session, Vector, Last);
+                  GNUTLS.Record_Recv (Self.TLS_Session, Vector, Length);
+                  Last := Buffer'First + Length - 1;
 
                   Ada.Text_IO.Put_Line
-                    ("Data of "
+                    ("Data of"
+                     & Ada.Streams.Stream_Element_Offset'Image (Buffer'First)
+                     & " .."
                      & Ada.Streams.Stream_Element_Offset'Image (Last)
                      & " received from GNUTLS.Record_Recv");
 
-                  declare
-                     Result : String (1 .. Integer (Last));
+                  Ada.Text_IO.Put
+                    ("Recieved from GNUTLS.Record_Recv : ");
 
-                  begin
-                     for J in 1 .. Last loop
-                        Result (Integer (J)) := Character'Val (Buffer (J - 1));
-                     end loop;
+                  for J in Buffer'First .. Last loop
+                     Ada.Text_IO.Put (Character'Val (Buffer (J)));
+                  end loop;
 
-                     Ada.Text_IO.Put_Line
-                       ("Recieved from GNUTLS.Record_Recv : " & Result);
-                  end;
+                  Ada.Text_IO.New_Line;
                end;
          end case;
 
