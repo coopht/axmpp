@@ -41,6 +41,8 @@ package GNUTLS is
 
    GNUTLS_Error : exception;
 
+   type Error_Kind is (NON_FATAL_ERROR, FATAL_ERROR, UNKNOWN_ERROR);
+
    type Connection_End is
      (GNUTLS_SERVER,
       GNUTLS_CLIENT);
@@ -231,6 +233,8 @@ package GNUTLS is
    type IO_Direction is (Read, Write);
 
    function Get_Direction (S : Session) return IO_Direction;
+
+   function Error_Is_Fatal (E : Integer) return Error_Kind;
 
 private
 

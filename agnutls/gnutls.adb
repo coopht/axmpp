@@ -186,9 +186,15 @@ package body GNUTLS is
                   gnutls_mac_set_priority,
                   "gnutls_mac_set_priority");
 
+   --
    function gnutls_record_get_direction (S : Session) return Interfaces.C.int;
    pragma Import
      (C, gnutls_record_get_direction, "gnutls_record_get_direction");
+
+   --
+   function gnutls_error_is_fatal (E : Interfaces.C.int)
+      return Interfaces.C.int;
+   pragma Import (C, gnutls_error_is_fatal, "gnutls_error_is_fatal");
 
    -------------------
    --  Global_Init  --
@@ -387,6 +393,7 @@ package body GNUTLS is
                                        Interfaces.C.size_t (Data (I).Length));
 
          if N_Read <= 0 then
+            gnutls_perror (Interfaces.C.int (N_Read));
             raise GNUTLS_Error with "Data read <= 0";
          end if;
 
@@ -555,5 +562,22 @@ package body GNUTLS is
          return Write;
       end if;
    end Get_Direction;
+
+   ----------------------
+   --  Error_Is_Fatal  --
+   ----------------------
+   function Error_Is_Fatal (E : Integer) return Error_Kind is
+   begin
+      case gnutls_error_is_fatal (Interfaces.C.int (E)) is
+         when 0 =>
+            return NON_FATAL_ERROR;
+
+         when 1 =>
+            return FATAL_ERROR;
+
+         when others =>
+            return UNKNOWN_ERROR;
+      end case;
+   end Error_Is_Fatal;
 
 end GNUTLS;
