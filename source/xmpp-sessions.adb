@@ -59,8 +59,6 @@ package body XMPP.Sessions is
    Password : Universal_String := To_Universal_String ("123");
    Addr     : Universal_String := To_Universal_String ("127.0.0.1");
 
-   Do_Read_Data : Boolean := True;
-
    --  Connection to Jabber.ru
    --  Host     : Universal_String := To_Universal_String ("jabber.ru");
    --  Password : Universal_String := To_Universal_String ("123456");
@@ -388,7 +386,6 @@ package body XMPP.Sessions is
         := (GNUTLS.GNUTLS_MAC_SHA, GNUTLS.GNUTLS_MAC_MD5, 0);
 
    begin
-      Do_Read_Data := False;
       --  Initializing gnutls
       GNUTLS.Global_Set_Log_Level (65537);
 
@@ -448,7 +445,6 @@ package body XMPP.Sessions is
       --        Ada.Wide_Wide_Text_IO.Put_Line
       --          ("TLS Session established. Sending Stream");
       --  Self.On_Connect;
-      Do_Read_Data := True;
    exception
       when E : others =>
          Ada.Text_IO.Put_Line
@@ -473,9 +469,7 @@ package body XMPP.Sessions is
    procedure Read_Data (Self   : not null access XMPP_Session)
    is
    begin
-      if Do_Read_Data then
-         Self.Reader.Parse;
-      end if;
+      Self.Reader.Parse;
    end Read_Data;
 
    -----------------------------
