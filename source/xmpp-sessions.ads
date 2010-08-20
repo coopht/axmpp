@@ -86,7 +86,6 @@ package XMPP.Sessions is
 
      TLS_Session     : GNUTLS.Session;
      Credential      : GNUTLS.Certificate_Client_Credentials;
-     TLS_Established : Boolean := False;
      Authenticated   : Boolean := False;
    end record;
 

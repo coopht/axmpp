@@ -55,16 +55,16 @@ package body XMPP.Sessions is
    use type XMPP.Objects.Object_Kind;
 
    JID      : Universal_String := To_Universal_String ("uim-test");
---   Host     : Universal_String := To_Universal_String ("zion");
---   Password : Universal_String := To_Universal_String ("123");
---   Addr     : Universal_String := To_Universal_String ("127.0.0.1");
+   Host     : Universal_String := To_Universal_String ("zion");
+   Password : Universal_String := To_Universal_String ("123");
+   Addr     : Universal_String := To_Universal_String ("127.0.0.1");
 
    Do_Read_Data : Boolean := True;
 
    --  Connection to Jabber.ru
-   Host     : Universal_String := To_Universal_String ("jabber.ru");
-   Password : Universal_String := To_Universal_String ("123456");
-   Addr     : Universal_String := To_Universal_String ("77.88.57.177");
+   --  Host     : Universal_String := To_Universal_String ("jabber.ru");
+   --  Password : Universal_String := To_Universal_String ("123456");
+   --  Addr     : Universal_String := To_Universal_String ("77.88.57.177");
 
    -------------
    --  Close  --
@@ -253,7 +253,8 @@ package body XMPP.Sessions is
          --  if tls session was not established, than send command to server
          --  to start tls negotiation
          --  XXX: may be XMPP object for xmpp-tls name space should be created
-         if not Self.TLS_Established then
+         if not Self.Source.Is_TLS_Established then
+            Ada.Wide_Wide_Text_IO.Put_Line ("Sending starttls");
             Self.Send_Wide_Wide_String
               ("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
          end if;
@@ -264,7 +265,7 @@ package body XMPP.Sessions is
 
       elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-tls"
         and Local_Name = "proceed" then
-         if not Self.TLS_Established then
+         if not Self.Source.Is_TLS_Established then
             Self.Proceed_TLS_Auth;
          end if;
       end if;
@@ -435,7 +436,6 @@ package body XMPP.Sessions is
 --        end;
 --        Ada.Text_IO.Put_Line ("End of GNUTLS.Handshake");
 --
---        Self.TLS_Established := True;
       Self.Set_TLS_Session (Self.TLS_Session);
       Self.Source.Set_TLS_Session (Self.TLS_Session);
       Self.Source.Object := Self.all'Unchecked_Access;
@@ -445,8 +445,8 @@ package body XMPP.Sessions is
       --  On Success handshake,
       --  we should reopen stream via TLS session.
 
---        Ada.Wide_Wide_Text_IO.Put_Line
---          ("TLS Session established. Sending Stream");
+      --        Ada.Wide_Wide_Text_IO.Put_Line
+      --          ("TLS Session established. Sending Stream");
       --  Self.On_Connect;
       Do_Read_Data := True;
    exception
@@ -454,7 +454,7 @@ package body XMPP.Sessions is
          Ada.Text_IO.Put_Line
            (Ada.Exceptions.Exception_Name (E) &
               ": " & Ada.Exceptions.Exception_Message (E));
-         Self.TLS_Established := False;
+
          Self.Disconnect;
    end Proceed_TLS_Auth;
 
@@ -487,7 +487,7 @@ package body XMPP.Sessions is
       Self.Send
         (XMPP.Networks.To_Stream_Element_Array
            (Ada.Characters.Conversions.To_String (Str)),
-        Self.TLS_Established);
+        Self.Source.Is_TLS_Established);
    end Send_Wide_Wide_String;
 
 end XMPP.Sessions;
