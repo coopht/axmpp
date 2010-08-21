@@ -41,6 +41,7 @@ with Ada.Wide_Wide_Text_IO;
 with League.Strings;
 with XML.SAX.Readers;
 
+with XMPP.Challenges;
 with XMPP.Networks;
 with XMPP.Null_Objects;
 with XMPP.Objects;
@@ -217,6 +218,13 @@ package body XMPP.Sessions is
       elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-tls"
         and Local_Name = "proceed" then
          return;
+
+      --  Creating Challenge object for sasl authentication
+      elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-sasl"
+        and Local_Name = "challenge" then
+         Self.Tag := League.Strings.To_Universal_String (Local_Name);
+         Self.Current := new XMPP.Challenges.XMPP_Challenge;
+         return;
       end if;
 
       --  Creating Null_Object, if actual object cannot be created.
@@ -255,6 +263,11 @@ package body XMPP.Sessions is
             Ada.Wide_Wide_Text_IO.Put_Line ("Sending starttls");
             Self.Send_Wide_Wide_String
               ("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
+         else
+            Ada.Wide_Wide_Text_IO.Put_Line ("Starting sasl auth");
+            Self.Send_Wide_Wide_String
+              ("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' "
+                 & "mechanism='DIGEST-MD5'/>");
          end if;
 
          Self.Current := Null_X;
@@ -266,6 +279,14 @@ package body XMPP.Sessions is
          if not Self.Source.Is_TLS_Established then
             Self.Proceed_TLS_Auth;
          end if;
+
+      --  Proceed with SASL Authentication
+      elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-sasl"
+        and Local_Name = "challenge" then
+         Self.Current := Null_X;
+         --  TODO:
+         --  Free (Self.Current);
+         return;
       end if;
    end Delete_Object;
 
@@ -325,7 +346,6 @@ package body XMPP.Sessions is
            and Local_Name.To_Wide_Wide_String = "mechanism" then
             --  We add mechanism parameter in Characters procedure
             Self.Tag := Local_Name;
-
          end if;
 
       --  If Object not yet created, then create it
@@ -347,6 +367,7 @@ package body XMPP.Sessions is
          end if;
       end if;
 
+      --  setting up object's attributes
       for J in 1 .. Attributes.Length loop
          Self.Current.Set_Content
            (Attributes.Local_Name (J), Attributes.Value (J));
@@ -363,8 +384,7 @@ package body XMPP.Sessions is
      Success    : in out Boolean)
    is
    begin
-      Put_Line
-       ("EEE (Error) " & Occurrence.Message & "'");
+      Put_Line ("EEE (Error) " & Occurrence.Message & "'");
    end Error;
 
    ------------------------
