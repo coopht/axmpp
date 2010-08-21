@@ -38,7 +38,8 @@ with League.Strings;
 package XMPP.Objects is
 
    type Object_Kind is
-     (Null_Object,
+     (Challenge,
+      Null_Object,
       Stream,
       Stream_Features);
 
