@@ -91,9 +91,6 @@ package XMPP.Networks is
    function Get_Channel (Self : not null access Network'Class)
       return Stream_Access;
 
-   function To_Stream_Element_Array (Value : String)
-      return Ada.Streams.Stream_Element_Array;
-
    procedure Set_TLS_Session (Self : not null access Network'Class;
                               S    : GNUTLS.Session);
 

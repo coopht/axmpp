@@ -289,23 +289,6 @@ package body XMPP.Networks is
          Self.On_Recieve (Buffer (1 .. 1));
    end Read_Data;
 
-   -------------------------------
-   --  To_Stream_Element_Array  --
-   -------------------------------
-   function To_Stream_Element_Array (Value : String)
-      return Ada.Streams.Stream_Element_Array
-   is
-      subtype Source is String (Value'Range);
-      subtype Result is Ada.Streams.Stream_Element_Array
-        (Ada.Streams.Stream_Element_Offset (Value'First)
-           .. Ada.Streams.Stream_Element_Offset (Value'Last));
-
-      function To_Array is
-         new Ada.Unchecked_Conversion (Source, Result);
-   begin
-      return To_Array (Value);
-   end To_Stream_Element_Array;
-
    -----------------------
    --  Set_TLS_Session  --
    -----------------------
