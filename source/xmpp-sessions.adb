@@ -112,8 +112,36 @@ package body XMPP.Sessions is
    ------------------
    --  On_Connect  --
    ------------------
-   overriding
-   procedure On_Connect (Self : not null access XMPP_Session) is
+   overriding procedure On_Connect (Self : not null access XMPP_Session) is
+   begin
+      --  After we connected, initialize parser.
+
+      Ada.Text_IO.Put_Line ("On_Connect");
+
+      if not Self.Source.Is_TLS_Established then
+         Self.Reader.Set_Content_Handler
+           (XML.SAX.Readers.SAX_Content_Handler_Access (Self));
+         XML.SAX.Simple_Readers.Put_Line := Put_Line'Access;
+
+         Self.Source.Set_Socket (Self.Get_Socket);
+         Self.Reader.Set_Input_Source (Self.Source'Access);
+      end if;
+
+      Self.Open_Stream;
+   end On_Connect;
+
+   ---------------------
+   --  On_Disconnect  --
+   ---------------------
+   overriding procedure On_Disconnect (Self : not null access XMPP_Session) is
+   begin
+      null;
+   end On_Disconnect;
+
+   -------------------
+   --  Open_Stream  --
+   -------------------
+   procedure Open_Stream (Self : not null access XMPP_Session) is
       --  TODO:
       --       Use appropriate object, instead of raw xml
       Open_Stream : Universal_String
@@ -126,33 +154,13 @@ package body XMPP.Sessions is
              & "' >";
 
    begin
-      --  After we connected, initialize parser.
-
-      Ada.Text_IO.Put_Line ("On_Connect");
-
-      Self.Reader.Set_Content_Handler
-        (XML.SAX.Readers.SAX_Content_Handler_Access (Self));
-      XML.SAX.Simple_Readers.Put_Line := Put_Line'Access;
-
-      Self.Source.Set_Socket (Self.Get_Socket);
-      Self.Reader.Set_Input_Source (Self.Source'Access);
-
       --  Sending open stream stanza
       Self.Send
         (XMPP.Utils.To_Stream_Element_Array
            (Ada.Characters.Conversions.To_String
               (Open_Stream.To_Wide_Wide_String)),
          Self.Source.Is_TLS_Established);
-   end On_Connect;
-
-   ---------------------
-   --  On_Disconnect  --
-   ---------------------
-   overriding
-   procedure On_Disconnect (Self : not null access XMPP_Session) is
-   begin
-      null;
-   end On_Disconnect;
+   end Open_Stream;
 
    --------------------------
    --  Set_Stream_Handler  --
@@ -246,7 +254,7 @@ package body XMPP.Sessions is
       --  For successfull authentication
       elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-sasl"
         and Local_Name = "success" then
-         --  all work is don in delete object
+         --  all work is don in delete_object
          return;
       end if;
 
@@ -319,7 +327,6 @@ package body XMPP.Sessions is
       --  For successfull authentication
       elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-sasl"
         and Local_Name = "success" then
-         Self.Current := Null_X;
          --  TODO:
          --  Free (Self.Current);
 
@@ -329,6 +336,7 @@ package body XMPP.Sessions is
          Ada.Wide_Wide_Text_IO.Put_Line ("Authentification successfull !!");
          Self.Authenticated := True;
          Self.On_Connect;
+         Self.Current := Null_X;
       end if;
    end Delete_Object;
 

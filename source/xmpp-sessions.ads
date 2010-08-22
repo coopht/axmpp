@@ -170,4 +170,6 @@ package XMPP.Sessions is
      (Self   : not null access XMPP_Session;
       Object : not null XMPP.Challenges.XMPP_Challenge_Access);
 
+   procedure Open_Stream (Self : not null access XMPP_Session);
+
 end XMPP.Sessions;
