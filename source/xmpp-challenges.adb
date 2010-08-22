@@ -38,16 +38,127 @@ with Ada.Streams;
 with Ada.Text_IO;
 with Ada.Wide_Wide_Text_IO;
 
+with GNAT.MD5;
+
 with League.Strings;
 
 with XMPP.Base64;
 with XMPP.Objects;
+with XMPP.Utils;
 
 package body XMPP.Challenges is
 
    use type Ada.Streams.Stream_Element_Offset;
 
    package ACC renames Ada.Characters.Conversions;
+
+   -------------------------
+   --  Generate_Response  --
+   -------------------------
+   function Generate_Response (Self : XMPP_Challenge)
+      return League.Strings.Universal_String is
+
+      function Hex_To_Oct (Sum : String) return String;
+
+      ------------------
+      --  Hex_To_Oct  --
+      ------------------
+      function Hex_To_Oct (Sum : String) return String is
+         Result : String (Sum'First .. Sum'Last / 2);
+         J      : Integer := Sum'First;
+
+      begin
+         for Idx in Result'Range loop
+            Result (Idx)
+              := Character'Val
+                   (Integer'Value (("16#" & Sum (J .. J + 1) & "#")));
+
+            J := J + 2;
+         end loop;
+
+         return Result;
+      end Hex_To_Oct;
+
+   begin
+
+      if not Self.RSP_Auth.Is_Empty then
+         return League.Strings.To_Universal_String
+                  ("<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'/>");
+      else
+         declare
+
+            --  TODO:
+            --        CNonce should not be hardcoded.
+            C_Nonce : Wide_Wide_String := "1a2f0ee81279451956625d2368";
+            SY     : String
+              := Hex_To_Oct (GNAT.MD5.Digest
+                               (ACC.To_String
+                                  (Self.JID.To_Wide_Wide_String & ":"
+                                     & Self.Host.To_Wide_Wide_String & ":"
+                                     & Self.Password.To_Wide_Wide_String)));
+
+            HA1 : String
+              := GNAT.MD5.Digest
+                  (SY & ":"
+                     & ACC.To_String (Self.Nonce.To_Wide_Wide_String)
+                     & ":" & ACC.To_String (C_Nonce));
+
+            HA2 : String
+              := GNAT.MD5.Digest
+                  (ACC.To_String ("AUTHENTICATE:xmpp/"
+                                    & Self.Host.To_Wide_Wide_String));
+
+            Z   : String
+              := GNAT.MD5.Digest
+                  (HA1 & ":"
+                     & ACC.To_String (Self.Nonce.To_Wide_Wide_String)
+                     & ":00000001:"
+                     & ACC.To_String (C_Nonce) & ":auth:"
+                     & HA2);
+
+            Realm_Reply : Wide_Wide_String
+              := "username=""" & Self.JID.To_Wide_Wide_String
+              & """,realm=""" & Self.Host.To_Wide_Wide_String
+              & """,nonce=""" & Self.Nonce.To_Wide_Wide_String
+              & """,cnonce=""" & C_Nonce
+              & """,nc=00000001"
+              & ",qop=auth,digest-uri=""xmpp/" & Self.Host.To_Wide_Wide_String
+              & """,response=" & ACC.To_Wide_Wide_String (Z)
+              & ",charset="
+              & Self.Charset.To_Wide_Wide_String;
+
+            --  Calculating buffer size for base64 encoded string
+            X : Integer := 4 * (Realm_Reply'Length + 2) / 3;
+            Y : Integer := X + 2 * (X / 76);
+
+            Realm_Reply_Base_64 : String (Realm_Reply'First .. Y);
+            Len                 : Natural;
+
+         begin
+            Ada.Text_IO.Put_Line ("SY:" & SY);
+            Ada.Text_IO.Put_Line ("HA1:" & HA1);
+            Ada.Text_IO.Put_Line ("HA2:" & HA2);
+            Ada.Text_IO.Put_Line ("Z:" & Z);
+            Ada.Text_IO.Put_Line ("Realm_Reply:"
+                                    & ACC.To_String (Realm_Reply));
+
+            XMPP.Base64.Encode
+              (XMPP.Utils.To_Stream_Element_Array
+                 (ACC.To_String (Realm_Reply)),
+               Realm_Reply_Base_64,
+               Len);
+            Ada.Text_IO.Put_Line ("Realm_Reply_Base_64:"
+                                    & Realm_Reply_Base_64);
+
+            return
+              League.Strings.To_Universal_String
+              ("<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>"
+                 & ACC.To_Wide_Wide_String
+                 (Realm_Reply_Base_64 (Realm_Reply_Base_64'First .. Len))
+                 & "</response>");
+         end;
+      end if;
+   end Generate_Response;
 
    ----------------
    --  Get_Kind  --
@@ -81,6 +192,14 @@ package body XMPP.Challenges is
       Pos : Integer := Challenge'First;
 
    begin
+      if Challenge (Challenge'First .. Challenge'First + 6) = "rspauth" then
+         Self.Set_RSP_Auth
+           (League.Strings.To_Universal_String
+              (ACC.To_Wide_Wide_String
+                 (Challenge (Challenge'First + 8 .. Challenge'Last))));
+         return;
+      end if;
+
       for J in Challenge'Range loop
          if Challenge (J) = ',' then
             declare
@@ -159,11 +278,18 @@ package body XMPP.Challenges is
                Buffer,
                Length);
 
-            Ada.Text_IO.Put ("Decoded challenge = ");
-            for J in 1 .. Length loop
-               Ada.Wide_Wide_Text_IO.Put
-                 (Wide_Wide_Character'Val (Buffer (J - 1)));
-            end loop;
+            declare
+               Result : String (1 .. Integer (Length));
+
+            begin
+               for J in 1 .. Length loop
+                  Result (Integer (J)) := (Character'Val (Buffer (J - 1)));
+               end loop;
+
+               Ada.Text_IO.Put_Line ("Decoded challenge: " & Result);
+
+               Self.Parse_Challenge (Result);
+            end;
          end;
       else
          Ada.Wide_Wide_Text_IO.Put_Line
@@ -215,5 +341,41 @@ package body XMPP.Challenges is
    begin
       Self.Algorithm := Algorithm;
    end Set_Algorithm;
+
+   ---------------
+   --  Set_JID  --
+   ---------------
+   procedure Set_JID (Self : in out XMPP_Challenge;
+                      JID  : League.Strings.Universal_String) is
+   begin
+      Self.JID := JID;
+   end Set_JID;
+
+   ----------------
+   --  Set_Host  --
+   ----------------
+   procedure Set_Host (Self : in out XMPP_Challenge;
+                       Host : League.Strings.Universal_String) is
+   begin
+      Self.Host := Host;
+   end Set_Host;
+
+   --------------------
+   --  Set_Password  --
+   --------------------
+   procedure Set_Password (Self     : in out XMPP_Challenge;
+                           Password : League.Strings.Universal_String) is
+   begin
+      Self.Password := Password;
+   end Set_Password;
+
+   --------------------
+   --  Set_RSP_Auth  --
+   --------------------
+   procedure Set_RSP_Auth (Self     : in out XMPP_Challenge;
+                           RSP_Auth : League.Strings.Universal_String) is
+   begin
+      Self.RSP_Auth := RSP_Auth;
+   end Set_RSP_Auth;
 
 end XMPP.Challenges;

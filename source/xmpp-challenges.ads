@@ -42,56 +42,48 @@ package XMPP.Challenges is
 
    type XMPP_Challenge_Access is access all XMPP_Challenge'Class;
 
-   ----------------
-   --  Get_Kind  --
-   ----------------
    overriding
    function Get_Kind (Self : XMPP_Challenge) return XMPP.Objects.Object_Kind;
 
-   -----------------
-   --  Serialize  --
-   -----------------
    overriding
    function Serialize (Self : in XMPP_Challenge)
       return League.Strings.Universal_String;
 
-   -------------------
-   --  Set_Content  --
-   -------------------
    overriding
    procedure Set_Content (Self      : in out XMPP_Challenge;
                           Parameter : League.Strings.Universal_String;
                           Value     : League.Strings.Universal_String);
 
-   -----------------
-   --  Set_Realm  --
-   -----------------
    procedure Set_Realm (Self : in out XMPP_Challenge;
                         Realm : League.Strings.Universal_String);
 
-   -----------------
-   --  Set_Nonce  --
-   -----------------
    procedure Set_Nonce (Self  : in out XMPP_Challenge;
                         Nonce : League.Strings.Universal_String);
 
-   ---------------
-   --  Set_Qop  --
-   ---------------
    procedure Set_Qop (Self : in out XMPP_Challenge;
                       Qop  : League.Strings.Universal_String);
 
-   -------------------
-   --  Set_Charset  --
-   -------------------
    procedure Set_Charset (Self    : in out XMPP_Challenge;
                           Charset : League.Strings.Universal_String);
 
-   ---------------------
-   --  Set_Algorithm  --
-   ---------------------
    procedure Set_Algorithm (Self      : in out XMPP_Challenge;
                             Algorithm : League.Strings.Universal_String);
+
+   --  data for response
+   procedure Set_JID (Self : in out XMPP_Challenge;
+                      JID  : League.Strings.Universal_String);
+
+   procedure Set_Host (Self : in out XMPP_Challenge;
+                       Host : League.Strings.Universal_String);
+
+   procedure Set_Password (Self     : in out XMPP_Challenge;
+                           Password : League.Strings.Universal_String);
+
+   procedure Set_RSP_Auth (Self     : in out XMPP_Challenge;
+                           RSP_Auth : League.Strings.Universal_String);
+
+   function Generate_Response (Self : XMPP_Challenge)
+      return League.Strings.Universal_String;
 
 private
 
@@ -102,6 +94,12 @@ private
       Qop       : League.Strings.Universal_String;
       Charset   : League.Strings.Universal_String;
       Algorithm : League.Strings.Universal_String;
+      RSP_Auth  : League.Strings.Universal_String;
+
+      --  data for response
+      JID       : League.Strings.Universal_String;
+      Host      : League.Strings.Universal_String;
+      Password  : League.Strings.Universal_String;
    end record;
 
    procedure Parse_Challenge (Self      : in out XMPP_Challenge;
