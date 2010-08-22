@@ -55,8 +55,9 @@ with XML.SAX.Locators;
 with XML.SAX.Parse_Exceptions;
 with XML.SAX.Simple_Readers;
 
-with XMPP.Objects;
+with XMPP.Challenges;
 with XMPP.Null_Objects;
+with XMPP.Objects;
 
 package XMPP.Sessions is
 
@@ -164,5 +165,9 @@ package XMPP.Sessions is
                                     Str  : Wide_Wide_String);
 
    procedure Proceed_TLS_Auth (Self : not null access XMPP_Session);
+
+   procedure Proceed_SASL_Auth
+     (Self   : not null access XMPP_Session;
+      Object : not null XMPP.Challenges.XMPP_Challenge_Access);
 
 end XMPP.Sessions;

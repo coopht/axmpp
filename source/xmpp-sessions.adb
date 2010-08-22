@@ -47,6 +47,7 @@ with XMPP.Null_Objects;
 with XMPP.Objects;
 with XMPP.Streams;
 with XMPP.Stream_Features;
+with XMPP.Utils;
 
 package body XMPP.Sessions is
 
@@ -64,6 +65,20 @@ package body XMPP.Sessions is
    --  Host     : Universal_String := To_Universal_String ("jabber.ru");
    --  Password : Universal_String := To_Universal_String ("123456");
    --  Addr     : Universal_String := To_Universal_String ("77.88.57.177");
+
+   -------------------------
+   --  Proceed_SASL_Auth  --
+   -------------------------
+   procedure Proceed_SASL_Auth
+     (Self   : not null access XMPP_Session;
+      Object : not null XMPP.Challenges.XMPP_Challenge_Access) is
+   begin
+      Object.Set_JID (JID);
+      Object.Set_Host (Host);
+      Object.Set_Password (Password);
+      Self.Send_Wide_Wide_String
+        (Object.Generate_Response.To_Wide_Wide_String);
+   end Proceed_SASL_Auth;
 
    -------------
    --  Close  --
@@ -124,7 +139,7 @@ package body XMPP.Sessions is
 
       --  Sending open stream stanza
       Self.Send
-        (XMPP.Networks.To_Stream_Element_Array
+        (XMPP.Utils.To_Stream_Element_Array
            (Ada.Characters.Conversions.To_String
               (Open_Stream.To_Wide_Wide_String)),
          Self.Source.Is_TLS_Established);
@@ -227,6 +242,16 @@ package body XMPP.Sessions is
          Self.Tag := League.Strings.To_Universal_String (Local_Name);
          Self.Current := new XMPP.Challenges.XMPP_Challenge;
          return;
+
+      --  For successfull authentication
+      elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-sasl"
+        and Local_Name = "success" then
+         --  We do not create any object here, just notifies user about
+         --  successful authentification, and opening another one stream
+         --  to server
+         Ada.Wide_Wide_Text_IO.Put_Line ("Authentification successfull !!");
+         Self.Authenticated := True;
+         Self.On_Connect;
       end if;
 
       --  Creating Null_Object, if actual object cannot be created.
@@ -285,6 +310,10 @@ package body XMPP.Sessions is
       --  Proceed with SASL Authentication
       elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-sasl"
         and Local_Name = "challenge" then
+         --  Proceeding with SASL auth
+         Self.Proceed_SASL_Auth
+           (XMPP.Challenges.XMPP_Challenge_Access (Self.Current));
+
          Self.Current := Null_X;
          --  TODO:
          --  Free (Self.Current);
@@ -501,7 +530,7 @@ package body XMPP.Sessions is
                                     Str  : Wide_Wide_String) is
    begin
       Self.Send
-        (XMPP.Networks.To_Stream_Element_Array
+        (XMPP.Utils.To_Stream_Element_Array
            (Ada.Characters.Conversions.To_String (Str)),
         Self.Source.Is_TLS_Established);
    end Send_Wide_Wide_String;
