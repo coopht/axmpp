@@ -38,31 +38,16 @@ with Ada.Streams;
 with Ada.Text_IO;
 with Ada.Wide_Wide_Text_IO;
 
+with League.Strings;
+
 with XMPP.Base64;
 with XMPP.Objects;
-
-with League.Strings;
 
 package body XMPP.Challenges is
 
    use type Ada.Streams.Stream_Element_Offset;
 
-   -------------------
-   --  Drop_Quotes  --
-   -------------------
-   function Drop_Quotes (Str : String) return String;
-
-   -------------------
-   --  Drop_Quotes  --
-   -------------------
-   function Drop_Quotes (Str : String) return String is
-   begin
-      if Str (Str'First) = '"' and Str (Str'Last) = '"' then
-         return Str (Str'First + 1 .. Str'Last - 1);
-      else
-         return Str;
-      end if;
-   end Drop_Quotes;
+   package ACC renames Ada.Characters.Conversions;
 
    ----------------
    --  Get_Kind  --
@@ -72,6 +57,76 @@ package body XMPP.Challenges is
    begin
       return XMPP.Objects.Challenge;
    end Get_Kind;
+
+   -----------------------
+   --  Parse_Challenge  --
+   -----------------------
+   procedure Parse_Challenge (Self      : in out XMPP_Challenge;
+                              Challenge : in String) is
+
+      function Drop_Quotes (Str : String) return String;
+
+      -------------------
+      --  Drop_Quotes  --
+      -------------------
+      function Drop_Quotes (Str : String) return String is
+      begin
+         if Str (Str'First) = '"' and Str (Str'Last) = '"' then
+            return Str (Str'First + 1 .. Str'Last - 1);
+         else
+            return Str;
+         end if;
+      end Drop_Quotes;
+
+      Pos : Integer := Challenge'First;
+
+   begin
+      for J in Challenge'Range loop
+         if Challenge (J) = ',' then
+            declare
+               T : String := Challenge (Pos .. J - 1);
+
+            begin
+               for X in T'Range loop
+                  if T (X) = '=' then
+                     declare
+                        Param : String := T (T'First .. X - 1);
+                        Val   : String := T (X + 1 .. T'Last);
+
+                     begin
+                        if Param = "nonce" then
+                           Self.Set_Nonce
+                             (League.Strings.To_Universal_String
+                                (ACC.To_Wide_Wide_String (Drop_Quotes (Val))));
+
+                        elsif Param = "qop" then
+                           Self.Set_Qop
+                             (League.Strings.To_Universal_String
+                                (ACC.To_Wide_Wide_String (Drop_Quotes (Val))));
+
+                        elsif Param = "charset" then
+                           Self.Set_Charset
+                             (League.Strings.To_Universal_String
+                                (ACC.To_Wide_Wide_String (Drop_Quotes (Val))));
+
+                        elsif Param = "algorithm" then
+                           Self.Set_Algorithm
+                             (League.Strings.To_Universal_String
+                                (ACC.To_Wide_Wide_String (Drop_Quotes (Val))));
+
+                        else
+                           Ada.Wide_Wide_Text_IO.Put_Line
+                             ("unknown parameter : "
+                                & ACC.To_Wide_Wide_String (Param));
+                        end if;
+                     end;
+                  end if;
+               end loop;
+            end;
+            Pos := J + 1;
+         end if;
+      end loop;
+   end Parse_Challenge;
 
    -----------------
    --  Serialize  --
@@ -100,20 +155,15 @@ package body XMPP.Challenges is
          begin
             XMPP.Base64.Decode
               (Ada.Characters.Conversions.To_String
-                 (Parameter.To_Wide_Wide_String),
+                 (Value.To_Wide_Wide_String),
                Buffer,
                Length);
 
-            declare
-               Result : String (1 .. Integer (Length));
-
-            begin
-               for J in 1 .. Length loop
-                  Result (Integer (J)) := Character'Val (Buffer (J - 1));
-               end loop;
-
-               Ada.Text_IO.Put_Line ("challenge = " & Result);
-            end;
+            Ada.Text_IO.Put ("Decoded challenge = ");
+            for J in 1 .. Length loop
+               Ada.Wide_Wide_Text_IO.Put
+                 (Wide_Wide_Character'Val (Buffer (J - 1)));
+            end loop;
          end;
       else
          Ada.Wide_Wide_Text_IO.Put_Line

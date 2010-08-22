@@ -104,4 +104,7 @@ private
       Algorithm : League.Strings.Universal_String;
    end record;
 
+   procedure Parse_Challenge (Self      : in out XMPP_Challenge;
+                              Challenge : in String);
+
 end XMPP.Challenges;
