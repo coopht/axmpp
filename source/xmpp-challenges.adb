@@ -35,7 +35,7 @@
 ------------------------------------------------------------------------------
 with Ada.Characters.Conversions;
 with Ada.Streams;
-with Ada.Text_IO;
+--  with Ada.Text_IO;
 with Ada.Wide_Wide_Text_IO;
 
 with GNAT.MD5;
@@ -135,20 +135,20 @@ package body XMPP.Challenges is
             Len                 : Natural;
 
          begin
-            Ada.Text_IO.Put_Line ("SY:" & SY);
-            Ada.Text_IO.Put_Line ("HA1:" & HA1);
-            Ada.Text_IO.Put_Line ("HA2:" & HA2);
-            Ada.Text_IO.Put_Line ("Z:" & Z);
-            Ada.Text_IO.Put_Line ("Realm_Reply:"
-                                    & ACC.To_String (Realm_Reply));
+            --  Ada.Text_IO.Put_Line ("SY:" & SY);
+            --  Ada.Text_IO.Put_Line ("HA1:" & HA1);
+            --  Ada.Text_IO.Put_Line ("HA2:" & HA2);
+            --  Ada.Text_IO.Put_Line ("Z:" & Z);
+            --  Ada.Text_IO.Put_Line ("Realm_Reply:"
+            --                          & ACC.To_String (Realm_Reply));
 
             XMPP.Base64.Encode
               (XMPP.Utils.To_Stream_Element_Array
                  (ACC.To_String (Realm_Reply)),
                Realm_Reply_Base_64,
                Len);
-            Ada.Text_IO.Put_Line ("Realm_Reply_Base_64:"
-                                    & Realm_Reply_Base_64);
+            --  Ada.Text_IO.Put_Line ("Realm_Reply_Base_64:"
+            --                          & Realm_Reply_Base_64);
 
             return
               League.Strings.To_Universal_String
@@ -286,7 +286,7 @@ package body XMPP.Challenges is
                   Result (Integer (J)) := (Character'Val (Buffer (J - 1)));
                end loop;
 
-               Ada.Text_IO.Put_Line ("Decoded challenge: " & Result);
+               --  Ada.Text_IO.Put_Line ("Decoded challenge: " & Result);
 
                Self.Parse_Challenge (Result);
             end;
