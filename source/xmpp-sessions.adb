@@ -284,8 +284,15 @@ package body XMPP.Sessions is
 
       elsif Namespace_URI = "http://etherx.jabber.org/streams"
         and Local_Name = "features" then
-         Self.Stream_Handler.Stream_Features
-           (XMPP.Stream_Features.XMPP_Stream_Feature_Access (Self.Current));
+
+         if not Self.Authenticated then
+            Self.Stream_Handler.Stream_Features
+             (XMPP.Stream_Features.XMPP_Stream_Feature_Access (Self.Current));
+
+         else
+            Self.Stream_Handler.Connected
+             (XMPP.Stream_Features.XMPP_Stream_Feature_Access (Self.Current));
+         end if;
 
          --  if tls session was not established, than send command to server
          --  to start tls negotiation
