@@ -99,6 +99,8 @@ package body XMPP.Sessions is
    ------------------
    overriding
    procedure On_Connect (Self : not null access XMPP_Session) is
+      --  TODO:
+      --       Use appropriate object, instead of raw xml
       Open_Stream : Universal_String
         := "<stream:stream "
              & "xmlns:stream='http://etherx.jabber.org/streams' "
