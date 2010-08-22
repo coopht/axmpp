@@ -88,6 +88,11 @@ package XMPP.Sessions is
      TLS_Session     : GNUTLS.Session;
      Credential      : GNUTLS.Certificate_Client_Credentials;
      Authenticated   : Boolean := False;
+
+     JID             : League.Strings.Universal_String;
+     Host            : League.Strings.Universal_String;
+     Password        : League.Strings.Universal_String;
+     Addr            : League.Strings.Universal_String;
    end record;
 
    type XMPP_Session_Access is access all XMPP_Session;
@@ -171,5 +176,17 @@ package XMPP.Sessions is
       Object : not null XMPP.Challenges.XMPP_Challenge_Access);
 
    procedure Open_Stream (Self : not null access XMPP_Session);
+
+   procedure Set_JID (Self : in out XMPP_Session;
+                      JID  : League.Strings.Universal_String);
+
+   procedure Set_Host (Self : in out XMPP_Session;
+                       Host : League.Strings.Universal_String);
+
+   procedure Set_Password (Self     : in out XMPP_Session;
+                           Password : League.Strings.Universal_String);
+
+   procedure Set_Host_Addr (Self : in out XMPP_Session;
+                            Addr : League.Strings.Universal_String);
 
 end XMPP.Sessions;

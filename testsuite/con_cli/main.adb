@@ -36,12 +36,26 @@
 with Con_Cli;
 with Con_Cli_Handlers;
 
+with League.Strings;
+
 procedure Main is
    S : not null Con_Cli.Session_Access := new Con_Cli.Session;
    H : not null Con_Cli_Handlers.Con_Cli_Handler_Access
      := new Con_Cli_Handlers.Con_Cli_Handler;
 
 begin
+   S.Set_JID (League.Strings.To_Universal_String ("uim-test"));
+
+   --  For local testing
+   S.Set_Host (League.Strings.To_Universal_String ("zion"));
+   S.Set_Password (League.Strings.To_Universal_String ("123"));
+   S.Set_Host_Addr (League.Strings.To_Universal_String ("127.0.0.1"));
+
+   --  for jabber.ru testing
+   --  S.Set_Host (League.Strings.To_Universal_String ("jabber.ru"));
+   --  S.Set_Password (League.Strings.To_Universal_String ("123456"));
+   --  S.Set_Host_Addr (League.Strings.To_Universal_String ("77.88.57.177"));
+
    S.Set_Stream_Handler (H);
    S.Open;
 end Main;

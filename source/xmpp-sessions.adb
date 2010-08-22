@@ -56,16 +56,6 @@ package body XMPP.Sessions is
    use type Ada.Streams.Stream_Element_Offset;
    use type XMPP.Objects.Object_Kind;
 
-   JID      : Universal_String := To_Universal_String ("uim-test");
-   Host     : Universal_String := To_Universal_String ("zion");
-   Password : Universal_String := To_Universal_String ("123");
-   Addr     : Universal_String := To_Universal_String ("127.0.0.1");
-
-   --  Connection to Jabber.ru
-   --  Host     : Universal_String := To_Universal_String ("jabber.ru");
-   --  Password : Universal_String := To_Universal_String ("123456");
-   --  Addr     : Universal_String := To_Universal_String ("77.88.57.177");
-
    -------------------------
    --  Proceed_SASL_Auth  --
    -------------------------
@@ -73,9 +63,9 @@ package body XMPP.Sessions is
      (Self   : not null access XMPP_Session;
       Object : not null XMPP.Challenges.XMPP_Challenge_Access) is
    begin
-      Object.Set_JID (JID);
-      Object.Set_Host (Host);
-      Object.Set_Password (Password);
+      Object.Set_JID (Self.JID);
+      Object.Set_Host (Self.Host);
+      Object.Set_Password (Self.Password);
       Self.Send_Wide_Wide_String
         (Object.Generate_Response.To_Wide_Wide_String);
    end Proceed_SASL_Auth;
@@ -103,7 +93,7 @@ package body XMPP.Sessions is
    begin
       if not Self.Is_Opened then
          Ada.Wide_Wide_Text_IO.Put_Line ("Connecting");
-         Self.Connect (Addr.To_Wide_Wide_String, 5222);
+         Self.Connect (Self.Addr.To_Wide_Wide_String, 5222);
          Ada.Wide_Wide_Text_IO.Put_Line ("Starting idle");
          Self.Idle;
       end if;
@@ -150,7 +140,7 @@ package body XMPP.Sessions is
              & "version='1.0' "
              & "xmlns='jabber:client' "
              & "to='"
-             & Host
+             & Self.Host
              & "' >";
 
    begin
@@ -560,5 +550,41 @@ package body XMPP.Sessions is
            (Ada.Characters.Conversions.To_String (Str)),
         Self.Source.Is_TLS_Established);
    end Send_Wide_Wide_String;
+
+   ---------------
+   --  Set_JID  --
+   ---------------
+   procedure Set_JID (Self : in out XMPP_Session;
+                      JID  : League.Strings.Universal_String) is
+   begin
+      Self.JID := JID;
+   end Set_JID;
+
+   ----------------
+   --  Set_Host  --
+   ----------------
+   procedure Set_Host (Self : in out XMPP_Session;
+                       Host : League.Strings.Universal_String) is
+   begin
+      Self.Host := Host;
+   end Set_Host;
+
+   --------------------
+   --  Set_Password  --
+   --------------------
+   procedure Set_Password (Self     : in out XMPP_Session;
+                           Password : League.Strings.Universal_String) is
+   begin
+      Self.Password := Password;
+   end Set_Password;
+
+   ---------------------
+   --  Set_Host_Addr  --
+   ---------------------
+   procedure Set_Host_Addr (Self : in out XMPP_Session;
+                            Addr : League.Strings.Universal_String) is
+   begin
+      Self.Addr := Addr;
+   end Set_Host_Addr;
 
 end XMPP.Sessions;
