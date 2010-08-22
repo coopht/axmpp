@@ -246,12 +246,8 @@ package body XMPP.Sessions is
       --  For successfull authentication
       elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-sasl"
         and Local_Name = "success" then
-         --  We do not create any object here, just notifies user about
-         --  successful authentification, and opening another one stream
-         --  to server
-         Ada.Wide_Wide_Text_IO.Put_Line ("Authentification successfull !!");
-         Self.Authenticated := True;
-         Self.On_Connect;
+         --  all work is don in delete object
+         return;
       end if;
 
       --  Creating Null_Object, if actual object cannot be created.
@@ -290,7 +286,8 @@ package body XMPP.Sessions is
             Ada.Wide_Wide_Text_IO.Put_Line ("Sending starttls");
             Self.Send_Wide_Wide_String
               ("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
-         else
+
+         elsif not Self.Authenticated then
             Ada.Wide_Wide_Text_IO.Put_Line ("Starting sasl auth");
             Self.Send_Wide_Wide_String
               ("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' "
@@ -318,6 +315,20 @@ package body XMPP.Sessions is
          --  TODO:
          --  Free (Self.Current);
          return;
+
+      --  For successfull authentication
+      elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-sasl"
+        and Local_Name = "success" then
+         Self.Current := Null_X;
+         --  TODO:
+         --  Free (Self.Current);
+
+         --  We do not create any object here, just notifies user about
+         --  successful authentification, and opening another one stream
+         --  to server
+         Ada.Wide_Wide_Text_IO.Put_Line ("Authentification successfull !!");
+         Self.Authenticated := True;
+         Self.On_Connect;
       end if;
    end Delete_Object;
 
