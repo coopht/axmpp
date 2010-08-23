@@ -26,7 +26,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --
---  <Unit> XMPP.Objects
+--  <Unit> XMPP.IQS
 --  <ImplementationNotes>
 --
 ------------------------------------------------------------------------------
@@ -35,39 +35,37 @@
 ------------------------------------------------------------------------------
 with League.Strings;
 
-package XMPP.Objects is
+with XMPP.Objects;
 
-   type Object_Kind is
-     (Challenge,
-      IQ,
-      Null_Object,
-      Stream,
-      Stream_Features);
-
-   type XMPP_Object is limited interface;
-
-   type XMPP_Object_Access is access all XMPP_Object'Class;
+package body XMPP.IQS is
 
    ----------------
    --  Get_Kind  --
    ----------------
-   not overriding
-   function Get_Kind (Self : XMPP_Object) return XMPP.Objects.Object_Kind
-      is abstract;
+   overriding function Get_Kind (Self : XMPP_IQ) return Objects.Object_Kind is
+   begin
+      return Objects.IQ;
+   end Get_Kind;
+
    -----------------
    --  Serialize  --
    -----------------
-   not overriding
-   function Serialize (Self : in XMPP_Object)
-      return League.Strings.Universal_String is abstract;
+   overriding function Serialize (Self : in XMPP_IQ)
+      return League.Strings.Universal_String is
+   begin
+      return X : League.Strings.Universal_String;
+   end Serialize;
 
    -------------------
    --  Set_Content  --
    -------------------
-   not overriding
-   procedure Set_Content (Self      : in out XMPP_Object;
-                          Parameter : League.Strings.Universal_String;
-                          Value     : League.Strings.Universal_String)
-      is abstract;
+   overriding procedure Set_Content
+     (Self      : in out XMPP_IQ;
+      Parameter : League.Strings.Universal_String;
+      Value     : League.Strings.Universal_String) is
+   begin
+      null;
+   end Set_Content;
 
-end XMPP.Objects;
+end XMPP.IQS;
+
