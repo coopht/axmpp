@@ -189,4 +189,7 @@ package XMPP.Sessions is
    procedure Set_Host_Addr (Self : in out XMPP_Session;
                             Addr : League.Strings.Universal_String);
 
+   procedure Send_Object (Self   : in out XMPP_Session;
+                          Object : XMPP.Objects.XMPP_Object_Access);
+
 end XMPP.Sessions;
