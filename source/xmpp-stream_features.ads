@@ -43,8 +43,7 @@ package XMPP.Stream_Features is
 
    type XMPP_Stream_Feature is new XMPP.Objects.XMPP_Object with private;
 
-   type XMPP_Stream_Feature_Access
-      is access all XMPP.Objects.XMPP_Object'Class;
+   type XMPP_Stream_Feature_Access is access all XMPP_Stream_Feature'Class;
 
    type Mechanism is (PLAIN, DIGEST_MD5);
 
