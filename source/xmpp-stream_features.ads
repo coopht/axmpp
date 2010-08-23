@@ -50,39 +50,22 @@ package XMPP.Stream_Features is
    package Mechanisms_Vectors is
       new Ada.Containers.Vectors (Natural, Mechanism);
 
-   ---------------------
-   --  Add_Mechanism  --
-   ---------------------
    procedure Add_Mechanism (Self  : in out XMPP_Stream_Feature;
                             Value : Wide_Wide_String);
 
-   ----------------
-   --  Get_Kind  --
-   ----------------
-   overriding
-   function Get_Kind (Self : XMPP_Stream_Feature)
+   overriding function Get_Kind (Self : XMPP_Stream_Feature)
       return XMPP.Objects.Object_Kind;
 
-   -----------------
-   --  Serialize  --
-   -----------------
-   overriding
-   function Serialize (Self : in XMPP_Stream_Feature)
+   overriding function Serialize (Self : in XMPP_Stream_Feature)
       return League.Strings.Universal_String;
 
-   -------------------
-   --  Set_Has_TLS  --
-   -------------------
    procedure Set_Has_TLS (Self  : in out XMPP_Stream_Feature;
                           Value : Boolean := True);
 
-   -------------------
-   --  Set_Content  --
-   -------------------
-   overriding
-   procedure Set_Content (Self      : in out XMPP_Stream_Feature;
-                          Parameter : League.Strings.Universal_String;
-                          Value     : League.Strings.Universal_String);
+   overriding procedure Set_Content
+     (Self      : in out XMPP_Stream_Feature;
+      Parameter : League.Strings.Universal_String;
+      Value     : League.Strings.Universal_String);
 
    function Is_Bind_Supported (Self : XMPP_Stream_Feature) return Boolean;
 
