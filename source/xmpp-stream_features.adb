@@ -61,6 +61,22 @@ package body XMPP.Stream_Features is
       end if;
    end Add_Mechanism;
 
+   -------------------------
+   --  Is_Bind_Supported  --
+   -------------------------
+   function Is_Bind_Supported (Self : XMPP_Stream_Feature) return Boolean is
+   begin
+      return Self.Bind_Supported;
+   end Is_Bind_Supported;
+
+   ----------------------------
+   --  Is_Session_Supported  --
+   ----------------------------
+   function Is_Session_Supported (Self : XMPP_Stream_Feature) return Boolean is
+   begin
+      return Self.Session_Supported;
+   end Is_Session_Supported;
+
    ----------------
    --  Get_Kind  --
    ----------------
@@ -96,6 +112,12 @@ package body XMPP.Stream_Features is
 
       elsif Parameter.To_Wide_Wide_String = "mechanism" then
          Self.Add_Mechanism (Value.To_Wide_Wide_String);
+
+      elsif Parameter.To_Wide_Wide_String = "bind" then
+         Self.Bind_Supported := Parameter = Value;
+
+      elsif Parameter.To_Wide_Wide_String = "session" then
+         Self.Bind_Supported := Parameter = Value;
 
       else
          Ada.Wide_Wide_Text_IO.Put_Line

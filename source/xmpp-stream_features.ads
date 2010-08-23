@@ -85,11 +85,17 @@ package XMPP.Stream_Features is
                           Parameter : League.Strings.Universal_String;
                           Value     : League.Strings.Universal_String);
 
+   function Is_Bind_Supported (Self : XMPP_Stream_Feature) return Boolean;
+
+   function Is_Session_Supported (Self : XMPP_Stream_Feature) return Boolean;
+
 private
 
    type XMPP_Stream_Feature is new XMPP.Objects.XMPP_Object with
    record
-      Has_TLS    : Boolean := False;
-      Mechanisms : Mechanisms_Vectors.Vector;
+      Has_TLS           : Boolean := False;
+      Mechanisms        : Mechanisms_Vectors.Vector;
+      Bind_Supported    : Boolean := False;
+      Session_Supported : Boolean := False;
    end record;
 end XMPP.Stream_Features;
