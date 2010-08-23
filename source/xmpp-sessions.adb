@@ -393,6 +393,21 @@ package body XMPP.Sessions is
            and Local_Name.To_Wide_Wide_String = "mechanism" then
             --  We add mechanism parameter in Characters procedure
             Self.Tag := Local_Name;
+
+         --  For XMPP_Stream_Feature
+         elsif Namespace_URI.To_Wide_Wide_String
+           = "urn:ietf:params:xml:ns:xmpp-bind"
+           and Local_Name.To_Wide_Wide_String = "bind" then
+            --  Setting bind feature to stream feature object
+            Self.Current.Set_Content (Local_Name, Local_Name);
+
+         --  For XMPP_Stream_Feature
+         elsif Namespace_URI.To_Wide_Wide_String
+           = "urn:ietf:params:xml:ns:xmpp-session"
+           and Local_Name.To_Wide_Wide_String = "session" then
+            --  Setting session feature to stream feature object
+            Self.Current.Set_Content (Local_Name, Local_Name);
+
          end if;
 
       --  If Object not yet created, then create it
