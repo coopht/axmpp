@@ -602,8 +602,8 @@ package body XMPP.Sessions is
       Self.Addr := Addr;
    end Set_Host_Addr;
 
-   procedure Send_Object (Self   : in out XMPP_Session;
-                          Object : XMPP.Objects.XMPP_Object_Access) is
+   procedure Send_Object (Self   : not null access XMPP_Session;
+                          Object : XMPP.Objects.XMPP_Object'Class) is
    begin
       Self.Send_Wide_Wide_String (Object.Serialize.To_Wide_Wide_String);
    end Send_Object;
