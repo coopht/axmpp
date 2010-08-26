@@ -26,7 +26,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --
---  <Unit> XMPP.Objects
+--  <Unit> XMPP.Presences
 --  <ImplementationNotes>
 --
 ------------------------------------------------------------------------------
@@ -35,41 +35,107 @@
 ------------------------------------------------------------------------------
 with League.Strings;
 
-package XMPP.Objects is
+with XMPP.Objects;
 
-   type Object_Kind is
-     (Challenge,
-      IQ,
-      Message,
-      Null_Object,
-      Presence,
-      Stream,
-      Stream_Features);
-
-   type XMPP_Object is limited interface;
-
-   type XMPP_Object_Access is access all XMPP_Object'Class;
+package body XMPP.Messages is
 
    ----------------
    --  Get_Kind  --
    ----------------
-   not overriding
-   function Get_Kind (Self : XMPP_Object) return XMPP.Objects.Object_Kind
-      is abstract;
+   overriding function Get_Kind (Self : XMPP_Message)
+     return Objects.Object_Kind is
+   begin
+      return XMPP.Objects.Message;
+   end Get_Kind;
+
    -----------------
    --  Serialize  --
    -----------------
-   not overriding
-   function Serialize (Self : in XMPP_Object)
-      return League.Strings.Universal_String is abstract;
+   overriding function Serialize (Self : in XMPP_Message)
+      return League.Strings.Universal_String is
+   begin
+      return X : League.Strings.Universal_String;
+   end Serialize;
 
    -------------------
    --  Set_Content  --
    -------------------
-   not overriding
-   procedure Set_Content (Self      : in out XMPP_Object;
+   overriding
+   procedure Set_Content (Self      : in out XMPP_Message;
                           Parameter : League.Strings.Universal_String;
-                          Value     : League.Strings.Universal_String)
-      is abstract;
+                          Value     : League.Strings.Universal_String) is
+   begin
+      raise Program_Error with "Not yet implemented";
+   end Set_Content;
 
-end XMPP.Objects;
+   ----------------
+   --  Set_Type  --
+   ----------------
+   procedure Set_Type (Self : in out XMPP_Message; T : Message_Type) is
+   begin
+      Self.Type_Of_Message := T;
+   end Set_Type;
+
+   ----------------
+   --  Get_Type  --
+   ----------------
+   function Get_Type (Self : XMPP_Message) return Message_Type is
+   begin
+      return Self.Type_Of_Message;
+   end Get_Type;
+
+   -------------------
+   --  Set_Subject  --
+   -------------------
+   procedure Set_Subject (Self : in out XMPP_Message;
+                          Subj : League.Strings.Universal_String) is
+   begin
+      Self.Subject := Subj;
+   end Set_Subject;
+   -------------------
+   --  Get_Subject  --
+   -------------------
+   function Get_Subject (Self : XMPP_Message)
+      return League.Strings.Universal_String is
+   begin
+      return Self.Subject;
+   end Get_Subject;
+
+   ----------------
+   --  Set_Body  --
+   ----------------
+   procedure Set_Body (Self : in out XMPP_Message;
+                       Val  : League.Strings.Universal_String) is
+   begin
+      Self.Message_Body := Val;
+   end Set_Body;
+
+   ----------------
+   --  Get_Body  --
+   ----------------
+   function Get_Body (Self : XMPP_Message)
+      return League.Strings.Universal_String is
+   begin
+      return Self.Message_Body;
+   end Get_Body;
+
+   ------------------
+   --  Set_Thread  --
+   ------------------
+   procedure Set_Thread (Self : in out XMPP_Message;
+                         Val : League.Strings.Universal_String) is
+   begin
+      Self.Thread := Val;
+   end Set_Thread;
+
+   ------------------
+   --  Get_Thread  --
+   ------------------
+   function Get_Thread (Self : XMPP_Message)
+      return League.Strings.Universal_String is
+   begin
+      return Self.Thread;
+   end Get_Thread;
+
+end XMPP.Messages;
+

@@ -26,7 +26,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --
---  <Unit> XMPP.Objects
+--  <Unit> XMPP.Presences
 --  <ImplementationNotes>
 --
 ------------------------------------------------------------------------------
@@ -35,41 +35,61 @@
 ------------------------------------------------------------------------------
 with League.Strings;
 
-package XMPP.Objects is
+with XMPP.Objects;
 
-   type Object_Kind is
-     (Challenge,
-      IQ,
-      Message,
-      Null_Object,
-      Presence,
-      Stream,
-      Stream_Features);
+package XMPP.Messages is
 
-   type XMPP_Object is limited interface;
+   type Message_Type is (Chat, Error, Group_Chat, Headline, Normal);
 
-   type XMPP_Object_Access is access all XMPP_Object'Class;
+   type Priority_Type is new Integer range -128 .. 127;
 
-   ----------------
-   --  Get_Kind  --
-   ----------------
-   not overriding
-   function Get_Kind (Self : XMPP_Object) return XMPP.Objects.Object_Kind
-      is abstract;
-   -----------------
-   --  Serialize  --
-   -----------------
-   not overriding
-   function Serialize (Self : in XMPP_Object)
-      return League.Strings.Universal_String is abstract;
+   type XMPP_Message is new XMPP.Objects.XMPP_Object with private;
 
-   -------------------
-   --  Set_Content  --
-   -------------------
-   not overriding
-   procedure Set_Content (Self      : in out XMPP_Object;
+   type XMPP_Message_Access is access all XMPP_Message'Class;
+
+   overriding function Get_Kind (Self : XMPP_Message)
+      return Objects.Object_Kind;
+
+   overriding function Serialize (Self : in XMPP_Message)
+      return League.Strings.Universal_String;
+
+   overriding
+   procedure Set_Content (Self      : in out XMPP_Message;
                           Parameter : League.Strings.Universal_String;
-                          Value     : League.Strings.Universal_String)
-      is abstract;
+                          Value     : League.Strings.Universal_String);
 
-end XMPP.Objects;
+   procedure Set_Type (Self : in out XMPP_Message; T : Message_Type);
+
+   function Get_Type (Self : XMPP_Message) return Message_Type;
+
+   procedure Set_Subject (Self : in out XMPP_Message;
+                          Subj : League.Strings.Universal_String);
+
+   function Get_Subject (Self : XMPP_Message)
+      return League.Strings.Universal_String;
+
+   procedure Set_Body (Self : in out XMPP_Message;
+                       Val : League.Strings.Universal_String);
+
+   function Get_Body (Self : XMPP_Message)
+      return League.Strings.Universal_String;
+
+   procedure Set_Thread (Self : in out XMPP_Message;
+                         Val : League.Strings.Universal_String);
+
+   function Get_Thread (Self : XMPP_Message)
+      return League.Strings.Universal_String;
+
+private
+
+   type XMPP_Message is new XMPP.Objects.XMPP_Object with
+   record
+      Type_Of_Message : Message_Type;
+      Subject         : League.Strings.Universal_String;
+      Message_Body    : League.Strings.Universal_String;
+      --  TODO: Add support of multiply body instanses
+      Thread          : League.Strings.Universal_String;
+   end record;
+
+end XMPP.Messages;
+
