@@ -26,7 +26,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --
---  <Unit> XMPP.Objects
+--  <Unit> XMPP.Presences
 --  <ImplementationNotes>
 --
 ------------------------------------------------------------------------------
@@ -35,40 +35,88 @@
 ------------------------------------------------------------------------------
 with League.Strings;
 
-package XMPP.Objects is
+with XMPP.Objects;
 
-   type Object_Kind is
-     (Challenge,
-      IQ,
-      Null_Object,
-      Presence,
-      Stream,
-      Stream_Features);
-
-   type XMPP_Object is limited interface;
-
-   type XMPP_Object_Access is access all XMPP_Object'Class;
+package body XMPP.Presences is
 
    ----------------
    --  Get_Kind  --
    ----------------
-   not overriding
-   function Get_Kind (Self : XMPP_Object) return XMPP.Objects.Object_Kind
-      is abstract;
+   overriding function Get_Kind (Self : XMPP_Presence)
+      return Objects.Object_Kind is
+   begin
+      return XMPP.Objects.Presence;
+   end Get_Kind;
+
    -----------------
    --  Serialize  --
    -----------------
-   not overriding
-   function Serialize (Self : in XMPP_Object)
-      return League.Strings.Universal_String is abstract;
+   overriding function Serialize (Self : in XMPP_Presence)
+      return League.Strings.Universal_String is
+   begin
+      return X : League.Strings.Universal_String;
+   end Serialize;
 
    -------------------
    --  Set_Content  --
    -------------------
-   not overriding
-   procedure Set_Content (Self      : in out XMPP_Object;
-                          Parameter : League.Strings.Universal_String;
-                          Value     : League.Strings.Universal_String)
-      is abstract;
+   overriding procedure Set_Content
+     (Self      : in out XMPP_Presence;
+      Parameter : League.Strings.Universal_String;
+      Value     : League.Strings.Universal_String) is
+   begin
+      raise Program_Error with "Not yet implemented";
+   end Set_Content;
 
-end XMPP.Objects;
+   ----------------
+   --  Set_Show  --
+   ----------------
+   procedure Set_Show (Self : in out XMPP_Presence; Show : Show_Kind) is
+   begin
+      Self.Show := Show;
+   end Set_Show;
+
+   ----------------
+   --  Get_Show  --
+   ----------------
+   function Get_Show (Self : XMPP_Presence) return Show_Kind is
+   begin
+      return Self.Show;
+   end Get_Show;
+
+   ------------------
+   --  Set_Status  --
+   ------------------
+   procedure Set_Status (Self   : in out XMPP_Presence;
+                         Status : League.Strings.Universal_String) is
+   begin
+      Self.Status := Status;
+   end Set_Status;
+
+   ------------------
+   --  Get_Status  --
+   ------------------
+   function Get_Status (Self : XMPP_Presence)
+      return League.Strings.Universal_String is
+   begin
+      return Self.Status;
+   end Get_Status;
+
+   --------------------
+   --  Set_Priority  --
+   --------------------
+   procedure Set_Priority (Self : in out XMPP_Presence; P : Priority_Type) is
+   begin
+      Self.Priority := P;
+   end Set_Priority;
+
+   --------------------
+   --  Get_Priority  --
+   --------------------
+   function Get_Priority (Self : XMPP_Presence) return Priority_Type is
+   begin
+      return Self.Priority;
+   end Get_Priority;
+
+end XMPP.Presences;
+

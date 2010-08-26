@@ -26,7 +26,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --
---  <Unit> XMPP.Objects
+--  <Unit> XMPP.Presences
 --  <ImplementationNotes>
 --
 ------------------------------------------------------------------------------
@@ -35,40 +35,58 @@
 ------------------------------------------------------------------------------
 with League.Strings;
 
-package XMPP.Objects is
+with XMPP.Objects;
 
-   type Object_Kind is
-     (Challenge,
-      IQ,
-      Null_Object,
-      Presence,
-      Stream,
-      Stream_Features);
+package XMPP.Presences is
 
-   type XMPP_Object is limited interface;
+   type Show_Kind is (Away, Chat, DND, XA);
 
-   type XMPP_Object_Access is access all XMPP_Object'Class;
+   --  type Presence_Type is (Error,
+   --                         Probe,
+   --                         Subscribe,
+   --                         Subscribed,
+   --                         Unavailable,
+   --                         Unsubscribe,
+   --                         Unsubscribed);
 
-   ----------------
-   --  Get_Kind  --
-   ----------------
-   not overriding
-   function Get_Kind (Self : XMPP_Object) return XMPP.Objects.Object_Kind
-      is abstract;
-   -----------------
-   --  Serialize  --
-   -----------------
-   not overriding
-   function Serialize (Self : in XMPP_Object)
-      return League.Strings.Universal_String is abstract;
+   type Priority_Type is new Integer range -128 .. 127;
 
-   -------------------
-   --  Set_Content  --
-   -------------------
-   not overriding
-   procedure Set_Content (Self      : in out XMPP_Object;
+   type XMPP_Presence is new XMPP.Objects.XMPP_Object with private;
+
+   type XMPP_Presence_Access is access all XMPP_Presence'Class;
+
+   overriding function Get_Kind (Self : XMPP_Presence)
+      return Objects.Object_Kind;
+
+   overriding function Serialize (Self : in XMPP_Presence)
+      return League.Strings.Universal_String;
+
+   overriding
+   procedure Set_Content (Self      : in out XMPP_Presence;
                           Parameter : League.Strings.Universal_String;
-                          Value     : League.Strings.Universal_String)
-      is abstract;
+                          Value     : League.Strings.Universal_String);
 
-end XMPP.Objects;
+   procedure Set_Show (Self : in out XMPP_Presence; Show : Show_Kind);
+
+   function Get_Show (Self : XMPP_Presence) return Show_Kind;
+
+   procedure Set_Status (Self   : in out XMPP_Presence;
+                         Status : League.Strings.Universal_String);
+
+   function Get_Status (Self : XMPP_Presence)
+      return League.Strings.Universal_String;
+
+   procedure Set_Priority (Self : in out XMPP_Presence; P : Priority_Type);
+
+   function Get_Priority (Self : XMPP_Presence) return Priority_Type;
+
+private
+
+   type XMPP_Presence is new XMPP.Objects.XMPP_Object with
+   record
+      Show     : Show_Kind;
+      Status   : League.Strings.Universal_String;
+      Priority : Priority_Type;
+   end record;
+end XMPP.Presences;
+
