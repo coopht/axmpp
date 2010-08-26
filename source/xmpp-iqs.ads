@@ -39,7 +39,9 @@ with XMPP.Objects;
 
 package XMPP.IQS is
 
-   type XMPP_IQ is new XMPP.Objects.XMPP_Object with private;
+   type IQ_Kind is (Error, Get, Result, Set);
+
+   type XMPP_IQ (Kind : IQ_Kind) is new XMPP.Objects.XMPP_Object with private;
 
    type XMPP_IQ_Access is access all XMPP_IQ'Class;
 
@@ -53,9 +55,28 @@ package XMPP.IQS is
                           Parameter : League.Strings.Universal_String;
                           Value     : League.Strings.Universal_String);
 
+   function Get_IQ_Kind (Self : XMPP_IQ) return IQ_Kind;
+
+   procedure Set_IQ_Kind (Self : in out XMPP_IQ; Val : IQ_Kind);
+
+   function Get_Id (Self : XMPP_IQ) return League.Strings.Universal_String;
+
+   procedure Set_Id (Self : in out XMPP_IQ;
+                     Val  : League.Strings.Universal_String);
+
+   procedure Set_Body (Self : in out XMPP_IQ;
+                       Val  : League.Strings.Universal_String);
+
+   function Get_Body (Self : XMPP_IQ) return League.Strings.Universal_String;
+
 private
 
-   type XMPP_IQ is new XMPP.Objects.XMPP_Object with null record;
+   type XMPP_IQ (Kind : IQ_Kind) is new XMPP.Objects.XMPP_Object with
+   record
+      Id         : League.Strings.Universal_String;
+      Kind_Of_IQ : IQ_Kind := Kind;
+      IQ_Body    : League.Strings.Universal_String;
+   end record;
 
 end XMPP.IQS;
 

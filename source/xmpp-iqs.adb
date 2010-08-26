@@ -47,6 +47,39 @@ package body XMPP.IQS is
       return Objects.IQ;
    end Get_Kind;
 
+   -------------------
+   --  Get_IQ_Kind  --
+   -------------------
+   function Get_IQ_Kind (Self : XMPP_IQ) return IQ_Kind is
+   begin
+      return Self.Kind_Of_IQ;
+   end Get_IQ_Kind;
+
+   --------------
+   --  Get_Id  --
+   --------------
+   function Get_Id (Self : XMPP_IQ) return League.Strings.Universal_String is
+   begin
+      return Self.Id;
+   end Get_Id;
+
+   --------------
+   --  Set_Id  --
+   --------------
+   procedure Set_Id (Self : in out XMPP_IQ;
+                     Val  : League.Strings.Universal_String) is
+   begin
+      Self.Id := Val;
+   end Set_Id;
+
+   -------------------
+   --  Set_IQ_Kind  --
+   -------------------
+   procedure Set_IQ_Kind (Self : in out XMPP_IQ; Val : IQ_Kind) is
+   begin
+      Self.Kind_Of_IQ := Val;
+   end Set_IQ_Kind;
+
    -----------------
    --  Serialize  --
    -----------------
@@ -66,6 +99,23 @@ package body XMPP.IQS is
    begin
       null;
    end Set_Content;
+
+   ----------------
+   --  Set_Body  --
+   ----------------
+   procedure Set_Body (Self : in out XMPP_IQ;
+                       Val  : League.Strings.Universal_String) is
+   begin
+      Self.IQ_Body := Val;
+   end Set_Body;
+
+   ----------------
+   --  Get_Body  --
+   ----------------
+   function Get_Body (Self : XMPP_IQ) return League.Strings.Universal_String is
+   begin
+      return Self.IQ_Body;
+   end Get_Body;
 
 end XMPP.IQS;
 
