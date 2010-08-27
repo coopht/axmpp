@@ -26,7 +26,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --
---  <Unit> XMPP.Objects
+--  <Unit> XMPP.IQ_Sessions
 --  <ImplementationNotes>
 --
 ------------------------------------------------------------------------------
@@ -35,43 +35,28 @@
 ------------------------------------------------------------------------------
 with League.Strings;
 
-package XMPP.Objects is
+with XMPP.Objects;
 
-   type Object_Kind is
-     (Challenge,
-      IQ,
-      IQ_Session,
-      Error,
-      Message,
-      Null_Object,
-      Presence,
-      Stream,
-      Stream_Features);
+package XMPP.IQ_Sessions is
 
-   type XMPP_Object is limited interface;
+   type XMPP_IQ_Session is new XMPP.Objects.XMPP_Object with private;
 
-   type XMPP_Object_Access is access all XMPP_Object'Class;
+   type XMPP_IQ_Session_Access is access all XMPP_IQ_Session'Class;
 
-   ----------------
-   --  Get_Kind  --
-   ----------------
-   not overriding
-   function Get_Kind (Self : XMPP_Object) return XMPP.Objects.Object_Kind
-      is abstract;
-   -----------------
-   --  Serialize  --
-   -----------------
-   not overriding
-   function Serialize (Self : in XMPP_Object)
-      return League.Strings.Universal_String is abstract;
+   overriding function Get_Kind (Self : XMPP_IQ_Session)
+      return Objects.Object_Kind;
 
-   -------------------
-   --  Set_Content  --
-   -------------------
-   not overriding
-   procedure Set_Content (Self      : in out XMPP_Object;
+   overriding function Serialize (Self : in XMPP_IQ_Session)
+      return League.Strings.Universal_String;
+
+   overriding
+   procedure Set_Content (Self      : in out XMPP_IQ_Session;
                           Parameter : League.Strings.Universal_String;
-                          Value     : League.Strings.Universal_String)
-      is abstract;
+                          Value     : League.Strings.Universal_String);
 
-end XMPP.Objects;
+private
+
+   type XMPP_IQ_Session is new XMPP.Objects.XMPP_Object with null record;
+
+end XMPP.IQ_Sessions;
+

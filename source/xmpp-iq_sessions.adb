@@ -26,7 +26,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --
---  <Unit> XMPP.Objects
+--  <Unit> XMPP.IQ_Sessions
 --  <ImplementationNotes>
 --
 ------------------------------------------------------------------------------
@@ -35,43 +35,38 @@
 ------------------------------------------------------------------------------
 with League.Strings;
 
-package XMPP.Objects is
+with XMPP.Objects;
 
-   type Object_Kind is
-     (Challenge,
-      IQ,
-      IQ_Session,
-      Error,
-      Message,
-      Null_Object,
-      Presence,
-      Stream,
-      Stream_Features);
-
-   type XMPP_Object is limited interface;
-
-   type XMPP_Object_Access is access all XMPP_Object'Class;
+package body XMPP.IQ_Sessions is
 
    ----------------
    --  Get_Kind  --
    ----------------
-   not overriding
-   function Get_Kind (Self : XMPP_Object) return XMPP.Objects.Object_Kind
-      is abstract;
+   overriding function Get_Kind (Self : XMPP_IQ_Session)
+      return Objects.Object_Kind is
+   begin
+      return XMPP.Objects.IQ_Session;
+   end Get_Kind;
+
    -----------------
    --  Serialize  --
    -----------------
-   not overriding
-   function Serialize (Self : in XMPP_Object)
-      return League.Strings.Universal_String is abstract;
+   overriding function Serialize (Self : in XMPP_IQ_Session)
+      return League.Strings.Universal_String is
+   begin
+      return X : League.Strings.Universal_String;
+   end Serialize;
 
    -------------------
    --  Set_Content  --
    -------------------
-   not overriding
-   procedure Set_Content (Self      : in out XMPP_Object;
+   overriding
+   procedure Set_Content (Self      : in out XMPP_IQ_Session;
                           Parameter : League.Strings.Universal_String;
-                          Value     : League.Strings.Universal_String)
-      is abstract;
+                          Value     : League.Strings.Universal_String) is
+   begin
+      raise Program_Error with "Not yet implemented";
+   end Set_Content;
 
-end XMPP.Objects;
+end XMPP.IQ_Sessions;
+
