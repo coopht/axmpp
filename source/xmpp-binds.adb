@@ -26,58 +26,101 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --
---  <Unit> XMPP.Objects
+--  <Unit> XMPP.Binds
 --  <ImplementationNotes>
 --
 ------------------------------------------------------------------------------
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
+with Ada.Wide_Wide_Text_IO;
+
 with League.Strings;
 
-with Ada.Containers.Vectors;
+with XMPP.Objects;
 
-package XMPP.Objects is
+package body XMPP.Binds is
 
-   type Object_Kind is
-     (Bind,
-      Challenge,
-      IQ,
-      IQ_Session,
-      Error,
-      Message,
-      Null_Object,
-      Presence,
-      Stream,
-      Stream_Features);
-
-   type XMPP_Object is limited interface;
-
-   type XMPP_Object_Access is access all XMPP_Object'Class;
-
-   package Object_Vectors is new Ada.Containers.Vectors
-     (Natural, XMPP_Object_Access);
+   use League.Strings;
 
    ----------------
    --  Get_Kind  --
    ----------------
-   not overriding
-   function Get_Kind (Self : XMPP_Object) return XMPP.Objects.Object_Kind
-      is abstract;
+   overriding function Get_Kind (Self : XMPP_Bind) return Objects.Object_Kind
+   is
+   begin
+      return XMPP.Objects.Bind;
+   end Get_Kind;
+
    -----------------
    --  Serialize  --
    -----------------
-   not overriding
-   function Serialize (Self : in XMPP_Object)
-      return League.Strings.Universal_String is abstract;
+   overriding function Serialize (Self : in XMPP_Bind)
+      return League.Strings.Universal_String is
+   begin
+      return X : League.Strings.Universal_String do
+         X := League.Strings.To_Universal_String
+               ("<bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>");
+
+         if not Self.Get_Resource.Is_Empty then
+            X.Append ("<resource>" & Self.Get_Resource & "</resource>");
+         end if;
+
+         X.Append (League.Strings.To_Universal_String ("</bind>"));
+      end return;
+   end Serialize;
 
    -------------------
    --  Set_Content  --
    -------------------
-   not overriding
-   procedure Set_Content (Self      : in out XMPP_Object;
+   overriding
+   procedure Set_Content (Self      : in out XMPP_Bind;
                           Parameter : League.Strings.Universal_String;
-                          Value     : League.Strings.Universal_String)
-      is abstract;
+                          Value     : League.Strings.Universal_String) is
+   begin
+      if Parameter = To_Universal_String ("jid") then
+         Self.JID := Value;
 
-end XMPP.Objects;
+      else
+         Ada.Wide_Wide_Text_IO.Put_Line
+           ("Unknown parameter : " & Parameter.To_Wide_Wide_String);
+      end if;
+   end Set_Content;
+
+   --------------------
+   --  Set_Resource  --
+   --------------------
+   procedure Set_Resource (Self : in out XMPP_Bind;
+                           Res  : League.Strings.Universal_String) is
+   begin
+      Self.Resource := Res;
+   end Set_Resource;
+
+   ---------------
+   --  Set_JID  --
+   ---------------
+   procedure Set_JID (Self : in out XMPP_Bind;
+                      JID  : League.Strings.Universal_String) is
+   begin
+      Self.JID := JID;
+   end Set_JID;
+
+   --------------------
+   --  Get_Resource  --
+   --------------------
+   function Get_Resource (Self : XMPP_Bind)
+      return League.Strings.Universal_String is
+   begin
+      return Self.Resource;
+   end Get_Resource;
+
+   ---------------
+   --  Set_JID  --
+   ---------------
+   function Get_JID (Self : XMPP_Bind) return League.Strings.Universal_String
+   is
+   begin
+      return Self.JID;
+   end Get_JID;
+
+end XMPP.Binds;

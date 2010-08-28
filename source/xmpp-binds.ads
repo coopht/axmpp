@@ -26,7 +26,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --
---  <Unit> XMPP.Objects
+--  <Unit> XMPP.Binds
 --  <ImplementationNotes>
 --
 ------------------------------------------------------------------------------
@@ -35,49 +35,41 @@
 ------------------------------------------------------------------------------
 with League.Strings;
 
-with Ada.Containers.Vectors;
+with XMPP.Objects;
 
-package XMPP.Objects is
+package XMPP.Binds is
 
-   type Object_Kind is
-     (Bind,
-      Challenge,
-      IQ,
-      IQ_Session,
-      Error,
-      Message,
-      Null_Object,
-      Presence,
-      Stream,
-      Stream_Features);
+   type XMPP_Bind is new XMPP.Objects.XMPP_Object with private;
 
-   type XMPP_Object is limited interface;
+   type XMPP_Bind_Access is access all XMPP_Bind'Class;
 
-   type XMPP_Object_Access is access all XMPP_Object'Class;
+   overriding function Get_Kind (Self : XMPP_Bind) return Objects.Object_Kind;
 
-   package Object_Vectors is new Ada.Containers.Vectors
-     (Natural, XMPP_Object_Access);
+   overriding function Serialize (Self : in XMPP_Bind)
+      return League.Strings.Universal_String;
 
-   ----------------
-   --  Get_Kind  --
-   ----------------
-   not overriding
-   function Get_Kind (Self : XMPP_Object) return XMPP.Objects.Object_Kind
-      is abstract;
-   -----------------
-   --  Serialize  --
-   -----------------
-   not overriding
-   function Serialize (Self : in XMPP_Object)
-      return League.Strings.Universal_String is abstract;
-
-   -------------------
-   --  Set_Content  --
-   -------------------
-   not overriding
-   procedure Set_Content (Self      : in out XMPP_Object;
+   overriding
+   procedure Set_Content (Self      : in out XMPP_Bind;
                           Parameter : League.Strings.Universal_String;
-                          Value     : League.Strings.Universal_String)
-      is abstract;
+                          Value     : League.Strings.Universal_String);
 
-end XMPP.Objects;
+   procedure Set_Resource (Self : in out XMPP_Bind;
+                           Res  : League.Strings.Universal_String);
+
+   procedure Set_JID (Self : in out XMPP_Bind;
+                      JID  : League.Strings.Universal_String);
+
+   function Get_Resource (Self : XMPP_Bind)
+      return League.Strings.Universal_String;
+
+   function Get_JID (Self : XMPP_Bind) return League.Strings.Universal_String;
+
+private
+
+   type XMPP_Bind is new XMPP.Objects.XMPP_Object with
+   record
+      JID      : League.Strings.Universal_String;
+      Resource : League.Strings.Universal_String;
+   end record;
+
+end XMPP.Binds;
