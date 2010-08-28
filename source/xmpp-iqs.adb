@@ -93,7 +93,7 @@ package body XMPP.IQS is
          --  Generating IQ container xml
          X := To_Universal_String ("<iq type='");
 
-         case Self.Kind is
+         case Self.Kind_Of_IQ is
             when Set =>
                X.Append (To_Universal_String ("set"));
 
