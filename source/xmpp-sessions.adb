@@ -175,7 +175,7 @@ package body XMPP.Sessions is
       Success : in out Boolean)
    is
    begin
-      Put_Line ("*** Text = " & Text);
+      --  Put_Line ("*** Text = " & Text);
       if Self.Current.Get_Kind /= XMPP.Objects.Null_Object then
          Self.Current.Set_Content (Self.Tag, Text);
       end if;
@@ -192,8 +192,8 @@ package body XMPP.Sessions is
       Success        : in out Boolean)
    is
    begin
-      Put_Line ("<<< End_Element_QN = " & Qualified_Name);
-      Put_Line ("<<< End_Element_URI = " & Namespace_URI);
+      --  Put_Line ("<<< End_Element_QN = " & Qualified_Name);
+      --  Put_Line ("<<< End_Element_URI = " & Namespace_URI);
       Self.Delete_Object (Namespace_URI.To_Wide_Wide_String,
                           Local_Name.To_Wide_Wide_String);
    end End_Element;
@@ -350,22 +350,22 @@ package body XMPP.Sessions is
    is
    begin
       --  DEBUG  --
-      Ada.Wide_Wide_Text_IO.Put
-        (">>> Start_Element_QN = "
-           & Qualified_Name.To_Wide_Wide_String & " (");
+      --  Ada.Wide_Wide_Text_IO.Put
+      --    (">>> Start_Element_QN = "
+      --       & Qualified_Name.To_Wide_Wide_String & " (");
 
-      Ada.Wide_Wide_Text_IO.Put
-        ("Namespace_URI = " & Namespace_URI.To_Wide_Wide_String & " ");
+      --  Ada.Wide_Wide_Text_IO.Put
+      --    ("Namespace_URI = " & Namespace_URI.To_Wide_Wide_String & " ");
 
-      for J in 1 .. Attributes.Length loop
-         Ada.Wide_Wide_Text_IO.Put
-           (Attributes.Local_Name (J).To_Wide_Wide_String
-              & "="
-              & Attributes.Value (J).To_Wide_Wide_String
-              & " ");
-      end loop;
+      --  for J in 1 .. Attributes.Length loop
+      --     Ada.Wide_Wide_Text_IO.Put
+      --       (Attributes.Local_Name (J).To_Wide_Wide_String
+      --          & "="
+      --          & Attributes.Value (J).To_Wide_Wide_String
+      --          & " ");
+      --  end loop;
 
-      Ada.Wide_Wide_Text_IO.Put_Line (")");
+      --  Ada.Wide_Wide_Text_IO.Put_Line (")");
 
       --  DEBUG  --
 
