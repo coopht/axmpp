@@ -560,6 +560,9 @@ package body XMPP.Sessions is
    procedure Send_Wide_Wide_String (Self : in out XMPP_Session;
                                     Str  : Wide_Wide_String) is
    begin
+      --  DEBUG
+      Ada.Wide_Wide_Text_IO.Put_Line ("Sending XML : " & Str);
+
       Self.Send
         (XMPP.Utils.To_Stream_Element_Array
            (Ada.Characters.Conversions.To_String (Str)),
