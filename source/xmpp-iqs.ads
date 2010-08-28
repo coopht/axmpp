@@ -79,4 +79,3 @@ private
    end record;
 
 end XMPP.IQS;
-
