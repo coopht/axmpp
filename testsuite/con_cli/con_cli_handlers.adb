@@ -35,9 +35,46 @@
 ------------------------------------------------------------------------------
 with Ada.Wide_Wide_Text_IO;
 
+with League.Strings;
+
+with Con_Cli;
+
+with XMPP.Binds;
+with XMPP.IQS;
+with XMPP.Objects;
 with XMPP.Stream_Handlers;
 
 package body Con_Cli_Handlers is
+
+   overriding procedure Connected
+     (Self    : in out Con_Cli_Handler;
+      Object  : XMPP.Stream_Features.XMPP_Stream_Feature_Access) is
+
+      Bind_IQ     : XMPP.IQS.XMPP_IQ (XMPP.IQS.Set);
+      Bind_Object : XMPP.Binds.XMPP_Bind_Access := new XMPP.Binds.XMPP_Bind;
+
+   begin
+      Ada.Wide_Wide_Text_IO.Put_Line ("Yeah, we are connected");
+
+      Bind_Object.Set_Resource
+        (League.Strings.To_Universal_String ("con_cli_resource"));
+
+      --  Binding resource
+      Bind_IQ.Set_Id (League.Strings.To_Universal_String ("bind_1"));
+      Bind_IQ.Append_Item (Bind_Object);
+
+      Self.Object.Send_Object (Bind_IQ);
+   end Connected;
+
+   --------------------------
+   --  Set_Session_Object  --
+   --------------------------
+   procedure Set_Session_Object
+     (Self   : in out Con_Cli_Handler;
+      Object : not null access Con_Cli.Session'Class) is
+   begin
+      Self.Object := Object;
+   end Set_Session_Object;
 
    --------------------
    --  Start_Stream  --

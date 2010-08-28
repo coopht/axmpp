@@ -57,5 +57,6 @@ begin
    --  S.Set_Host_Addr (League.Strings.To_Universal_String ("77.88.57.177"));
 
    S.Set_Stream_Handler (H);
+   H.Set_Session_Object (S);
    S.Open;
 end Main;

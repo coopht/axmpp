@@ -38,12 +38,18 @@ with XMPP.Stream_Handlers;
 with XMPP.Streams;
 with XMPP.Stream_Features;
 
+limited with Con_Cli;
+
 package Con_Cli_Handlers is
 
    type Con_Cli_Handler is limited new XMPP.Stream_Handlers.XMPP_Stream_Handler
      with private;
 
    type Con_Cli_Handler_Access is access all Con_Cli_Handler'Class;
+
+   overriding procedure Connected
+     (Self   : in out Con_Cli_Handler;
+      Object : XMPP.Stream_Features.XMPP_Stream_Feature_Access);
 
    overriding procedure Start_Stream
      (Self   : in out Con_Cli_Handler;
@@ -53,9 +59,15 @@ package Con_Cli_Handlers is
      (Self   : in out Con_Cli_Handler;
       Object : not null XMPP.Stream_Features.XMPP_Stream_Feature_Access);
 
+   procedure Set_Session_Object
+     (Self   : in out Con_Cli_Handler;
+      Object : not null access Con_Cli.Session'Class);
+
 private
 
    type Con_Cli_Handler is limited new XMPP.Stream_Handlers.XMPP_Stream_Handler
-     with null record;
-
+     with
+   record
+     Object : access Con_Cli.Session;
+   end record;
 end Con_Cli_Handlers;
