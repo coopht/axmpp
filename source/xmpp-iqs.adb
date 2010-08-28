@@ -117,5 +117,32 @@ package body XMPP.IQS is
       return Self.IQ_Body;
    end Get_Body;
 
+   -------------------
+   --  Append_Item  --
+   -------------------
+   procedure Append_Item
+     (Self : in out XMPP_IQ;
+      Item : not null access XMPP.Objects.XMPP_Object'Class) is
+   begin
+      Self.Item_List.Append (XMPP.Objects.XMPP_Object_Access (Item));
+   end Append_Item;
+
+   -------------------
+   --  Items_Count  --
+   -------------------
+   function Items_Count (Self : XMPP_IQ) return Natural is
+   begin
+      return Natural (Self.Item_List.Length);
+   end Items_Count;
+
+   ---------------
+   --  Item_At  --
+   ---------------
+   function Item_At (Self : XMPP_IQ; Pos : Natural)
+     return not null access XMPP.Objects.XMPP_Object'Class is
+   begin
+      return Self.Item_List.Element (Pos);
+   end Item_At;
+
 end XMPP.IQS;
 
