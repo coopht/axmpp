@@ -33,6 +33,7 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
+with XMPP.IQS;
 with XMPP.Streams;
 with XMPP.Stream_Features;
 
@@ -67,7 +68,8 @@ package XMPP.Stream_Handlers is
      (Self : in out XMPP_Stream_Handler) is null;
 
    not overriding procedure IQ
-     (Self : in out XMPP_Stream_Handler) is null;
+     (Self : in out XMPP_Stream_Handler;
+      IQ   : not null XMPP.IQS.XMPP_IQ_Access) is null;
 
    not overriding procedure End_Stream
      (Self : in out XMPP_Stream_Handler) is null;
