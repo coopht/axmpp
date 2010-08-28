@@ -39,6 +39,8 @@ with XMPP.Objects;
 
 package body XMPP.IQS is
 
+   use League.Strings;
+
    ----------------
    --  Get_Kind  --
    ----------------
@@ -86,7 +88,40 @@ package body XMPP.IQS is
    overriding function Serialize (Self : in XMPP_IQ)
       return League.Strings.Universal_String is
    begin
-      return X : League.Strings.Universal_String;
+      return X : League.Strings.Universal_String do
+
+         --  Generating IQ container xml
+         X := To_Universal_String ("<iq type='");
+
+         case Self.Kind is
+            when Set =>
+               X.Append (To_Universal_String ("set"));
+
+            when Get =>
+               X.Append (To_Universal_String ("get"));
+
+            when Result =>
+               X.Append (To_Universal_String ("result"));
+
+            when Error =>
+               X.Append (To_Universal_String ("error"));
+
+            when others =>
+               raise Program_Error with "Unknown IQ type";
+
+         end case;
+
+         X.Append ("' id='" & Self.Get_Id & "'>");
+
+         --  Generating IQ body
+         if Self.Items_Count > 0 then
+            for J in 0 .. Self.Items_Count - 1 loop
+               X.Append (Self.Item_At (J).Serialize);
+            end loop;
+         end if;
+
+         X.Append (To_Universal_String ("</iq>"));
+      end return;
    end Serialize;
 
    -------------------
