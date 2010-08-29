@@ -43,6 +43,14 @@ package body XMPP.Binds is
 
    use League.Strings;
 
+   --------------
+   --  Create  --
+   --------------
+   function Create return not null XMPP_Bind_Access is
+   begin
+      return new XMPP_Bind;
+   end Create;
+
    ----------------
    --  Get_Kind  --
    ----------------

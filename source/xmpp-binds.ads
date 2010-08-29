@@ -43,6 +43,8 @@ package XMPP.Binds is
 
    type XMPP_Bind_Access is access all XMPP_Bind'Class;
 
+   function Create return not null XMPP_Bind_Access;
+
    overriding function Get_Kind (Self : XMPP_Bind) return Objects.Object_Kind;
 
    overriding function Serialize (Self : in XMPP_Bind)
