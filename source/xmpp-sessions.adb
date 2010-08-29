@@ -178,8 +178,8 @@ package body XMPP.Sessions is
    is
    begin
       --  Put_Line ("*** Text = " & Text);
-      if Self.Current.Get_Kind /= XMPP.Objects.Null_Object then
-         Self.Current.Set_Content (Self.Tag, Text);
+      if not Self.Stack.Is_Empty then
+         Self.Stack.Last_Element.Set_Content (Self.Tag, Text);
       end if;
    end Characters;
 
@@ -220,15 +220,14 @@ package body XMPP.Sessions is
    begin
       if Namespace_URI = "http://etherx.jabber.org/streams"
         and Local_Name = "stream" then
-
-         Self.Current := new XMPP.Streams.XMPP_Stream;
-         Self.Stack.Append (Self.Current);
+         Self.Stack.Append
+           (XMPP.Objects.XMPP_Object_Access (XMPP.Streams.Create));
          return;
 
       elsif Namespace_URI = "http://etherx.jabber.org/streams"
         and Local_Name = "features" then
-         Self.Current := new XMPP.Stream_Features.XMPP_Stream_Feature;
-         Self.Stack.Append (Self.Current);
+         Self.Stack.Append
+           (XMPP.Objects.XMPP_Object_Access (XMPP.Stream_Features.Create));
          return;
 
       --  proceed tls connection establishment
@@ -242,8 +241,9 @@ package body XMPP.Sessions is
       elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-sasl"
         and Local_Name = "challenge" then
          Self.Tag := League.Strings.To_Universal_String (Local_Name);
-         Self.Current := new XMPP.Challenges.XMPP_Challenge;
-         Self.Stack.Append (Self.Current);
+
+         Self.Stack.Append
+           (XMPP.Objects.XMPP_Object_Access (XMPP.Challenges.Create));
          return;
 
       --  For successfull authentication
@@ -254,14 +254,14 @@ package body XMPP.Sessions is
 
       --  Creating IQ object
       elsif Namespace_URI = "jabber:client" and Local_Name = "iq" then
-         Self.Current := new XMPP.IQS.XMPP_IQ (XMPP.IQS.Result);
-         Self.Stack.Append (Self.Current);
+         Self.Stack.Append
+           (XMPP.Objects.XMPP_Object_Access
+              (XMPP.IQS.Create (XMPP.IQS.Result)));
          return;
       end if;
 
       --  Creating Null_Object, if actual object cannot be created.
 
-      Self.Current := Null_X;
       Ada.Wide_Wide_Text_IO.Put_Line
         ("Don't know what kind of element should be created : ");
       Ada.Wide_Wide_Text_IO.Put_Line ("Namespace_URI : " & Namespace_URI);
@@ -276,12 +276,15 @@ package body XMPP.Sessions is
                             Local_Name    : Wide_Wide_String)
    is
    begin
+      --  Ada.Wide_Wide_Text_IO.Put_Line
+      --    ("Stack size at begin : "
+      --       & Integer'Wide_Wide_Image (Integer (Self.Stack.Length)));
+
       if Namespace_URI = "http://etherx.jabber.org/streams"
         and Local_Name = "stream" then
 
          --  TODO:
          --  Free (Self.Current);
-         Self.Current := Null_X;
          Self.Stack.Delete_Last;
 
       elsif Namespace_URI = "http://etherx.jabber.org/streams"
@@ -289,11 +292,13 @@ package body XMPP.Sessions is
 
          if not Self.Authenticated then
             Self.Stream_Handler.Stream_Features
-             (XMPP.Stream_Features.XMPP_Stream_Feature_Access (Self.Current));
+              (XMPP.Stream_Features.XMPP_Stream_Feature_Access
+                 (Self.Stack.Last_Element));
 
          else
             Self.Stream_Handler.Connected
-             (XMPP.Stream_Features.XMPP_Stream_Feature_Access (Self.Current));
+              (XMPP.Stream_Features.XMPP_Stream_Feature_Access
+                 (Self.Stack.Last_Element));
          end if;
 
          --  if tls session was not established, than send command to server
@@ -311,7 +316,6 @@ package body XMPP.Sessions is
                  & "mechanism='DIGEST-MD5'/>");
          end if;
 
-         Self.Current := Null_X;
          Self.Stack.Delete_Last;
          --  TODO:
          --  Free (Self.Current);
@@ -327,9 +331,8 @@ package body XMPP.Sessions is
         and Local_Name = "challenge" then
          --  Proceeding with SASL auth
          Self.Proceed_SASL_Auth
-           (XMPP.Challenges.XMPP_Challenge_Access (Self.Current));
+           (XMPP.Challenges.XMPP_Challenge_Access (Self.Stack.Last_Element));
 
-         Self.Current := Null_X;
          Self.Stack.Delete_Last;
          --  TODO:
          --  Free (Self.Current);
@@ -348,7 +351,6 @@ package body XMPP.Sessions is
          Ada.Wide_Wide_Text_IO.Put_Line ("Authentification successfull !!");
          Self.Authenticated := True;
          Self.On_Connect;
-         Self.Current := Null_X;
 
          --  For XMPP_Stream_Feature
       elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-bind"
@@ -364,6 +366,10 @@ package body XMPP.Sessions is
             Self.Stack.Delete_Last;
          end if;
       end if;
+
+      --  Ada.Wide_Wide_Text_IO.Put_Line
+      --    ("Stack size at end : "
+      --       & Integer'Wide_Wide_Image (Integer (Self.Stack.Length)));
    end Delete_Object;
 
    ---------------------
@@ -379,36 +385,36 @@ package body XMPP.Sessions is
    is
    begin
       --  DEBUG  --
-      Ada.Wide_Wide_Text_IO.Put
-        (">>> Start_Element_QN = "
-           & Qualified_Name.To_Wide_Wide_String & " (");
+      --  Ada.Wide_Wide_Text_IO.Put
+      --    (">>> Start_Element_QN = "
+      --       & Qualified_Name.To_Wide_Wide_String & " (");
 
-      Ada.Wide_Wide_Text_IO.Put
-        ("Namespace_URI = " & Namespace_URI.To_Wide_Wide_String & " ");
+      --  Ada.Wide_Wide_Text_IO.Put
+      --    ("Namespace_URI = " & Namespace_URI.To_Wide_Wide_String & " ");
 
-      for J in 1 .. Attributes.Length loop
-         Ada.Wide_Wide_Text_IO.Put
-           (Attributes.Local_Name (J).To_Wide_Wide_String
-              & "="
-              & Attributes.Value (J).To_Wide_Wide_String
-              & " ");
-      end loop;
+      --  for J in 1 .. Attributes.Length loop
+      --     Ada.Wide_Wide_Text_IO.Put
+      --       (Attributes.Local_Name (J).To_Wide_Wide_String
+      --          & "="
+      --          & Attributes.Value (J).To_Wide_Wide_String
+      --          & " ");
+      --  end loop;
 
-      Ada.Wide_Wide_Text_IO.Put_Line (")");
+      --  Ada.Wide_Wide_Text_IO.Put_Line (")");
 
       --  DEBUG  --
 
       Self.Tag := Local_Name;
 
       --  If object was created, then fill it
-      if Self.Current.Get_Kind /= XMPP.Objects.Null_Object then
+      if not Self.Stack.Is_Empty then
 
          --  For XMPP_Stream_Feature
          if Namespace_URI.To_Wide_Wide_String
            = "urn:ietf:params:xml:ns:xmpp-tls"
            and Local_Name.To_Wide_Wide_String = "starttls"
          then
-            Self.Current.Set_Content (Local_Name, Local_Name);
+            Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
 
          --  For XMPP_Stream_Feature
          elsif Namespace_URI.To_Wide_Wide_String
@@ -435,7 +441,7 @@ package body XMPP.Sessions is
                     (XMPP.Objects.XMPP_Object_Access (XMPP.Binds.Create));
                else
                   --  Setting bind feature to stream feature object
-                  Self.Current.Set_Content (Local_Name, Local_Name);
+                  Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
                end if;
 
                --  For XMPP_Stream_Feature
@@ -443,7 +449,7 @@ package body XMPP.Sessions is
               = "urn:ietf:params:xml:ns:xmpp-session"
               and Local_Name.To_Wide_Wide_String = "session" then
                --  Setting session feature to stream feature object
-               Self.Current.Set_Content (Local_Name, Local_Name);
+               Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
 
             end if;
 
@@ -458,23 +464,25 @@ package body XMPP.Sessions is
          Self.Create_Object (Namespace_URI.To_Wide_Wide_String,
                              Local_Name.To_Wide_Wide_String);
 
-         --  Hack for stream:stream stanza, which does not have close tag
-         if Self.Current.Get_Kind = XMPP.Objects.Stream then
-            for J in 1 .. Attributes.Length loop
-               Self.Current.Set_Content
-                 (Attributes.Local_Name (J), Attributes.Value (J));
-            end loop;
+         if not Self.Stack.Is_Empty then
+            --  Hack for stream:stream stanza, which does not have close tag
+            if Self.Stack.Last_Element.Get_Kind = XMPP.Objects.Stream then
+               for J in 1 .. Attributes.Length loop
+                  Self.Stack.Last_Element.Set_Content
+                    (Attributes.Local_Name (J), Attributes.Value (J));
+               end loop;
 
-            Self.Stream_Handler.Start_Stream
-              (XMPP.Streams.XMPP_Stream_Access (Self.Current));
-            Self.Current := Null_X;
-            return;
+               Self.Stream_Handler.Start_Stream
+                 (XMPP.Streams.XMPP_Stream_Access (Self.Stack.Last_Element));
+               Self.Stack.Delete_Last;
+               return;
+            end if;
          end if;
       end if;
 
       --  setting up object's attributes
       for J in 1 .. Attributes.Length loop
-         Self.Current.Set_Content
+         Self.Stack.Last_Element.Set_Content
            (Attributes.Local_Name (J), Attributes.Value (J));
       end loop;
 
