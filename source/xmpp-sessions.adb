@@ -196,8 +196,110 @@ package body XMPP.Sessions is
    begin
       --  Put_Line ("<<< End_Element_QN = " & Qualified_Name);
       --  Put_Line ("<<< End_Element_URI = " & Namespace_URI);
-      Self.Delete_Object (Namespace_URI.To_Wide_Wide_String,
-                          Local_Name.To_Wide_Wide_String);
+
+      --  Ada.Wide_Wide_Text_IO.Put_Line
+      --    ("Stack size at begin : "
+      --       & Integer'Wide_Wide_Image (Integer (Self.Stack.Length)));
+
+      if Namespace_URI
+        = To_Universal_String ("http://etherx.jabber.org/streams")
+        and Local_Name = To_Universal_String ("stream") then
+
+         --  TODO:
+         --  Free (Self.Current);
+         Self.Stack.Delete_Last;
+
+      elsif Namespace_URI
+        = To_Universal_String ("http://etherx.jabber.org/streams")
+        and Local_Name = To_Universal_String ("features") then
+
+         if not Self.Authenticated then
+            Self.Stream_Handler.Stream_Features
+              (XMPP.Stream_Features.XMPP_Stream_Feature_Access
+                 (Self.Stack.Last_Element));
+
+         else
+            Self.Stream_Handler.Connected
+              (XMPP.Stream_Features.XMPP_Stream_Feature_Access
+                 (Self.Stack.Last_Element));
+         end if;
+
+         --  if tls session was not established, than send command to server
+         --  to start tls negotiation
+         --  XXX: may be XMPP object for xmpp-tls name space should be created
+         if not Self.Source.Is_TLS_Established then
+            Ada.Wide_Wide_Text_IO.Put_Line ("Sending starttls");
+            Self.Send_Wide_Wide_String
+              ("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
+
+         elsif not Self.Authenticated then
+            Ada.Wide_Wide_Text_IO.Put_Line ("Starting sasl auth");
+            Self.Send_Wide_Wide_String
+              ("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' "
+                 & "mechanism='DIGEST-MD5'/>");
+         end if;
+
+         Self.Stack.Delete_Last;
+         --  TODO:
+         --  Free (Self.Current);
+
+      elsif Namespace_URI
+        = To_Universal_String ("urn:ietf:params:xml:ns:xmpp-tls")
+        and Local_Name = To_Universal_String ("proceed") then
+         if not Self.Source.Is_TLS_Established then
+            Self.Proceed_TLS_Auth;
+         end if;
+
+      --  Proceed with SASL Authentication
+      elsif Namespace_URI
+        = To_Universal_String ("urn:ietf:params:xml:ns:xmpp-sasl")
+        and Local_Name = To_Universal_String ("challenge") then
+         --  Proceeding with SASL auth
+         Self.Proceed_SASL_Auth
+           (XMPP.Challenges.XMPP_Challenge_Access (Self.Stack.Last_Element));
+
+         Self.Stack.Delete_Last;
+         --  TODO:
+         --  Free (Self.Current);
+         return;
+
+      --  For successfull authentication
+      elsif Namespace_URI
+        = To_Universal_String ("urn:ietf:params:xml:ns:xmpp-sasl")
+        and Local_Name = To_Universal_String ("success") then
+         --  TODO:
+         --  Free (Self.Current);
+
+         --  We do not create any object here, just notifies user about
+         --  successful authentification, and opening another one stream
+         --  to server
+         Self.Stack.Delete_Last;
+         Ada.Wide_Wide_Text_IO.Put_Line ("Authentification successfull !!");
+         Self.Authenticated := True;
+         Self.On_Connect;
+
+         --  For XMPP_Stream_Feature
+      elsif Namespace_URI
+        = To_Universal_String ("urn:ietf:params:xml:ns:xmpp-bind")
+        and Local_Name = To_Universal_String ("bind") then
+
+         --  Adding bind body for IQ object
+         if Self.Stack.Element (Integer (Self.Stack.Length) - 1).Get_Kind
+           = XMPP.Objects.IQ then
+            XMPP.IQS.XMPP_IQ_Access
+              (Self.Stack.Element
+                 (Integer (Self.Stack.Length) - 1))
+              .Append_Item (Self.Stack.Last_Element);
+            Self.Stack.Delete_Last;
+         end if;
+      end if;
+
+      --  Ada.Wide_Wide_Text_IO.Put_Line
+      --    ("Stack size at end : "
+      --       & Integer'Wide_Wide_Image (Integer (Self.Stack.Length)));
+      --  Ada.Wide_Wide_Text_IO.Put_Line
+      --    ("Stack size : "
+      --       & Integer'Wide_Wide_Image (Integer (Self.Stack.Length)));
    end End_Element;
 
    --------------------
@@ -267,110 +369,6 @@ package body XMPP.Sessions is
       Ada.Wide_Wide_Text_IO.Put_Line ("Namespace_URI : " & Namespace_URI);
       Ada.Wide_Wide_Text_IO.Put_Line ("Local_Name : " & Local_Name);
    end Create_Object;
-
-   ---------------------
-   --  Delete_Object  --
-   ---------------------
-   procedure Delete_Object (Self          : in out XMPP_Session;
-                            Namespace_URI : Wide_Wide_String;
-                            Local_Name    : Wide_Wide_String)
-   is
-   begin
-      --  Ada.Wide_Wide_Text_IO.Put_Line
-      --    ("Stack size at begin : "
-      --       & Integer'Wide_Wide_Image (Integer (Self.Stack.Length)));
-
-      if Namespace_URI = "http://etherx.jabber.org/streams"
-        and Local_Name = "stream" then
-
-         --  TODO:
-         --  Free (Self.Current);
-         Self.Stack.Delete_Last;
-
-      elsif Namespace_URI = "http://etherx.jabber.org/streams"
-        and Local_Name = "features" then
-
-         if not Self.Authenticated then
-            Self.Stream_Handler.Stream_Features
-              (XMPP.Stream_Features.XMPP_Stream_Feature_Access
-                 (Self.Stack.Last_Element));
-
-         else
-            Self.Stream_Handler.Connected
-              (XMPP.Stream_Features.XMPP_Stream_Feature_Access
-                 (Self.Stack.Last_Element));
-         end if;
-
-         --  if tls session was not established, than send command to server
-         --  to start tls negotiation
-         --  XXX: may be XMPP object for xmpp-tls name space should be created
-         if not Self.Source.Is_TLS_Established then
-            Ada.Wide_Wide_Text_IO.Put_Line ("Sending starttls");
-            Self.Send_Wide_Wide_String
-              ("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
-
-         elsif not Self.Authenticated then
-            Ada.Wide_Wide_Text_IO.Put_Line ("Starting sasl auth");
-            Self.Send_Wide_Wide_String
-              ("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' "
-                 & "mechanism='DIGEST-MD5'/>");
-         end if;
-
-         Self.Stack.Delete_Last;
-         --  TODO:
-         --  Free (Self.Current);
-
-      elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-tls"
-        and Local_Name = "proceed" then
-         if not Self.Source.Is_TLS_Established then
-            Self.Proceed_TLS_Auth;
-         end if;
-
-      --  Proceed with SASL Authentication
-      elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-sasl"
-        and Local_Name = "challenge" then
-         --  Proceeding with SASL auth
-         Self.Proceed_SASL_Auth
-           (XMPP.Challenges.XMPP_Challenge_Access (Self.Stack.Last_Element));
-
-         Self.Stack.Delete_Last;
-         --  TODO:
-         --  Free (Self.Current);
-         return;
-
-      --  For successfull authentication
-      elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-sasl"
-        and Local_Name = "success" then
-         --  TODO:
-         --  Free (Self.Current);
-
-         --  We do not create any object here, just notifies user about
-         --  successful authentification, and opening another one stream
-         --  to server
-         Self.Stack.Delete_Last;
-         Ada.Wide_Wide_Text_IO.Put_Line ("Authentification successfull !!");
-         Self.Authenticated := True;
-         Self.On_Connect;
-
-         --  For XMPP_Stream_Feature
-      elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-bind"
-        and Local_Name = "bind" then
-
-         --  Adding bind body for IQ object
-         if Self.Stack.Element (Integer (Self.Stack.Length) - 1).Get_Kind
-           = XMPP.Objects.IQ then
-            XMPP.IQS.XMPP_IQ_Access
-              (Self.Stack.Element
-                 (Integer (Self.Stack.Length) - 1))
-              .Append_Item (Self.Stack.Last_Element);
-            Self.Stack.Delete_Last;
-         end if;
-      end if;
-
-      --  Ada.Wide_Wide_Text_IO.Put_Line
-      --    ("Stack size at end : "
-      --       & Integer'Wide_Wide_Image (Integer (Self.Stack.Length)));
-   end Delete_Object;
 
    ---------------------
    --  Start_Element  --
