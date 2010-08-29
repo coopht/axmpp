@@ -42,6 +42,8 @@ package XMPP.Challenges is
 
    type XMPP_Challenge_Access is access all XMPP_Challenge'Class;
 
+   function Create return XMPP_Challenge_Access;
+
    overriding
    function Get_Kind (Self : XMPP_Challenge) return XMPP.Objects.Object_Kind;
 

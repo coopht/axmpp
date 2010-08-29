@@ -42,6 +42,8 @@ package XMPP.Streams is
 
    type XMPP_Stream_Access is access all XMPP_Stream'Class;
 
+   function Create return XMPP_Stream_Access;
+
    ----------------
    --  Get_Kind  --
    ----------------

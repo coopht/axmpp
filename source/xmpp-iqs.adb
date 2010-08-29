@@ -43,6 +43,12 @@ package body XMPP.IQS is
 
    use League.Strings;
 
+   function Create (X : IQ_Kind) return XMPP_IQ_Access is
+   begin
+      return new XMPP_IQ (X);
+   end Create;
+
+
    ----------------
    --  Get_Kind  --
    ----------------

@@ -43,6 +43,11 @@ package body XMPP.Streams is
 
    use type League.Strings.Universal_String;
 
+   function Create return XMPP_Stream_Access is
+   begin
+      return new XMPP_Stream;
+   end Create;
+
    ----------------
    --  Get_Kind  --
    ----------------

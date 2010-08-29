@@ -43,6 +43,12 @@ package body XMPP.Stream_Features is
 
    use type League.Strings.Universal_String;
 
+   function Create return XMPP_Stream_Feature_Access is
+   begin
+      return new XMPP_Stream_Feature;
+   end Create;
+
+
    ---------------------
    --  Add_Mechanism  --
    ---------------------

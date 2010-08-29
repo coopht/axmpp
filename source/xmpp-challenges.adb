@@ -52,6 +52,11 @@ package body XMPP.Challenges is
 
    package ACC renames Ada.Characters.Conversions;
 
+   function Create return XMPP_Challenge_Access is
+   begin
+      return new XMPP_Challenge;
+   end Create;
+
    -------------------------
    --  Generate_Response  --
    -------------------------

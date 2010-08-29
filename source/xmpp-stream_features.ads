@@ -53,6 +53,8 @@ package XMPP.Stream_Features is
    procedure Add_Mechanism (Self  : in out XMPP_Stream_Feature;
                             Value : Wide_Wide_String);
 
+   function Create return XMPP_Stream_Feature_Access;
+
    overriding function Get_Kind (Self : XMPP_Stream_Feature)
       return XMPP.Objects.Object_Kind;
 
