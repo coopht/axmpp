@@ -41,7 +41,9 @@ with Ada.Wide_Wide_Text_IO;
 with League.Strings;
 with XML.SAX.Readers;
 
+with XMPP.Binds;
 with XMPP.Challenges;
+with XMPP.IQS;
 with XMPP.Networks;
 with XMPP.Null_Objects;
 with XMPP.Objects;
@@ -220,11 +222,13 @@ package body XMPP.Sessions is
         and Local_Name = "stream" then
 
          Self.Current := new XMPP.Streams.XMPP_Stream;
+         Self.Stack.Append (Self.Current);
          return;
 
       elsif Namespace_URI = "http://etherx.jabber.org/streams"
         and Local_Name = "features" then
          Self.Current := new XMPP.Stream_Features.XMPP_Stream_Feature;
+         Self.Stack.Append (Self.Current);
          return;
 
       --  proceed tls connection establishment
@@ -239,12 +243,19 @@ package body XMPP.Sessions is
         and Local_Name = "challenge" then
          Self.Tag := League.Strings.To_Universal_String (Local_Name);
          Self.Current := new XMPP.Challenges.XMPP_Challenge;
+         Self.Stack.Append (Self.Current);
          return;
 
       --  For successfull authentication
       elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-sasl"
         and Local_Name = "success" then
          --  all work is don in delete_object
+         return;
+
+      --  Creating IQ object
+      elsif Namespace_URI = "jabber:client" and Local_Name = "iq" then
+         Self.Current := new XMPP.IQS.XMPP_IQ (XMPP.IQS.Result);
+         Self.Stack.Append (Self.Current);
          return;
       end if;
 
@@ -271,6 +282,7 @@ package body XMPP.Sessions is
          --  TODO:
          --  Free (Self.Current);
          Self.Current := Null_X;
+         Self.Stack.Delete_Last;
 
       elsif Namespace_URI = "http://etherx.jabber.org/streams"
         and Local_Name = "features" then
@@ -300,6 +312,7 @@ package body XMPP.Sessions is
          end if;
 
          Self.Current := Null_X;
+         Self.Stack.Delete_Last;
          --  TODO:
          --  Free (Self.Current);
 
@@ -317,6 +330,7 @@ package body XMPP.Sessions is
            (XMPP.Challenges.XMPP_Challenge_Access (Self.Current));
 
          Self.Current := Null_X;
+         Self.Stack.Delete_Last;
          --  TODO:
          --  Free (Self.Current);
          return;
@@ -330,10 +344,25 @@ package body XMPP.Sessions is
          --  We do not create any object here, just notifies user about
          --  successful authentification, and opening another one stream
          --  to server
+         Self.Stack.Delete_Last;
          Ada.Wide_Wide_Text_IO.Put_Line ("Authentification successfull !!");
          Self.Authenticated := True;
          Self.On_Connect;
          Self.Current := Null_X;
+
+         --  For XMPP_Stream_Feature
+      elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-bind"
+        and Local_Name = "bind" then
+
+         --  Adding bind body for IQ object
+         if Self.Stack.Element (Integer (Self.Stack.Length) - 1).Get_Kind
+           = XMPP.Objects.IQ then
+            XMPP.IQS.XMPP_IQ_Access
+              (Self.Stack.Element
+                 (Integer (Self.Stack.Length) - 1))
+              .Append_Item (Self.Stack.Last_Element);
+            Self.Stack.Delete_Last;
+         end if;
       end if;
    end Delete_Object;
 
@@ -350,22 +379,22 @@ package body XMPP.Sessions is
    is
    begin
       --  DEBUG  --
-      --  Ada.Wide_Wide_Text_IO.Put
-      --    (">>> Start_Element_QN = "
-      --       & Qualified_Name.To_Wide_Wide_String & " (");
+      Ada.Wide_Wide_Text_IO.Put
+        (">>> Start_Element_QN = "
+           & Qualified_Name.To_Wide_Wide_String & " (");
 
-      --  Ada.Wide_Wide_Text_IO.Put
-      --    ("Namespace_URI = " & Namespace_URI.To_Wide_Wide_String & " ");
+      Ada.Wide_Wide_Text_IO.Put
+        ("Namespace_URI = " & Namespace_URI.To_Wide_Wide_String & " ");
 
-      --  for J in 1 .. Attributes.Length loop
-      --     Ada.Wide_Wide_Text_IO.Put
-      --       (Attributes.Local_Name (J).To_Wide_Wide_String
-      --          & "="
-      --          & Attributes.Value (J).To_Wide_Wide_String
-      --          & " ");
-      --  end loop;
+      for J in 1 .. Attributes.Length loop
+         Ada.Wide_Wide_Text_IO.Put
+           (Attributes.Local_Name (J).To_Wide_Wide_String
+              & "="
+              & Attributes.Value (J).To_Wide_Wide_String
+              & " ");
+      end loop;
 
-      --  Ada.Wide_Wide_Text_IO.Put_Line (")");
+      Ada.Wide_Wide_Text_IO.Put_Line (")");
 
       --  DEBUG  --
 
@@ -396,18 +425,32 @@ package body XMPP.Sessions is
 
          --  For XMPP_Stream_Feature
          elsif Namespace_URI.To_Wide_Wide_String
-           = "urn:ietf:params:xml:ns:xmpp-bind"
-           and Local_Name.To_Wide_Wide_String = "bind" then
-            --  Setting bind feature to stream feature object
-            Self.Current.Set_Content (Local_Name, Local_Name);
+           = "urn:ietf:params:xml:ns:xmpp-bind" then
+            if Local_Name.To_Wide_Wide_String = "bind" then
 
-         --  For XMPP_Stream_Feature
-         elsif Namespace_URI.To_Wide_Wide_String
-           = "urn:ietf:params:xml:ns:xmpp-session"
-           and Local_Name.To_Wide_Wide_String = "session" then
-            --  Setting session feature to stream feature object
-            Self.Current.Set_Content (Local_Name, Local_Name);
+               --  If bind for iq object, than create new bind object
+               --  and push it into stack
+               if Self.Stack.Last_Element.Get_Kind = XMPP.Objects.IQ then
+                  Self.Stack.Append
+                    (XMPP.Objects.XMPP_Object_Access (XMPP.Binds.Create));
+               else
+                  --  Setting bind feature to stream feature object
+                  Self.Current.Set_Content (Local_Name, Local_Name);
+               end if;
 
+               --  For XMPP_Stream_Feature
+            elsif Namespace_URI.To_Wide_Wide_String
+              = "urn:ietf:params:xml:ns:xmpp-session"
+              and Local_Name.To_Wide_Wide_String = "session" then
+               --  Setting session feature to stream feature object
+               Self.Current.Set_Content (Local_Name, Local_Name);
+
+            end if;
+
+         --  setting jid value for bind object
+         --  the data actual set in character procedure
+         elsif Local_Name.To_Wide_Wide_String = "jid" then
+            Self.Tag := Local_Name;
          end if;
 
       --  If Object not yet created, then create it

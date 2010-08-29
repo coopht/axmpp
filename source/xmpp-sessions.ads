@@ -85,6 +85,8 @@ package XMPP.Sessions is
 
      Current : XMPP.Objects.XMPP_Object_Access := Null_X;
 
+     Stack   : XMPP.Objects.Object_Vectors.Vector;
+
      TLS_Session     : GNUTLS.Session;
      Credential      : GNUTLS.Certificate_Client_Credentials;
      Authenticated   : Boolean := False;
