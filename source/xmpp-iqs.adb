@@ -33,6 +33,8 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
+with Ada.Wide_Wide_Text_IO;
+
 with League.Strings;
 
 with XMPP.Objects;
@@ -132,7 +134,27 @@ package body XMPP.IQS is
       Parameter : League.Strings.Universal_String;
       Value     : League.Strings.Universal_String) is
    begin
-      null;
+      if Parameter.To_Wide_Wide_String = "type" then
+         if Value.To_Wide_Wide_String = "set" then
+            Self.Kind_Of_IQ := Set;
+
+         elsif Value.To_Wide_Wide_String = "get" then
+            Self.Kind_Of_IQ := Get;
+
+         elsif Value.To_Wide_Wide_String = "result" then
+            Self.Kind_Of_IQ := Result;
+
+         elsif Value.To_Wide_Wide_String = "error" then
+            Self.Kind_Of_IQ := Error;
+         end if;
+
+      elsif Parameter.To_Wide_Wide_String = "id" then
+         Self.Id := Value;
+
+      else
+         Ada.Wide_Wide_Text_IO.Put_Line
+           ("Unknwown parameter : " & Parameter.To_Wide_Wide_String);
+      end if;
    end Set_Content;
 
    ----------------
