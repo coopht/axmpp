@@ -33,6 +33,7 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
+with Ada.Containers.Vectors;
 with Ada.Characters.Conversions;
 with Ada.Exceptions;
 with Ada.Text_IO;
@@ -56,7 +57,8 @@ package body XMPP.Sessions is
    use League.Strings;
 
    use type Ada.Streams.Stream_Element_Offset;
-   use type XMPP.Objects.Object_Kind;
+   use XMPP.Objects;
+   use XMPP.Objects.Object_Vectors;
 
    -------------------------
    --  Proceed_SASL_Auth  --
@@ -193,6 +195,9 @@ package body XMPP.Sessions is
       Qualified_Name : League.Strings.Universal_String;
       Success        : in out Boolean)
    is
+      Current : XMPP.Objects.Object_Vectors.Cursor
+        := Self.Stack.Last;
+
    begin
       Put_Line ("<<< End_Element_QN = " & Qualified_Name);
       Put_Line ("<<< End_Element_URI = " & Namespace_URI);
@@ -280,18 +285,32 @@ package body XMPP.Sessions is
 
          --  For XMPP_Stream_Feature
       elsif Namespace_URI
-        = To_Universal_String ("urn:ietf:params:xml:ns:xmpp-bind")
-        and Local_Name = To_Universal_String ("bind") then
+        = To_Universal_String ("urn:ietf:params:xml:ns:xmpp-bind") then
 
-         --  Adding bind body for IQ object
-         if Self.Stack.Element (Integer (Self.Stack.Length) - 1).Get_Kind
-           = XMPP.Objects.IQ then
-            XMPP.IQS.XMPP_IQ_Access
-              (Self.Stack.Element
-                 (Integer (Self.Stack.Length) - 1))
-              .Append_Item (Self.Stack.Last_Element);
-            Self.Stack.Delete_Last;
+         --  XXX: ugly code
+         if Local_Name = To_Universal_String ("bind") then
+            --  Adding bind body for IQ object
+            if Previous (Current) /= No_Element then
+               if Self.Stack.Element (To_Index (Previous (Current))).Get_Kind
+                 = XMPP.Objects.IQ then
+                  XMPP.IQS.XMPP_IQ_Access
+                    (Self.Stack.Element (To_Index (Previous (Current))))
+                     .Append_Item (Self.Stack.Last_Element);
+
+                  Self.Stack.Delete_Last;
+               end if;
+            end if;
          end if;
+
+      elsif Namespace_URI = To_Universal_String ("jabber:client")
+        and Local_Name = To_Universal_String ("iq") then
+         Ada.Wide_Wide_Text_IO.Put_Line
+           ("Self.Stack.Last_Element.Get_Kind "
+              & XMPP.Objects.Object_Kind'Wide_Wide_Image
+              (Self.Stack.Last_Element.Get_Kind));
+         Self.Stream_Handler.IQ
+           (XMPP.IQS.XMPP_IQ_Access (Self.Stack.Last_Element));
+         Self.Stack.Delete_Last;
       end if;
 
       --  Ada.Wide_Wide_Text_IO.Put_Line
