@@ -33,7 +33,7 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-
+with XMPP.IQS;
 with XMPP.Stream_Handlers;
 with XMPP.Streams;
 with XMPP.Stream_Features;
@@ -58,6 +58,9 @@ package Con_Cli_Handlers is
    overriding procedure Stream_Features
      (Self   : in out Con_Cli_Handler;
       Object : not null XMPP.Stream_Features.XMPP_Stream_Feature_Access);
+
+   overriding procedure IQ (Self : in out Con_Cli_Handler;
+                            IQ   : not null XMPP.IQS.XMPP_IQ_Access);
 
    procedure Set_Session_Object
      (Self   : in out Con_Cli_Handler;

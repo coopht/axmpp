@@ -46,6 +46,12 @@ with XMPP.Stream_Handlers;
 
 package body Con_Cli_Handlers is
 
+   use XMPP.IQS;
+   use XMPP.Objects;
+
+   -----------------
+   --  Connected  --
+   -----------------
    overriding procedure Connected
      (Self    : in out Con_Cli_Handler;
       Object  : XMPP.Stream_Features.XMPP_Stream_Feature_Access) is
@@ -65,6 +71,29 @@ package body Con_Cli_Handlers is
 
       Self.Object.Send_Object (Bind_IQ);
    end Connected;
+
+   ----------
+   --  IQ  --
+   ----------
+   overriding procedure IQ (Self : in out Con_Cli_Handler;
+                            IQ   : not null XMPP.IQS.XMPP_IQ_Access) is
+   begin
+      if IQ.Get_IQ_Kind = XMPP.IQS.Result then
+         for J in 0 .. IQ.Items_Count - 1 loop
+            if IQ.Item_At (J).Get_Kind = XMPP.Objects.Bind then
+               declare
+                  Bind_Object : XMPP.Binds.XMPP_Bind_Access
+                    := XMPP.Binds.XMPP_Bind_Access (IQ.Item_At (J));
+
+               begin
+                  Ada.Wide_Wide_Text_IO.Put_Line
+                    ("Resource Binded Success: "
+                       & Bind_Object.Get_JID.To_Wide_Wide_String);
+               end;
+            end if;
+         end loop;
+      end if;
+   end IQ;
 
    --------------------------
    --  Set_Session_Object  --
