@@ -252,31 +252,31 @@ package body XMPP.Sessions is
 
       --  Proceed with SASL Authentication
       elsif Namespace_URI
-        = To_Universal_String ("urn:ietf:params:xml:ns:xmpp-sasl")
-        and Local_Name = To_Universal_String ("challenge") then
-         --  Proceeding with SASL auth
-         Self.Proceed_SASL_Auth
-           (XMPP.Challenges.XMPP_Challenge_Access (Self.Stack.Last_Element));
+        = To_Universal_String ("urn:ietf:params:xml:ns:xmpp-sasl") then
+         if Local_Name = To_Universal_String ("challenge") then
+            --  Proceeding with SASL auth
+            Self.Proceed_SASL_Auth
+              (XMPP.Challenges.XMPP_Challenge_Access
+                 (Self.Stack.Last_Element));
 
-         Self.Stack.Delete_Last;
-         --  TODO:
-         --  Free (Self.Current);
-         return;
+            Self.Stack.Delete_Last;
+            --  TODO:
+            --  Free (Self.Current);
+            return;
 
-      --  For successfull authentication
-      elsif Namespace_URI
-        = To_Universal_String ("urn:ietf:params:xml:ns:xmpp-sasl")
-        and Local_Name = To_Universal_String ("success") then
-         --  TODO:
-         --  Free (Self.Current);
+            --  For successfull authentication
+         elsif Local_Name = To_Universal_String ("success") then
+            --  TODO:
+            --  Free (Self.Current);
 
-         --  We do not create any object here, just notifies user about
-         --  successful authentification, and opening another one stream
-         --  to server
-         Self.Stack.Delete_Last;
-         Ada.Wide_Wide_Text_IO.Put_Line ("Authentification successfull !!");
-         Self.Authenticated := True;
-         Self.On_Connect;
+            --  We do not create any object here, just notifies user about
+            --  successful authentification, and opening another one stream
+            --  to server
+            Self.Stack.Delete_Last;
+            Ada.Wide_Wide_Text_IO.Put_Line ("Authentification successfull !!");
+            Self.Authenticated := True;
+            Self.On_Connect;
+         end if;
 
          --  For XMPP_Stream_Feature
       elsif Namespace_URI
