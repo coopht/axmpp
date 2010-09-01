@@ -33,11 +33,23 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
+with Ada.Wide_Wide_Text_IO;
+
 with League.Strings;
 
 with XMPP.Objects;
 
 package body XMPP.Presences is
+
+   use League.Strings;
+
+   --------------
+   --  Create  --
+   --------------
+   function Create return XMPP_Presence_Access is
+   begin
+      return new XMPP_Presence;
+   end Create;
 
    ----------------
    --  Get_Kind  --
@@ -53,8 +65,57 @@ package body XMPP.Presences is
    -----------------
    overriding function Serialize (Self : in XMPP_Presence)
       return League.Strings.Universal_String is
+
+      Result : League.Strings.Universal_String
+        := League.Strings.To_Universal_String ("<presence");
+
    begin
-      return X : League.Strings.Universal_String;
+      if not Self.To.Is_Empty then
+         Result.Append (" to='" & Self.To & "'");
+      end if;
+
+      if not Self.From.Is_Empty then
+         Result.Append (" from='" & Self.From & "'");
+      end if;
+
+      Result := Result & ">";
+
+      if Self.Priority /= -129 then
+         Result := Result & "<priority>"
+           & Priority_Type'Wide_Wide_Image (Self.Priority)
+           & "</priority>";
+      end if;
+
+      if not Self.Status.Is_Empty then
+         Result.Append ("<status>" & Self.Status & "</status>");
+      end if;
+
+      if Self.Show /= Online then
+         Result.Append (To_Universal_String ("<show>"));
+
+         case Self.Show is
+            when Away =>
+               Result.Append (To_Universal_String ("away"));
+
+            when Chat =>
+               Result.Append (To_Universal_String ("chat"));
+
+            when DND =>
+               Result.Append (To_Universal_String ("dnd"));
+
+            when XA =>
+               Result.Append (To_Universal_String ("xa"));
+
+            when Online =>
+               raise Program_Error;
+         end case;
+
+         Result.Append (To_Universal_String ("</show>"));
+      end if;
+
+      Result.Append (To_Universal_String ("</presence>"));
+
+      return Result;
    end Serialize;
 
    -------------------
@@ -65,7 +126,19 @@ package body XMPP.Presences is
       Parameter : League.Strings.Universal_String;
       Value     : League.Strings.Universal_String) is
    begin
-      raise Program_Error with "Not yet implemented";
+      if Parameter = To_Universal_String ("from") then
+         Self.From := Value;
+
+      elsif Parameter = To_Universal_String ("to") then
+         Self.To := Value;
+
+      --  elsif Parameter = To_Universal_String ("type") then
+      --     Self.To := Value;
+
+      else
+         Ada.Wide_Wide_Text_IO.Put_Line
+          ("Unknown Parameter : " & Parameter.To_Wide_Wide_String);
+      end if;
    end Set_Content;
 
    ----------------
@@ -117,6 +190,42 @@ package body XMPP.Presences is
    begin
       return Self.Priority;
    end Get_Priority;
+
+   --------------
+   --  Get_To  --
+   --------------
+   function Get_To (Self : XMPP_Presence)
+      return League.Strings.Universal_String is
+   begin
+      return Self.To;
+   end Get_To;
+
+   ----------------
+   --  Get_From  --
+   ----------------
+   function Get_From (Self : XMPP_Presence)
+      return League.Strings.Universal_String is
+   begin
+      return Self.From;
+   end Get_From;
+
+   --------------
+   --  Set_To  --
+   --------------
+   procedure Set_To (Self  : in out XMPP_Presence;
+                     Value : League.Strings.Universal_String) is
+   begin
+      Self.To := Value;
+   end Set_To;
+
+   ----------------
+   --  Set_From  --
+   ----------------
+   procedure Set_From (Self  : in out XMPP_Presence;
+                       Value  : League.Strings.Universal_String) is
+   begin
+      Self.From := Value;
+   end Set_From;
 
 end XMPP.Presences;
 
