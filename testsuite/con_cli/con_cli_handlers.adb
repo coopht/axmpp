@@ -43,6 +43,7 @@ with XMPP.Binds;
 with XMPP.IQS;
 with XMPP.IQ_Sessions;
 with XMPP.Objects;
+with XMPP.Presences;
 with XMPP.Stream_Handlers;
 
 package body Con_Cli_Handlers is
@@ -125,11 +126,38 @@ package body Con_Cli_Handlers is
 
                   --  After session successfully established,
                   --  sending presence
+                  Self.Set_Presence;
                end;
             end if;
          end loop;
       end if;
    end IQ;
+
+   ----------------
+   --  Presence  --
+   ----------------
+   overriding procedure Presence
+     (Self : in out Con_Cli_Handler;
+      Data : not null XMPP.Presences.XMPP_Presence_Access) is
+   begin
+      Ada.Wide_Wide_Text_IO.Put_Line ("Presence Arrived: ");
+      Ada.Wide_Wide_Text_IO.Put_Line
+        ("User "
+           & Data.Get_From.To_Wide_Wide_String
+           & " is "
+           & XMPP.Presences.Show_Kind'Wide_Wide_Image (Data.Get_Show)
+           & "(" & Data.Get_Status.To_Wide_Wide_String & ")");
+   end Presence;
+
+   --------------------
+   --  Set_Presence  --
+   --------------------
+   procedure Set_Presence (Self : in out Con_Cli_Handler) is
+      P : XMPP.Presences.XMPP_Presence;
+
+   begin
+      Self.Object.Send_Object (P);
+   end Set_Presence;
 
    --------------------------
    --  Set_Session_Object  --

@@ -34,6 +34,7 @@
 --  $Date$
 ------------------------------------------------------------------------------
 with XMPP.IQS;
+with XMPP.Presences;
 with XMPP.Stream_Handlers;
 with XMPP.Streams;
 with XMPP.Stream_Features;
@@ -62,11 +63,17 @@ package Con_Cli_Handlers is
    overriding procedure IQ (Self : in out Con_Cli_Handler;
                             IQ   : not null XMPP.IQS.XMPP_IQ_Access);
 
+   overriding procedure Presence
+     (Self : in out Con_Cli_Handler;
+      Data : not null XMPP.Presences.XMPP_Presence_Access);
+
    procedure Set_Session_Object
      (Self   : in out Con_Cli_Handler;
       Object : not null access Con_Cli.Session'Class);
 
    procedure Establish_IQ_Session (Self : in out Con_Cli_Handler);
+
+   procedure Set_Presence (Self : in out Con_Cli_Handler);
 
 private
 
