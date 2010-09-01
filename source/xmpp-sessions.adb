@@ -49,6 +49,7 @@ with XMPP.IQ_Sessions;
 with XMPP.Networks;
 with XMPP.Null_Objects;
 with XMPP.Objects;
+with XMPP.Presences;
 with XMPP.Streams;
 with XMPP.Stream_Features;
 with XMPP.Utils;
@@ -322,15 +323,23 @@ package body XMPP.Sessions is
             end if;
          end if;
 
-      elsif Namespace_URI = To_Universal_String ("jabber:client")
-        and Local_Name = To_Universal_String ("iq") then
-         Ada.Wide_Wide_Text_IO.Put_Line
-           ("Self.Stack.Last_Element.Get_Kind "
-              & XMPP.Objects.Object_Kind'Wide_Wide_Image
-              (Self.Stack.Last_Element.Get_Kind));
-         Self.Stream_Handler.IQ
-           (XMPP.IQS.XMPP_IQ_Access (Self.Stack.Last_Element));
-         Self.Stack.Delete_Last;
+      elsif Namespace_URI = To_Universal_String ("jabber:client") then
+         --  Calling IQ Handler
+         if Local_Name = To_Universal_String ("iq") then
+            --  Ada.Wide_Wide_Text_IO.Put_Line
+            --    ("Self.Stack.Last_Element.Get_Kind "
+            --       & XMPP.Objects.Object_Kind'Wide_Wide_Image
+            --       (Self.Stack.Last_Element.Get_Kind));
+            Self.Stream_Handler.IQ
+              (XMPP.IQS.XMPP_IQ_Access (Self.Stack.Last_Element));
+            Self.Stack.Delete_Last;
+
+         --  Calling Presence Handler
+         elsif Local_Name = To_Universal_String ("presence") then
+            Self.Stream_Handler.Presence
+              (XMPP.Presences.XMPP_Presence_Access (Self.Stack.Last_Element));
+            Self.Stack.Delete_Last;
+         end if;
       end if;
 
       --  Ada.Wide_Wide_Text_IO.Put_Line
@@ -393,12 +402,22 @@ package body XMPP.Sessions is
          --  all work is don in delete_object
          return;
 
-      --  Creating IQ object
-      elsif Namespace_URI = "jabber:client" and Local_Name = "iq" then
-         Self.Stack.Append
-           (XMPP.Objects.XMPP_Object_Access
-              (XMPP.IQS.Create (XMPP.IQS.Result)));
-         return;
+      elsif Namespace_URI = "jabber:client" then
+
+         --  Creating IQ object
+         if Local_Name = "iq" then
+            Self.Stack.Append
+             (XMPP.Objects.XMPP_Object_Access
+               (XMPP.IQS.Create (XMPP.IQS.Result)));
+            return;
+
+         --  Creating Presence object
+         elsif Local_Name = "presence" then
+            Self.Stack.Append
+             (XMPP.Objects.XMPP_Object_Access (XMPP.Presences.Create));
+            return;
+         end if;
+
       end if;
 
       --  Creating Null_Object, if actual object cannot be created.
