@@ -45,6 +45,7 @@ with XML.SAX.Readers;
 with XMPP.Binds;
 with XMPP.Challenges;
 with XMPP.IQS;
+with XMPP.IQ_Sessions;
 with XMPP.Networks;
 with XMPP.Null_Objects;
 with XMPP.Objects;
@@ -283,12 +284,31 @@ package body XMPP.Sessions is
             Self.On_Connect;
          end if;
 
-         --  For XMPP_Stream_Feature
+      --  For IQ
       elsif Namespace_URI
         = To_Universal_String ("urn:ietf:params:xml:ns:xmpp-bind") then
 
          --  XXX: ugly code
          if Local_Name = To_Universal_String ("bind") then
+            --  Adding bind body for IQ object
+            if Previous (Current) /= No_Element then
+               if Self.Stack.Element (To_Index (Previous (Current))).Get_Kind
+                 = XMPP.Objects.IQ then
+                  XMPP.IQS.XMPP_IQ_Access
+                    (Self.Stack.Element (To_Index (Previous (Current))))
+                     .Append_Item (Self.Stack.Last_Element);
+
+                  Self.Stack.Delete_Last;
+               end if;
+            end if;
+         end if;
+
+      --  For IQ
+      elsif Namespace_URI
+        = To_Universal_String ("urn:ietf:params:xml:ns:xmpp-session") then
+
+         --  XXX: ugly code
+         if Local_Name = To_Universal_String ("session") then
             --  Adding bind body for IQ object
             if Previous (Current) /= No_Element then
                if Self.Stack.Element (To_Index (Previous (Current))).Get_Kind
@@ -461,19 +481,23 @@ package body XMPP.Sessions is
                   Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
                end if;
 
-               --  For XMPP_Stream_Feature
-            elsif Namespace_URI.To_Wide_Wide_String
-              = "urn:ietf:params:xml:ns:xmpp-session"
-              and Local_Name.To_Wide_Wide_String = "session" then
-               --  Setting session feature to stream feature object
-               Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
-
+            --  setting jid value for bind object
+            --  the data actual set in character procedure
+            elsif Local_Name.To_Wide_Wide_String = "jid" then
+               Self.Tag := Local_Name;
             end if;
 
-         --  setting jid value for bind object
-         --  the data actual set in character procedure
-         elsif Local_Name.To_Wide_Wide_String = "jid" then
-            Self.Tag := Local_Name;
+            --  For XMPP_Stream_Feature
+         elsif Namespace_URI.To_Wide_Wide_String
+           = "urn:ietf:params:xml:ns:xmpp-session"
+           and Local_Name.To_Wide_Wide_String = "session" then
+            --  Setting session feature to stream feature object
+            if Self.Stack.Last_Element.Get_Kind = XMPP.Objects.IQ then
+               Self.Stack.Append
+                 (XMPP.Objects.XMPP_Object_Access (XMPP.IQ_Sessions.Create));
+            else
+               Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
+            end if;
          end if;
 
       --  If Object not yet created, then create it
