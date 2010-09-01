@@ -54,6 +54,8 @@ package XMPP.IQ_Sessions is
                           Parameter : League.Strings.Universal_String;
                           Value     : League.Strings.Universal_String);
 
+   function Create return not null XMPP_IQ_Session_Access;
+
 private
 
    type XMPP_IQ_Session is new XMPP.Objects.XMPP_Object with null record;

@@ -54,7 +54,9 @@ package body XMPP.IQ_Sessions is
    overriding function Serialize (Self : in XMPP_IQ_Session)
       return League.Strings.Universal_String is
    begin
-      return X : League.Strings.Universal_String;
+      return
+        League.Strings.To_Universal_String
+         ("<session xmlns='urn:ietf:params:xml:ns:xmpp-session'/>");
    end Serialize;
 
    -------------------
@@ -67,6 +69,14 @@ package body XMPP.IQ_Sessions is
    begin
       raise Program_Error with "Not yet implemented";
    end Set_Content;
+
+   --------------
+   --  Create  --
+   --------------
+   function Create return not null XMPP_IQ_Session_Access is
+   begin
+      return new XMPP_IQ_Session;
+   end Create;
 
 end XMPP.IQ_Sessions;
 
