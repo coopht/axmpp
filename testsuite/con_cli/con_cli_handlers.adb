@@ -41,6 +41,7 @@ with Con_Cli;
 
 with XMPP.Binds;
 with XMPP.IQS;
+with XMPP.IQ_Sessions;
 with XMPP.Objects;
 with XMPP.Stream_Handlers;
 
@@ -72,14 +73,32 @@ package body Con_Cli_Handlers is
       Self.Object.Send_Object (Bind_IQ);
    end Connected;
 
+   ----------------------------
+   --  Establish_IQ_Session  --
+   ----------------------------
+   procedure Establish_IQ_Session (Self : in out Con_Cli_Handler) is
+      IQ : XMPP.IQS.XMPP_IQ (XMPP.IQS.Set);
+      S  : XMPP.IQ_Sessions.XMPP_IQ_Session_Access
+        := new XMPP.IQ_Sessions.XMPP_IQ_Session;
+
+   begin
+      IQ.Set_Id (League.Strings.To_Universal_String ("sess_1"));
+      IQ.Append_Item (S);
+      Self.Object.Send_Object (IQ);
+   end Establish_IQ_Session;
+
    ----------
    --  IQ  --
    ----------
    overriding procedure IQ (Self : in out Con_Cli_Handler;
                             IQ   : not null XMPP.IQS.XMPP_IQ_Access) is
    begin
+      Ada.Wide_Wide_Text_IO.Put_Line ("IQ Arrived !!!");
+
       if IQ.Get_IQ_Kind = XMPP.IQS.Result then
          for J in 0 .. IQ.Items_Count - 1 loop
+
+            --  Resource Binded
             if IQ.Item_At (J).Get_Kind = XMPP.Objects.Bind then
                declare
                   Bind_Object : XMPP.Binds.XMPP_Bind_Access
@@ -89,6 +108,23 @@ package body Con_Cli_Handlers is
                   Ada.Wide_Wide_Text_IO.Put_Line
                     ("Resource Binded Success: "
                        & Bind_Object.Get_JID.To_Wide_Wide_String);
+
+                  --  After resource binded successfull establishing session
+                  Self.Establish_IQ_Session;
+               end;
+
+            --  Session established
+            elsif IQ.Item_At (J).Get_Kind = XMPP.Objects.IQ_Session then
+               declare
+                  S : XMPP.IQ_Sessions.XMPP_IQ_Session_Access
+                    := XMPP.IQ_Sessions.XMPP_IQ_Session_Access
+                        (IQ.Item_At (J));
+
+               begin
+                  Ada.Wide_Wide_Text_IO.Put_Line ("Session established !!!");
+
+                  --  After session successfully established,
+                  --  sending presence
                end;
             end if;
          end loop;

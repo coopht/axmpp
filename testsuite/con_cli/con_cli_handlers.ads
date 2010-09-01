@@ -66,6 +66,8 @@ package Con_Cli_Handlers is
      (Self   : in out Con_Cli_Handler;
       Object : not null access Con_Cli.Session'Class);
 
+   procedure Establish_IQ_Session (Self : in out Con_Cli_Handler);
+
 private
 
    type Con_Cli_Handler is limited new XMPP.Stream_Handlers.XMPP_Stream_Handler
