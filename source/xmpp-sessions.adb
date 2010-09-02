@@ -501,27 +501,20 @@ package body XMPP.Sessions is
          return;
       end if;
 
-      if not Self.Stack.Is_Empty then
-         --  Hack for stream:stream stanza, which does not have close tag
-         if Self.Stack.Last_Element.Get_Kind = XMPP.Objects.Stream then
-            for J in 1 .. Attributes.Length loop
-               Self.Stack.Last_Element.Set_Content
-                 (Attributes.Local_Name (J), Attributes.Value (J));
-            end loop;
-
-            Self.Stream_Handler.Start_Stream
-              (XMPP.Streams.XMPP_Stream_Access (Self.Stack.Last_Element));
-            Self.Stack.Delete_Last;
-            return;
-         end if;
-      end if;
-
       --  setting up object's attributes
       for J in 1 .. Attributes.Length loop
          Self.Stack.Last_Element.Set_Content
            (Attributes.Local_Name (J), Attributes.Value (J));
       end loop;
 
+      if not Self.Stack.Is_Empty then
+         --  Hack for stream:stream stanza, which does not have close tag
+         if Self.Stack.Last_Element.Get_Kind = XMPP.Objects.Stream then
+            Self.Stream_Handler.Start_Stream
+              (XMPP.Streams.XMPP_Stream_Access (Self.Stack.Last_Element));
+            Self.Stack.Delete_Last;
+         end if;
+      end if;
    end Start_Element;
 
    -------------
