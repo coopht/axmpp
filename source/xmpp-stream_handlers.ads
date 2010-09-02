@@ -34,6 +34,7 @@
 --  $Date$
 ------------------------------------------------------------------------------
 with XMPP.IQS;
+with XMPP.Messages;
 with XMPP.Presences;
 with XMPP.Streams;
 with XMPP.Stream_Features;
@@ -63,7 +64,8 @@ package XMPP.Stream_Handlers is
      (Self : in out XMPP_Stream_Handler) is null;
 
    not overriding procedure Message
-     (Self : in out XMPP_Stream_Handler) is null;
+     (Self : in out XMPP_Stream_Handler;
+      Msg  : not null XMPP.Messages.XMPP_Message_Access) is null;
 
    not overriding procedure Presence
      (Self : in out XMPP_Stream_Handler;
