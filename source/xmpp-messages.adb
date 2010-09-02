@@ -33,11 +33,15 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
+with Ada.Wide_Wide_Text_IO;
+
 with League.Strings;
 
 with XMPP.Objects;
 
 package body XMPP.Messages is
+
+   use League.Strings;
 
    ----------------
    --  Get_Kind  --
@@ -54,7 +58,56 @@ package body XMPP.Messages is
    overriding function Serialize (Self : in XMPP_Message)
       return League.Strings.Universal_String is
    begin
-      return X : League.Strings.Universal_String;
+      return X : Universal_String := To_Universal_String ("<message") do
+
+         --  setting 'to' attr
+         if not Self.To.Is_Empty then
+            X.Append (" to='" & Self.To & "'");
+         end if;
+
+         --  setting 'from' attr
+         if not Self.From.Is_Empty then
+            X.Append (" from='" & Self.From & "'");
+         end if;
+
+         --  setting 'type' attr
+         case Self.Type_Of_Message is
+            when Chat =>
+               X.Append (To_Universal_String (" type='chat'"));
+
+            when Error =>
+               X.Append (To_Universal_String (" type='error'"));
+
+            when Group_Chat =>
+               X.Append (To_Universal_String (" type='groupchat'"));
+
+            when Headline =>
+               X.Append (To_Universal_String (" type='headline'"));
+
+            when Normal =>
+               X.Append (To_Universal_String (" type='normal'"));
+         end case;
+
+         --  setting xml:lang attr
+         X.Append (" xml:lang=" & Self.Language & "'");
+         X.Append (To_Universal_String (">"));
+
+         --  setting 'subject' obj
+         if not Self.Subject.Is_Empty then
+            X.Append ("<subject>" & Self.Subject & "</subject>");
+         end if;
+
+         --  setting 'body' attr
+         if not Self.Subject.Is_Empty then
+            X.Append ("<body>" & Self.Message_Body & "</body>");
+         end if;
+
+         --  setting 'thread' attr
+         if not Self.Subject.Is_Empty then
+            X.Append ("<thread>" & Self.Thread & "</thread>");
+         end if;
+
+      end return;
    end Serialize;
 
    -------------------
@@ -65,7 +118,46 @@ package body XMPP.Messages is
                           Parameter : League.Strings.Universal_String;
                           Value     : League.Strings.Universal_String) is
    begin
-      raise Program_Error with "Not yet implemented";
+      if Parameter = To_Universal_String ("to") then
+         Self.To := Value;
+
+      elsif Parameter = To_Universal_String ("from") then
+         Self.From := Value;
+
+      elsif Parameter = To_Universal_String ("type") then
+         if Value = To_Universal_String ("chat") then
+            Self.Type_Of_Message := Chat;
+
+         elsif Value = To_Universal_String ("error") then
+            Self.Type_Of_Message := Error;
+
+         elsif Value = To_Universal_String ("groupchat") then
+            Self.Type_Of_Message := Group_Chat;
+
+         elsif Value = To_Universal_String ("headline") then
+            Self.Type_Of_Message := Headline;
+
+         elsif Value = To_Universal_String ("normal") then
+            Self.Type_Of_Message := Normal;
+
+         else
+            Ada.Wide_Wide_Text_IO.Put_Line ("Unknown message type: "
+                                              & Value.To_Wide_Wide_String);
+         end if;
+
+      elsif Parameter = To_Universal_String ("subject") then
+         Self.Subject := Value;
+
+      elsif Parameter = To_Universal_String ("body") then
+         Self.Message_Body := Value;
+
+      elsif Parameter = To_Universal_String ("thread") then
+         Self.Thread := Value;
+
+      else
+         Ada.Wide_Wide_Text_IO.Put_Line ("WARNING: Unknown parameter : "
+                                           & Parameter.To_Wide_Wide_String);
+      end if;
    end Set_Content;
 
    ----------------
@@ -92,6 +184,7 @@ package body XMPP.Messages is
    begin
       Self.Subject := Subj;
    end Set_Subject;
+
    -------------------
    --  Get_Subject  --
    -------------------
@@ -136,6 +229,50 @@ package body XMPP.Messages is
    begin
       return Self.Thread;
    end Get_Thread;
+
+   --------------
+   --  Get_To  --
+   --------------
+   function Get_To (Self : XMPP_Message)
+      return League.Strings.Universal_String is
+   begin
+      return Self.To;
+   end Get_To;
+
+   --------------
+   --  Set_To  --
+   --------------
+   procedure Set_To (Self : in out XMPP_Message;
+                     To   : League.Strings.Universal_String) is
+   begin
+      Self.To := To;
+   end Set_To;
+
+   ----------------
+   --  Get_From  --
+   ----------------
+   function Get_From (Self : XMPP_Message)
+      return League.Strings.Universal_String is
+   begin
+      return Self.From;
+   end Get_From;
+
+   ----------------
+   --  Set_From  --
+   ----------------
+   procedure Set_From (Self : in out XMPP_Message;
+                       From : League.Strings.Universal_String) is
+   begin
+      Self.From := From;
+   end Set_From;
+
+   --------------
+   --  Create  --
+   --------------
+   function Create return not null XMPP_Message_Access is
+   begin
+      return new XMPP_Message;
+   end Create;
 
 end XMPP.Messages;
 

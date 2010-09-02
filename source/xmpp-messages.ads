@@ -80,15 +80,35 @@ package XMPP.Messages is
    function Get_Thread (Self : XMPP_Message)
       return League.Strings.Universal_String;
 
+   function Get_To (Self : XMPP_Message)
+      return League.Strings.Universal_String;
+
+   procedure Set_To (Self : in out XMPP_Message;
+                     To   : League.Strings.Universal_String);
+
+   function Get_From (Self : XMPP_Message)
+      return League.Strings.Universal_String;
+
+   procedure Set_From (Self : in out XMPP_Message;
+                       From : League.Strings.Universal_String);
+
+   function Create return not null XMPP_Message_Access;
+
 private
 
    type XMPP_Message is new XMPP.Objects.XMPP_Object with
    record
-      Type_Of_Message : Message_Type;
+      To              : League.Strings.Universal_String;
+      From            : League.Strings.Universal_String;
       Subject         : League.Strings.Universal_String;
+      --  TODO: Add support of multiply subject instanses
       Message_Body    : League.Strings.Universal_String;
       --  TODO: Add support of multiply body instanses
+      Type_Of_Message : Message_Type := Chat;
       Thread          : League.Strings.Universal_String;
+      --  TODO: Add proper type for this attribute
+      Language        : League.Strings.Universal_String
+        := League.Strings.To_Universal_String ("en");
    end record;
 
 end XMPP.Messages;
