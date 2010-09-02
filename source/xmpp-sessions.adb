@@ -474,16 +474,16 @@ package body XMPP.Sessions is
 
          --  For XMPP_Stream_Feature
          elsif Namespace_URI.To_Wide_Wide_String
-           = "urn:ietf:params:xml:ns:xmpp-sasl"
-           and Local_Name.To_Wide_Wide_String = "mechanisms" then
-            null; --  we can safety skip mechanisms tag here.
+           = "urn:ietf:params:xml:ns:xmpp-sasl" then
+            if Local_Name.To_Wide_Wide_String = "mechanisms" then
+               --  we can safety skip mechanisms tag here.
+               null;
 
-         --  For XMPP_Stream_Feature
-         elsif Namespace_URI.To_Wide_Wide_String
-           = "urn:ietf:params:xml:ns:xmpp-sasl"
-           and Local_Name.To_Wide_Wide_String = "mechanism" then
-            --  We add mechanism parameter in Characters procedure
-            Self.Tag := Local_Name;
+            --  For XMPP_Stream_Feature
+            elsif Local_Name.To_Wide_Wide_String = "mechanism" then
+               --  We add mechanism parameter in Characters procedure
+               Self.Tag := Local_Name;
+            end if;
 
          --  For XMPP_Stream_Feature
          elsif Namespace_URI.To_Wide_Wide_String
