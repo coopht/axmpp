@@ -70,6 +70,11 @@ package body XMPP.Messages is
             X.Append (" from='" & Self.From & "'");
          end if;
 
+         --  setting 'id' attr
+         if not Self.Id.Is_Empty then
+            X.Append (" id='" & Self.Id & "'");
+         end if;
+
          --  setting 'type' attr
          case Self.Type_Of_Message is
             when Chat =>
@@ -91,6 +96,14 @@ package body XMPP.Messages is
          --  setting xml:lang attr
          X.Append (" xml:lang=" & Self.Language & "'");
          X.Append (To_Universal_String (">"));
+
+         --  setting 'composing' obj
+
+         if Self.Is_Composing then
+            X.Append
+              (To_Universal_String
+               ("<composing xmlns='http://jabber.org/protocol/chatstates'/>"));
+         end if;
 
          --  setting 'subject' obj
          if not Self.Subject.Is_Empty then
@@ -153,6 +166,12 @@ package body XMPP.Messages is
 
       elsif Parameter = To_Universal_String ("thread") then
          Self.Thread := Value;
+
+      elsif Parameter = To_Universal_String ("id") then
+         Self.Id := Value;
+
+      elsif Parameter = To_Universal_String ("composing") then
+         Self.Is_Composing := True;
 
       else
          Ada.Wide_Wide_Text_IO.Put_Line ("WARNING: Unknown parameter : "
@@ -273,6 +292,41 @@ package body XMPP.Messages is
    begin
       return new XMPP_Message;
    end Create;
+
+   --------------
+   --  Get_Id  --
+   --------------
+   function Get_Id (Self : XMPP_Message)
+      return League.Strings.Universal_String is
+   begin
+      return Self.Id;
+   end Get_Id;
+
+   --------------
+   --  Set_Id  --
+   --------------
+   procedure Set_Id (Self : in out XMPP_Message;
+                     Id   : League.Strings.Universal_String) is
+   begin
+      Self.Id := Id;
+   end Set_Id;
+
+   ------------------------
+   --  Set_Is_Composing  --
+   ------------------------
+   procedure Set_Is_Composing (Self  : in out XMPP_Message;
+                               Value : Boolean) is
+   begin
+      Self.Is_Composing := Value;
+   end Set_Is_Composing;
+
+   --------------------
+   --  Is_Composing  --
+   --------------------
+   function Is_Composing (Self : XMPP_Message) return Boolean is
+   begin
+      return Self.Is_Composing;
+   end Is_Composing;
 
 end XMPP.Messages;
 

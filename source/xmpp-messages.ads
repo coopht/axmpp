@@ -86,11 +86,22 @@ package XMPP.Messages is
    procedure Set_To (Self : in out XMPP_Message;
                      To   : League.Strings.Universal_String);
 
+   function Get_Id (Self : XMPP_Message)
+      return League.Strings.Universal_String;
+
+   procedure Set_Id (Self : in out XMPP_Message;
+                     Id   : League.Strings.Universal_String);
+
    function Get_From (Self : XMPP_Message)
       return League.Strings.Universal_String;
 
    procedure Set_From (Self : in out XMPP_Message;
                        From : League.Strings.Universal_String);
+
+   procedure Set_Is_Composing (Self  : in out XMPP_Message;
+                               Value : Boolean);
+
+   function Is_Composing (Self : XMPP_Message) return Boolean;
 
    function Create return not null XMPP_Message_Access;
 
@@ -109,6 +120,8 @@ private
       --  TODO: Add proper type for this attribute
       Language        : League.Strings.Universal_String
         := League.Strings.To_Universal_String ("en");
+      Id              : League.Strings.Universal_String;
+      Is_Composing    : Boolean := False;
    end record;
 
 end XMPP.Messages;
