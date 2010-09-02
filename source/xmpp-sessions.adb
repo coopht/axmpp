@@ -388,19 +388,19 @@ package body XMPP.Sessions is
          return;
 
       --  Creating Challenge object for sasl authentication
-      elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-sasl"
-        and Local_Name = "challenge" then
-         Self.Tag := League.Strings.To_Universal_String (Local_Name);
+      elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-sasl" then
+         if Local_Name = "challenge" then
+            Self.Tag := League.Strings.To_Universal_String (Local_Name);
 
-         Self.Stack.Append
-           (XMPP.Objects.XMPP_Object_Access (XMPP.Challenges.Create));
-         return;
+            Self.Stack.Append
+              (XMPP.Objects.XMPP_Object_Access (XMPP.Challenges.Create));
+            return;
 
-      --  For successfull authentication
-      elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-sasl"
-        and Local_Name = "success" then
+         --  For successfull authentication
+         elsif Local_Name = "success" then
          --  all work is don in delete_object
-         return;
+            return;
+         end if;
 
       elsif Namespace_URI = "jabber:client" then
 
