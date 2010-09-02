@@ -160,10 +160,6 @@ package XMPP.Sessions is
    overriding
    procedure Read_Data (Self   : not null access XMPP_Session);
 
-   procedure Create_Object (Self          : in out XMPP_Session;
-                            Namespace_URI : Wide_Wide_String;
-                            Local_Name    : Wide_Wide_String);
-
    procedure Send_Wide_Wide_String (Self : in out XMPP_Session;
                                     Str  : Wide_Wide_String);
 

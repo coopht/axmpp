@@ -361,74 +361,6 @@ package body XMPP.Sessions is
    end Error_String;
 
    ---------------------
-   --  Create_Object  --
-   ---------------------
-   procedure Create_Object (Self          : in out XMPP_Session;
-                            Namespace_URI : Wide_Wide_String;
-                            Local_Name    : Wide_Wide_String)
-   is
-   begin
-      if Namespace_URI = "http://etherx.jabber.org/streams"
-        and Local_Name = "stream" then
-         Self.Stack.Append
-           (XMPP.Objects.XMPP_Object_Access (XMPP.Streams.Create));
-         return;
-
-      elsif Namespace_URI = "http://etherx.jabber.org/streams"
-        and Local_Name = "features" then
-         Self.Stack.Append
-           (XMPP.Objects.XMPP_Object_Access (XMPP.Stream_Features.Create));
-         return;
-
-      --  proceed tls connection establishment
-      --  nothing todo here, just send required data to server in
-      --  End_Element callback
-      elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-tls"
-        and Local_Name = "proceed" then
-         return;
-
-      --  Creating Challenge object for sasl authentication
-      elsif Namespace_URI = "urn:ietf:params:xml:ns:xmpp-sasl" then
-         if Local_Name = "challenge" then
-            Self.Tag := League.Strings.To_Universal_String (Local_Name);
-
-            Self.Stack.Append
-              (XMPP.Objects.XMPP_Object_Access (XMPP.Challenges.Create));
-            return;
-
-         --  For successfull authentication
-         elsif Local_Name = "success" then
-         --  all work is don in delete_object
-            return;
-         end if;
-
-      elsif Namespace_URI = "jabber:client" then
-
-         --  Creating IQ object
-         if Local_Name = "iq" then
-            Self.Stack.Append
-             (XMPP.Objects.XMPP_Object_Access
-               (XMPP.IQS.Create (XMPP.IQS.Result)));
-            return;
-
-         --  Creating Presence object
-         elsif Local_Name = "presence" then
-            Self.Stack.Append
-             (XMPP.Objects.XMPP_Object_Access (XMPP.Presences.Create));
-            return;
-         end if;
-
-      end if;
-
-      --  Creating Null_Object, if actual object cannot be created.
-
-      Ada.Wide_Wide_Text_IO.Put_Line
-        ("Don't know what kind of element should be created : ");
-      Ada.Wide_Wide_Text_IO.Put_Line ("Namespace_URI : " & Namespace_URI);
-      Ada.Wide_Wide_Text_IO.Put_Line ("Local_Name : " & Local_Name);
-   end Create_Object;
-
-   ---------------------
    --  Start_Element  --
    ---------------------
    overriding procedure Start_Element
@@ -462,81 +394,125 @@ package body XMPP.Sessions is
 
       Self.Tag := Local_Name;
 
-      --  If object was created, then fill it
-      if not Self.Stack.Is_Empty then
+      --  For XMPP_Stream_Feature
+      if Namespace_URI
+        = To_Universal_String ("urn:ietf:params:xml:ns:xmpp-tls")
+        and Local_Name.To_Wide_Wide_String = "starttls"
+      then
+         Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
+
+      --  proceed tls connection establishment
+      --  nothing todo here, just send required data to server in
+      --  End_Element callback
+      elsif Namespace_URI
+        = To_Universal_String ("urn:ietf:params:xml:ns:xmpp-tls")
+        and Local_Name = To_Universal_String ("proceed") then
+         null;
 
          --  For XMPP_Stream_Feature
-         if Namespace_URI.To_Wide_Wide_String
-           = "urn:ietf:params:xml:ns:xmpp-tls"
-           and Local_Name.To_Wide_Wide_String = "starttls"
-         then
-            Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
-
-         --  For XMPP_Stream_Feature
-         elsif Namespace_URI.To_Wide_Wide_String
-           = "urn:ietf:params:xml:ns:xmpp-sasl" then
-            if Local_Name.To_Wide_Wide_String = "mechanisms" then
-               --  we can safety skip mechanisms tag here.
-               null;
+      elsif Namespace_URI.To_Wide_Wide_String
+        = "urn:ietf:params:xml:ns:xmpp-sasl" then
+         if Local_Name.To_Wide_Wide_String = "mechanisms" then
+            --  we can safety skip mechanisms tag here.
+            null;
 
             --  For XMPP_Stream_Feature
-            elsif Local_Name.To_Wide_Wide_String = "mechanism" then
+         elsif Local_Name.To_Wide_Wide_String = "mechanism" then
                --  We add mechanism parameter in Characters procedure
-               Self.Tag := Local_Name;
-            end if;
+            Self.Tag := Local_Name;
 
-         --  For XMPP_Stream_Feature
-         elsif Namespace_URI.To_Wide_Wide_String
-           = "urn:ietf:params:xml:ns:xmpp-bind" then
-            if Local_Name.To_Wide_Wide_String = "bind" then
+         --  Creating Challenge object for sasl authentication
+         elsif Local_Name = To_Universal_String ("challenge") then
+            Self.Tag := Local_Name;
 
-               --  If bind for iq object, than create new bind object
-               --  and push it into stack
-               if Self.Stack.Last_Element.Get_Kind = XMPP.Objects.IQ then
-                  Self.Stack.Append
-                    (XMPP.Objects.XMPP_Object_Access (XMPP.Binds.Create));
-               else
-                  --  Setting bind feature to stream feature object
-                  Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
-               end if;
+            Self.Stack.Append
+              (XMPP.Objects.XMPP_Object_Access (XMPP.Challenges.Create));
 
-            --  setting jid value for bind object
-            --  the data actual set in character procedure
-            elsif Local_Name.To_Wide_Wide_String = "jid" then
-               Self.Tag := Local_Name;
-            end if;
-
-            --  For XMPP_Stream_Feature
-         elsif Namespace_URI.To_Wide_Wide_String
-           = "urn:ietf:params:xml:ns:xmpp-session"
-           and Local_Name.To_Wide_Wide_String = "session" then
-            --  Setting session feature to stream feature object
-            if Self.Stack.Last_Element.Get_Kind = XMPP.Objects.IQ then
-               Self.Stack.Append
-                 (XMPP.Objects.XMPP_Object_Access (XMPP.IQ_Sessions.Create));
-            else
-               Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
-            end if;
+         --  For successfull authentication
+         elsif Local_Name = To_Universal_String ("success") then
+         --  all work is don in delete_object
+            null;
          end if;
 
-      --  If Object not yet created, then create it
-      else
-         Self.Create_Object (Namespace_URI.To_Wide_Wide_String,
-                             Local_Name.To_Wide_Wide_String);
+      --  For XMPP_Stream_Feature
+      elsif Namespace_URI.To_Wide_Wide_String
+        = "urn:ietf:params:xml:ns:xmpp-bind" then
+         if Local_Name.To_Wide_Wide_String = "bind" then
 
-         if not Self.Stack.Is_Empty then
-            --  Hack for stream:stream stanza, which does not have close tag
-            if Self.Stack.Last_Element.Get_Kind = XMPP.Objects.Stream then
-               for J in 1 .. Attributes.Length loop
-                  Self.Stack.Last_Element.Set_Content
-                    (Attributes.Local_Name (J), Attributes.Value (J));
-               end loop;
-
-               Self.Stream_Handler.Start_Stream
-                 (XMPP.Streams.XMPP_Stream_Access (Self.Stack.Last_Element));
-               Self.Stack.Delete_Last;
-               return;
+            --  If bind for iq object, than create new bind object
+            --  and push it into stack
+            if Self.Stack.Last_Element.Get_Kind = XMPP.Objects.IQ then
+               Self.Stack.Append
+                 (XMPP.Objects.XMPP_Object_Access (XMPP.Binds.Create));
+            else
+               --  Setting bind feature to stream feature object
+               Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
             end if;
+
+         --  setting jid value for bind object
+         --  the data actual set in character procedure
+         elsif Local_Name.To_Wide_Wide_String = "jid" then
+            Self.Tag := Local_Name;
+         end if;
+
+      --  For XMPP_Stream_Feature
+      elsif Namespace_URI.To_Wide_Wide_String
+        = "urn:ietf:params:xml:ns:xmpp-session"
+        and Local_Name.To_Wide_Wide_String = "session" then
+         --  Setting session feature to stream feature object
+         if Self.Stack.Last_Element.Get_Kind = XMPP.Objects.IQ then
+            Self.Stack.Append
+              (XMPP.Objects.XMPP_Object_Access (XMPP.IQ_Sessions.Create));
+         else
+            Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
+         end if;
+
+      elsif Namespace_URI
+        = To_Universal_String ("http://etherx.jabber.org/streams") then
+
+         if Local_Name = To_Universal_String ("stream") then
+            Self.Stack.Append
+              (XMPP.Objects.XMPP_Object_Access (XMPP.Streams.Create));
+
+         elsif Local_Name = To_Universal_String ("features") then
+            Self.Stack.Append
+              (XMPP.Objects.XMPP_Object_Access
+                 (XMPP.Stream_Features.Create));
+         end if;
+
+      elsif Namespace_URI = To_Universal_String ("jabber:client") then
+
+         --  Creating IQ object
+         if Local_Name = To_Universal_String ("iq") then
+            Self.Stack.Append
+             (XMPP.Objects.XMPP_Object_Access
+               (XMPP.IQS.Create (XMPP.IQS.Result)));
+
+         --  Creating Presence object
+         elsif Local_Name = To_Universal_String ("presence") then
+            Self.Stack.Append
+             (XMPP.Objects.XMPP_Object_Access (XMPP.Presences.Create));
+         end if;
+      else
+         Ada.Wide_Wide_Text_IO.Put_Line
+           ("WARNING skipped unknown data : ");
+         Put_Line ("Namespace_URI : " & Namespace_URI);
+         Put_Line ("Local_Name : " & Local_Name);
+         return;
+      end if;
+
+      if not Self.Stack.Is_Empty then
+         --  Hack for stream:stream stanza, which does not have close tag
+         if Self.Stack.Last_Element.Get_Kind = XMPP.Objects.Stream then
+            for J in 1 .. Attributes.Length loop
+               Self.Stack.Last_Element.Set_Content
+                 (Attributes.Local_Name (J), Attributes.Value (J));
+            end loop;
+
+            Self.Stream_Handler.Start_Stream
+              (XMPP.Streams.XMPP_Stream_Access (Self.Stack.Last_Element));
+            Self.Stack.Delete_Last;
+            return;
          end if;
       end if;
 
