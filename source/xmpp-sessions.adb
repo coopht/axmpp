@@ -493,6 +493,8 @@ package body XMPP.Sessions is
             Self.Stack.Append
              (XMPP.Objects.XMPP_Object_Access (XMPP.Presences.Create));
          end if;
+
+      --  Here is the end of actual object parsing.
       else
          Ada.Wide_Wide_Text_IO.Put_Line
            ("WARNING skipped unknown data : ");
@@ -501,13 +503,14 @@ package body XMPP.Sessions is
          return;
       end if;
 
-      --  setting up object's attributes
-      for J in 1 .. Attributes.Length loop
-         Self.Stack.Last_Element.Set_Content
-           (Attributes.Local_Name (J), Attributes.Value (J));
-      end loop;
-
       if not Self.Stack.Is_Empty then
+
+         --  setting up object's attributes
+         for J in 1 .. Attributes.Length loop
+            Self.Stack.Last_Element.Set_Content
+              (Attributes.Local_Name (J), Attributes.Value (J));
+         end loop;
+
          --  Hack for stream:stream stanza, which does not have close tag
          if Self.Stack.Last_Element.Get_Kind = XMPP.Objects.Stream then
             Self.Stream_Handler.Start_Stream
@@ -685,6 +688,9 @@ package body XMPP.Sessions is
       Self.Addr := Addr;
    end Set_Host_Addr;
 
+   -------------------
+   --  Send_Object  --
+   -------------------
    procedure Send_Object (Self   : not null access XMPP_Session;
                           Object : XMPP.Objects.XMPP_Object'Class) is
    begin
