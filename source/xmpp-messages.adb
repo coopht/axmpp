@@ -173,6 +173,10 @@ package body XMPP.Messages is
       elsif Parameter = To_Universal_String ("composing") then
          Self.Is_Composing := True;
 
+      --  XXX: this should not happen,but it happens =(
+      elsif Parameter = To_Universal_String ("message") then
+         null;
+
       else
          Ada.Wide_Wide_Text_IO.Put_Line ("WARNING: Unknown parameter : "
                                            & Parameter.To_Wide_Wide_String);
