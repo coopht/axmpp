@@ -48,6 +48,8 @@ package XMPP.Objects is
       Message,
       Null_Object,
       Presence,
+      Roster,
+      Roster_Item,
       Stream,
       Stream_Features);
 
