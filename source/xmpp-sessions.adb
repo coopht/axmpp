@@ -729,4 +729,19 @@ package body XMPP.Sessions is
       Self.Send_Wide_Wide_String (Object.Serialize.To_Wide_Wide_String);
    end Send_Object;
 
+   ----------------------
+   --  Request_Roster  --
+   ----------------------
+   procedure Request_Roster (Self : not null access XMPP_Session) is
+   begin
+      Self.Send_Wide_Wide_String
+        ("<iq from='"
+           & Self.JID.To_Wide_Wide_String
+           & "@"
+           & Self.Host.To_Wide_Wide_String
+           & "' type='get' id='roster_1'>"
+           & " <query xmlns='jabber:iq:roster'/>"
+           & "</iq>");
+   end Request_Roster;
+
 end XMPP.Sessions;

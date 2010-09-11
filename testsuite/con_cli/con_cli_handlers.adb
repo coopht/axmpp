@@ -124,6 +124,10 @@ package body Con_Cli_Handlers is
                begin
                   Ada.Wide_Wide_Text_IO.Put_Line ("Session established !!!");
 
+                  Self.Object.Request_Roster;
+
+                  delay 1.0;
+
                   --  After session successfully established,
                   --  sending presence
                   Self.Set_Presence;

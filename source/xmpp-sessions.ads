@@ -186,4 +186,6 @@ package XMPP.Sessions is
    procedure Send_Object (Self   : not null access XMPP_Session;
                           Object : XMPP.Objects.XMPP_Object'Class);
 
+   procedure Request_Roster (Self : not null access XMPP_Session);
+
 end XMPP.Sessions;
