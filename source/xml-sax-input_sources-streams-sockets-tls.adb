@@ -80,7 +80,7 @@ package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
           Old_Unused,
           Buffer.Unused - Old_Unused,
           Buffer.Length - Old_Length);
-      XMPP.Sessions.Put_Line (League.Strings.Internals.Wrap (New_Data));
+      --  XMPP.Sessions.Put_Line (League.Strings.Internals.Wrap (New_Data));
    end Next;
 
    ------------
