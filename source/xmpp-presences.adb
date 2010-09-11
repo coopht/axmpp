@@ -132,8 +132,55 @@ package body XMPP.Presences is
       elsif Parameter = To_Universal_String ("to") then
          Self.To := Value;
 
-      --  elsif Parameter = To_Universal_String ("type") then
-      --     Self.To := Value;
+      elsif Parameter = To_Universal_String ("show") then
+         if Value = To_Universal_String ("away") then
+            Self.Show := Away;
+
+         elsif Value = To_Universal_String ("chat") then
+            Self.Show := Chat;
+
+         elsif Value = To_Universal_String ("dnd") then
+            Self.Show := DND;
+
+         elsif Value = To_Universal_String ("xa") then
+            Self.Show := XA;
+
+         elsif Value = To_Universal_String ("online") then
+            Self.Show := Online;
+         end if;
+
+      elsif Parameter = To_Universal_String ("status") then
+         Self.Status := Value;
+
+      elsif Parameter = To_Universal_String ("type") then
+         if Value = To_Universal_String ("error") then
+            Self.Type_Of_Presence := Error;
+
+         elsif Value = To_Universal_String ("probe") then
+            Self.Type_Of_Presence := Probe;
+
+         elsif Value = To_Universal_String ("subscribe") then
+            Self.Type_Of_Presence := Subscribe;
+
+         elsif Value = To_Universal_String ("subscribed") then
+            Self.Type_Of_Presence := Subscribed;
+
+         elsif Value = To_Universal_String ("unavailable") then
+            Self.Type_Of_Presence := Unavailable;
+
+         elsif Value = To_Universal_String ("unsubscribe") then
+            Self.Type_Of_Presence := Unsubscribe;
+
+         elsif Value = To_Universal_String ("unsubscribed") then
+            Self.Type_Of_Presence := Unsubscribed;
+         end if;
+
+      elsif Parameter = To_Universal_String ("priority") then
+         Self.Priority
+           := Priority_Type'Wide_Wide_Value (Value.To_Wide_Wide_String);
+
+      elsif Parameter = To_Universal_String ("presence") then
+         null;
 
       else
          Ada.Wide_Wide_Text_IO.Put_Line
@@ -226,6 +273,23 @@ package body XMPP.Presences is
    begin
       Self.From := Value;
    end Set_From;
+
+   ----------------
+   --  Set_Type  --
+   ----------------
+   procedure Set_Type (Self : in out XMPP_Presence; Value : Presence_Type) is
+   begin
+      Self.Type_Of_Presence := Value;
+   end Set_Type;
+
+
+   ----------------
+   --  Get_Type  --
+   ----------------
+   function Get_Type (Self : XMPP_Presence) return Presence_Type is
+   begin
+      return Self.Type_Of_Presence;
+   end Get_Type;
 
 end XMPP.Presences;
 

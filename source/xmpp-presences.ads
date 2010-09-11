@@ -41,13 +41,13 @@ package XMPP.Presences is
 
    type Show_Kind is (Away, Chat, DND, XA, Online);
 
-   --  type Presence_Type is (Error,
-   --                         Probe,
-   --                         Subscribe,
-   --                         Subscribed,
-   --                         Unavailable,
-   --                         Unsubscribe,
-   --                         Unsubscribed);
+   type Presence_Type is (Error,
+                          Probe,
+                          Subscribe,
+                          Subscribed,
+                          Unavailable,
+                          Unsubscribe,
+                          Unsubscribed);
 
    type Priority_Type is new Integer range -129 .. 127;
 
@@ -92,18 +92,22 @@ package XMPP.Presences is
    procedure Set_From (Self  : in out XMPP_Presence;
                        Value : League.Strings.Universal_String);
 
+   procedure Set_Type (Self : in out XMPP_Presence; Value : Presence_Type);
+
+   function Get_Type (Self : XMPP_Presence) return Presence_Type;
+
    function Create return XMPP_Presence_Access;
 
 private
 
    type XMPP_Presence is new XMPP.Objects.XMPP_Object with
    record
-      To       : League.Strings.Universal_String;
-      From     : League.Strings.Universal_String;
-      Show     : Show_Kind := Online;
-      Status   : League.Strings.Universal_String;
-      Priority : Priority_Type := -129;
-      --  Type_Of_Presence : Presence_Type := Unavailable;
+      To               : League.Strings.Universal_String;
+      From             : League.Strings.Universal_String;
+      Show             : Show_Kind := Online;
+      Status           : League.Strings.Universal_String;
+      Priority         : Priority_Type := -129;
+      Type_Of_Presence : Presence_Type := Unavailable;
    end record;
 end XMPP.Presences;
 
