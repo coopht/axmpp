@@ -97,14 +97,6 @@ package body XMPP.Messages is
          X.Append (" xml:lang=" & Self.Language & "'");
          X.Append (To_Universal_String (">"));
 
-         --  setting 'composing' obj
-
-         if Self.Is_Composing then
-            X.Append
-              (To_Universal_String
-               ("<composing xmlns='http://jabber.org/protocol/chatstates'/>"));
-         end if;
-
          --  setting 'subject' obj
          if not Self.Subject.Is_Empty then
             X.Append ("<subject>" & Self.Subject & "</subject>");
@@ -171,7 +163,19 @@ package body XMPP.Messages is
          Self.Id := Value;
 
       elsif Parameter = To_Universal_String ("composing") then
-         Self.Is_Composing := True;
+         Self.Chat_State := Composing;
+
+      elsif Parameter = To_Universal_String ("active") then
+         Self.Chat_State := Active;
+
+      elsif Parameter = To_Universal_String ("paused") then
+         Self.Chat_State := Paused;
+
+      elsif Parameter = To_Universal_String ("inactive") then
+         Self.Chat_State := Inactive;
+
+      elsif Parameter = To_Universal_String ("gone") then
+         Self.Chat_State := Gone;
 
       --  XXX: this should not happen,but it happens =(
       elsif Parameter = To_Universal_String ("message") then
@@ -315,22 +319,22 @@ package body XMPP.Messages is
       Self.Id := Id;
    end Set_Id;
 
-   ------------------------
-   --  Set_Is_Composing  --
-   ------------------------
-   procedure Set_Is_Composing (Self  : in out XMPP_Message;
-                               Value : Boolean) is
+   ----------------------
+   --  Get_Chat_State  --
+   ----------------------
+   function Get_Chat_State (Self : XMPP_Message) return Chat_State_Type is
    begin
-      Self.Is_Composing := Value;
-   end Set_Is_Composing;
+      return Self.Chat_State;
+   end Get_Chat_State;
 
-   --------------------
-   --  Is_Composing  --
-   --------------------
-   function Is_Composing (Self : XMPP_Message) return Boolean is
+   ----------------------
+   --  Set_Chat_State  --
+   ----------------------
+   procedure Set_Chat_State (Self  : in out XMPP_Message;
+                             Value : Chat_State_Type) is
    begin
-      return Self.Is_Composing;
-   end Is_Composing;
+      Self.Chat_State := Value;
+   end Set_Chat_State;
 
 end XMPP.Messages;
 

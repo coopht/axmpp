@@ -41,6 +41,8 @@ package XMPP.Messages is
 
    type Message_Type is (Chat, Error, Group_Chat, Headline, Normal);
 
+   type Chat_State_Type is (Active, Composing, Paused, Inactive, Gone);
+
    type Priority_Type is new Integer range -128 .. 127;
 
    type XMPP_Message is new XMPP.Objects.XMPP_Object with private;
@@ -98,10 +100,10 @@ package XMPP.Messages is
    procedure Set_From (Self : in out XMPP_Message;
                        From : League.Strings.Universal_String);
 
-   procedure Set_Is_Composing (Self  : in out XMPP_Message;
-                               Value : Boolean);
+   function Get_Chat_State (Self : XMPP_Message) return Chat_State_Type;
 
-   function Is_Composing (Self : XMPP_Message) return Boolean;
+   procedure Set_Chat_State (Self  : in out XMPP_Message;
+                             Value : Chat_State_Type);
 
    function Create return not null XMPP_Message_Access;
 
@@ -121,7 +123,9 @@ private
       Language        : League.Strings.Universal_String
         := League.Strings.To_Universal_String ("en");
       Id              : League.Strings.Universal_String;
-      Is_Composing    : Boolean := False;
+
+      --  Chat States
+      Chat_State : Chat_State_Type := Active;
    end record;
 
 end XMPP.Messages;
