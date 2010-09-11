@@ -46,6 +46,7 @@ with XMPP.Binds;
 with XMPP.Challenges;
 with XMPP.IQS;
 with XMPP.IQ_Sessions;
+with XMPP.Messages;
 with XMPP.Networks;
 with XMPP.Null_Objects;
 with XMPP.Objects;
@@ -181,9 +182,10 @@ package body XMPP.Sessions is
       Success : in out Boolean)
    is
    begin
-      --  Put_Line ("*** Text = " & Text);
-      if not Self.Stack.Is_Empty then
+      Put_Line ("*** Text = [" & Text & "]");
+      if not Self.Tag.Is_Empty and not Text.Is_Empty then
          Self.Stack.Last_Element.Set_Content (Self.Tag, Text);
+         Self.Tag.Clear;
       end if;
    end Characters;
 
@@ -339,7 +341,19 @@ package body XMPP.Sessions is
             Self.Stream_Handler.Presence
               (XMPP.Presences.XMPP_Presence_Access (Self.Stack.Last_Element));
             Self.Stack.Delete_Last;
+
+         --  Calling Message Handler
+         elsif Local_Name = To_Universal_String ("message") then
+            Ada.Wide_Wide_Text_IO.Put_Line ("Calling Message_Handler");
+            Self.Stream_Handler.Message
+              (XMPP.Messages.XMPP_Message_Access (Self.Stack.Last_Element));
+            Self.Stack.Delete_Last;
          end if;
+
+      --  All objects of chatsets namespaces processed in start_element
+      elsif Namespace_URI
+        = To_Universal_String ("http://jabber.org/protocol/chatstates") then
+         null;
       end if;
 
       --  Ada.Wide_Wide_Text_IO.Put_Line
@@ -373,22 +387,22 @@ package body XMPP.Sessions is
    is
    begin
       --  DEBUG  --
-      --  Ada.Wide_Wide_Text_IO.Put
-      --    (">>> Start_Element_QN = "
-      --       & Qualified_Name.To_Wide_Wide_String & " (");
+      Ada.Wide_Wide_Text_IO.Put
+        (">>> Start_Element_QN = "
+           & Qualified_Name.To_Wide_Wide_String & " (");
 
-      --  Ada.Wide_Wide_Text_IO.Put
-      --    ("Namespace_URI = " & Namespace_URI.To_Wide_Wide_String & " ");
+      Ada.Wide_Wide_Text_IO.Put
+        ("Namespace_URI = " & Namespace_URI.To_Wide_Wide_String & " ");
 
-      --  for J in 1 .. Attributes.Length loop
-      --     Ada.Wide_Wide_Text_IO.Put
-      --       (Attributes.Local_Name (J).To_Wide_Wide_String
-      --          & "="
-      --          & Attributes.Value (J).To_Wide_Wide_String
-      --          & " ");
-      --  end loop;
+      for J in 1 .. Attributes.Length loop
+         Ada.Wide_Wide_Text_IO.Put
+           (Attributes.Local_Name (J).To_Wide_Wide_String
+              & "="
+              & Attributes.Value (J).To_Wide_Wide_String
+              & " ");
+      end loop;
 
-      --  Ada.Wide_Wide_Text_IO.Put_Line (")");
+      Ada.Wide_Wide_Text_IO.Put_Line (")");
 
       --  DEBUG  --
 
@@ -492,6 +506,24 @@ package body XMPP.Sessions is
          elsif Local_Name = To_Universal_String ("presence") then
             Self.Stack.Append
              (XMPP.Objects.XMPP_Object_Access (XMPP.Presences.Create));
+
+         --  Creating message
+         elsif Local_Name = To_Universal_String ("message") then
+            Self.Stack.Append
+             (XMPP.Objects.XMPP_Object_Access (XMPP.Messages.Create));
+         end if;
+
+      elsif Namespace_URI
+        = To_Universal_String ("http://jabber.org/protocol/chatstates") then
+         if Local_Name = To_Universal_String ("active")
+           or Local_Name = To_Universal_String ("inactive")
+           or Local_Name = To_Universal_String ("gone")
+           or Local_Name = To_Universal_String ("composing")
+           or Local_Name = To_Universal_String ("paused")
+         then
+            if Self.Stack.Last_Element.Get_Kind = Objects.Message then
+               Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
+            end if;
          end if;
 
       --  Here is the end of actual object parsing.
