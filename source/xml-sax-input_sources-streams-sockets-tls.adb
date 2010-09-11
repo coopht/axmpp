@@ -132,6 +132,7 @@ package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
                   GNUTLS.Record_Recv (Self.TLS_Session, Vector, Length);
                   Last := Buffer'First + Length - 1;
 
+                  Ada.Text_IO.Put_Line ("=================================");
                   Ada.Text_IO.Put_Line
                     ("Data of"
                      & Ada.Streams.Stream_Element_Offset'Image (Buffer'First)
@@ -147,6 +148,7 @@ package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
                   end loop;
 
                   Ada.Text_IO.New_Line;
+                  Ada.Text_IO.Put_Line ("=================================");
                end;
          end case;
 
