@@ -163,6 +163,9 @@ package body XMPP.IQS is
       elsif Parameter.To_Wide_Wide_String = "from" then
          Self.From := Value;
 
+      elsif Parameter.To_Wide_Wide_String = "iq" then
+         null;
+
       else
          Ada.Wide_Wide_Text_IO.Put_Line
            ("Unknwown parameter : " & Parameter.To_Wide_Wide_String);
