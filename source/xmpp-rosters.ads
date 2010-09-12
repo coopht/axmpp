@@ -26,7 +26,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --
---  <Unit> XMPP.Sessions
+--  <Unit> XMPP.Rosters
 --  <ImplementationNotes>
 --
 ------------------------------------------------------------------------------
@@ -36,10 +36,13 @@
 with League.Strings;
 
 with XMPP.Objects;
+with XMPP.Roster_Items;
 
 package XMPP.Rosters is
 
    type XMPP_Roster is new XMPP.Objects.XMPP_Object with private;
+
+   type XMPP_Roster_Access is access all XMPP_Roster'Class;
 
    overriding function Get_Kind (Self : XMPP_Roster)
       return Objects.Object_Kind;
@@ -52,11 +55,22 @@ package XMPP.Rosters is
                           Parameter : League.Strings.Universal_String;
                           Value     : League.Strings.Universal_String);
 
+   function Items_Count (Self : XMPP_Roster) return Natural;
+
+   function Item_At (Self : XMPP_Roster; Pos : Natural)
+      return not null XMPP.Roster_Items.XMPP_Roster_Item_Access;
+
+   procedure Append_Item
+     (Self : in out XMPP_Roster;
+      Item : not null XMPP.Roster_Items.XMPP_Roster_Item_Access);
+
+   function Create return not null XMPP_Roster_Access;
+
 private
 
    type XMPP_Roster is new XMPP.Objects.XMPP_Object with
    record
-      null;
+      Items : XMPP.Objects.Object_Vectors.Vector;
    end record;
 
 end XMPP.Rosters;

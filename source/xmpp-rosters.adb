@@ -33,7 +33,10 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
+
 package body XMPP.Rosters is
+
+   use XMPP.Objects;
 
    ----------------
    --  Get_Kind  --
@@ -65,5 +68,41 @@ package body XMPP.Rosters is
    begin
       raise Program_Error with "Not yet implemented";
    end Set_Content;
+
+   -------------------
+   --  Items_Count  --
+   -------------------
+   function Items_Count (Self : XMPP_Roster) return Natural is
+   begin
+      return Natural (Self.Items.Length);
+   end Items_Count;
+
+   ---------------
+   --  Item_At  --
+   ---------------
+   function Item_At (Self : XMPP_Roster; Pos : Natural)
+      return not null XMPP.Roster_Items.XMPP_Roster_Item_Access is
+   begin
+      return XMPP.Roster_Items.XMPP_Roster_Item_Access
+               (Self.Items.Element (Pos));
+   end Item_At;
+
+   -------------------
+   --  Append_Item  --
+   -------------------
+   procedure Append_Item
+     (Self : in out XMPP_Roster;
+      Item : not null XMPP.Roster_Items.XMPP_Roster_Item_Access) is
+   begin
+      Self.Items.Append (XMPP_Object_Access (Item));
+   end Append_Item;
+
+   --------------
+   --  Create  --
+   --------------
+   function Create return not null Xmpp_Roster_Access is
+   begin
+      return new XMPP_Roster;
+   end Create;
 
 end XMPP.Rosters;
