@@ -26,22 +26,25 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --
---  <Unit> XMPP.Sessions
+--  <Unit> XMPP.Roster_Items
 --  <ImplementationNotes>
 --
 ------------------------------------------------------------------------------
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
+with League.String_Vectors;
 with League.Strings;
 
 with XMPP.Objects;
 
 package XMPP.Roster_Items is
 
-   type Subscription_Type is (None);
+   type Subscription_Type is (Both, None);
 
    type XMPP_Roster_Item is new XMPP.Objects.XMPP_Object with private;
+
+   type XMPP_Roster_Item_Access is access all XMPP_Roster_Item'Class;
 
    overriding function Get_Kind (Self : XMPP_Roster_Item)
       return Objects.Object_Kind;
@@ -73,6 +76,14 @@ package XMPP.Roster_Items is
    procedure Set_Name (Self  : in out XMPP_Roster_Item;
                        Value : League.Strings.Universal_String);
 
+   function Create return not null XMPP_Roster_Item_Access;
+
+   procedure Append_Group (Self  : in out XMPP_Roster_Item;
+                           Value : League.Strings.Universal_String);
+
+   function Get_Groups (Self : XMPP_Roster_Item)
+     return League.String_Vectors.Universal_String_Vector;
+
 private
 
    type XMPP_Roster_Item is new XMPP.Objects.XMPP_Object with
@@ -80,6 +91,7 @@ private
       JID          : League.Strings.Universal_String;
       Name         : League.Strings.Universal_String;
       Subscription : Subscription_Type := None;
+      Groups       : League.String_Vectors.Universal_String_Vector;
    end record;
 
 end XMPP.Roster_Items;

@@ -26,16 +26,22 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --
---  <Unit> XMPP.Sessions
+--  <Unit> XMPP.Roster_Items
 --  <ImplementationNotes>
 --
 ------------------------------------------------------------------------------
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
+with Ada.Wide_Wide_Text_IO;
+
+with League.Strings;
+
 with XMPP.Objects;
 
 package body XMPP.Roster_Items is
+
+   use League.Strings;
 
    ----------------
    --  Get_Kind  --
@@ -65,7 +71,23 @@ package body XMPP.Roster_Items is
                           Parameter : League.Strings.Universal_String;
                           Value     : League.Strings.Universal_String) is
    begin
-      raise Program_Error with "Not yet implemented";
+      if Parameter = To_Universal_String ("subscription") then
+         if Value = To_Universal_String ("both") then
+            Self.Subscription := Both;
+         else
+            Self.Subscription := None;
+         end if;
+
+      elsif Parameter = To_Universal_String ("jid") then
+         Self.JID := Value;
+
+      elsif Parameter = To_Universal_String ("group") then
+         Self.Append_Group (Value);
+
+      else
+         Ada.Wide_Wide_Text_IO.Put_Line
+           ("Unknow parameter: " & Parameter.To_Wide_Wide_String);
+      end if;
    end Set_Content;
 
    ------------------------
@@ -121,5 +143,32 @@ package body XMPP.Roster_Items is
    begin
       Self.Name := Value;
    end Set_Name;
+
+   --------------
+   --  Create  --
+   --------------
+   function Create return not null XMPP_Roster_Item_Access is
+   begin
+      return new XMPP_Roster_Item;
+   end Create;
+
+   --------------------
+   --  Append_Group  --
+   --------------------
+   procedure Append_Group (Self  : in out XMPP_Roster_Item;
+                           Value : League.Strings.Universal_String) is
+   begin
+      --  Self.Groups.Append (Value);
+      null;
+   end Append_Group;
+
+   ------------------
+   --  Get_Groups  --
+   ------------------
+   function Get_Groups (Self : XMPP_Roster_Item)
+      return League.String_Vectors.Universal_String_Vector is
+   begin
+      return Self.Groups;
+   end Get_Groups;
 
 end XMPP.Roster_Items;
