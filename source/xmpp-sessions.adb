@@ -51,6 +51,8 @@ with XMPP.Networks;
 with XMPP.Null_Objects;
 with XMPP.Objects;
 with XMPP.Presences;
+with XMPP.Roster_Items;
+with XMPP.Rosters;
 with XMPP.Streams;
 with XMPP.Stream_Features;
 with XMPP.Utils;
@@ -325,6 +327,44 @@ package body XMPP.Sessions is
             end if;
          end if;
 
+      --  working with roster
+      elsif Namespace_URI = To_Universal_String ("jabber:iq:roster") then
+         --  Adding Roster to IQ object
+         if Local_Name = To_Universal_String ("query") then
+            if Self.Stack.Last_Element.Get_Kind = Objects.Roster then
+               if Previous (Current) /= No_Element then
+                  if Self.Stack.Element
+                    (To_Index
+                      (Previous (Current))).Get_Kind = XMPP.Objects.IQ
+                  then
+                     XMPP.IQS.XMPP_IQ_Access
+                       (Self.Stack.Element (To_Index (Previous (Current))))
+                         .Append_Item (Self.Stack.Last_Element);
+
+                     Self.Stack.Delete_Last;
+                  end if;
+               end if;
+            end if;
+
+         --  Adding item to the roster
+         elsif Local_Name = To_Universal_String ("item") then
+            if Self.Stack.Last_Element.Get_Kind = Objects.Roster_Item then
+               if Previous (Current) /= No_Element then
+                  if Self.Stack.Element
+                    (To_Index
+                      (Previous (Current))).Get_Kind = XMPP.Objects.Roster
+                  then
+                     XMPP.Rosters.XMPP_Roster_Access
+                       (Self.Stack.Element (To_Index (Previous (Current))))
+                       .Append_Item (Roster_Items.XMPP_Roster_Item_Access
+                                      (Self.Stack.Last_Element));
+
+                     Self.Stack.Delete_Last;
+                  end if;
+               end if;
+            end if;
+         end if;
+
       elsif Namespace_URI = To_Universal_String ("jabber:client") then
          --  Calling IQ Handler
          if Local_Name = To_Universal_String ("iq") then
@@ -524,6 +564,29 @@ package body XMPP.Sessions is
             if Self.Stack.Last_Element.Get_Kind = Objects.Message then
                Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
             end if;
+         end if;
+
+      --  working with roster
+      elsif Namespace_URI = To_Universal_String ("jabber:iq:roster") then
+         --  if query found within jabber:iq:roster namespace, then
+         --  creating a roster list.
+         if Local_Name = To_Universal_String ("query") then
+            if Self.Stack.Last_Element.Get_Kind = Objects.IQ then
+               Self.Stack.Append
+                 (XMPP.Objects.XMPP_Object_Access (XMPP.Rosters.Create));
+            end if;
+
+         --  if item found within jabber:iq:roster namespace, then
+         --  creating a roster item.
+         elsif Local_Name = To_Universal_String ("item") then
+            if Self.Stack.Last_Element.Get_Kind = Objects.Roster then
+               Self.Stack.Append
+                 (XMPP.Objects.XMPP_Object_Access (XMPP.Roster_Items.Create));
+            end if;
+
+         --  nothing to do here for group tag
+         elsif Local_Name = To_Universal_String ("group") then
+            null;
          end if;
 
       --  Here is the end of actual object parsing.
