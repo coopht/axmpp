@@ -78,7 +78,17 @@ package XMPP.IQS is
    function Items_Count (Self : XMPP_IQ) return Natural;
 
    function Item_At (Self : XMPP_IQ; Pos : Natural)
-     return not null access XMPP.Objects.XMPP_Object'Class;
+      return not null access XMPP.Objects.XMPP_Object'Class;
+
+   procedure Set_From (Self : in out XMPP_IQ;
+                       Val  : League.Strings.Universal_String);
+
+   function Get_From (Self : XMPP_IQ) return League.Strings.Universal_String;
+
+   procedure Set_To (Self : in out XMPP_IQ;
+                     Val  : League.Strings.Universal_String);
+
+   function Get_To (Self : XMPP_IQ) return League.Strings.Universal_String;
 
 private
 
@@ -88,6 +98,8 @@ private
       Kind_Of_IQ : IQ_Kind := Kind;
       IQ_Body    : League.Strings.Universal_String;
       Item_List  : XMPP.Objects.Object_Vectors.Vector;
+      To         : League.Strings.Universal_String;
+      From       : League.Strings.Universal_String;
    end record;
 
 end XMPP.IQS;

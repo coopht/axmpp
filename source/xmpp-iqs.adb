@@ -157,6 +157,12 @@ package body XMPP.IQS is
       elsif Parameter.To_Wide_Wide_String = "id" then
          Self.Id := Value;
 
+      elsif Parameter.To_Wide_Wide_String = "to" then
+         Self.To := Value;
+
+      elsif Parameter.To_Wide_Wide_String = "from" then
+         Self.From := Value;
+
       else
          Ada.Wide_Wide_Text_IO.Put_Line
            ("Unknwown parameter : " & Parameter.To_Wide_Wide_String);
@@ -206,6 +212,40 @@ package body XMPP.IQS is
    begin
       return Self.Item_List.Element (Pos);
    end Item_At;
+
+   ----------------
+   --  Set_From  --
+   ----------------
+   procedure Set_From (Self : in out XMPP_IQ;
+                       Val  : League.Strings.Universal_String) is
+   begin
+      Self.From := Val;
+   end Set_From;
+
+   ----------------
+   --  Get_From  --
+   ----------------
+   function Get_From (Self : XMPP_IQ) return League.Strings.Universal_String is
+   begin
+      return Self.From;
+   end Get_From;
+
+   --------------
+   --  Set_To  --
+   --------------
+   procedure Set_To (Self : in out XMPP_IQ;
+                     Val  : League.Strings.Universal_String) is
+   begin
+      Self.To := Val;
+   end Set_To;
+
+   --------------
+   --  Get_To  --
+   --------------
+   function Get_To (Self : XMPP_IQ) return League.Strings.Universal_String is
+   begin
+      return Self.To;
+   end Get_To;
 
 end XMPP.IQS;
 
