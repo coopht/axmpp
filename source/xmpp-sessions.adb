@@ -44,6 +44,7 @@ with XML.SAX.Readers;
 
 with XMPP.Binds;
 with XMPP.Challenges;
+with XMPP.Discoes;
 with XMPP.IQS;
 with XMPP.IQ_Sessions;
 with XMPP.Messages;
@@ -365,6 +366,26 @@ package body XMPP.Sessions is
             end if;
          end if;
 
+
+      --  Service discovery
+      elsif Namespace_URI
+        = To_Universal_String ("http://jabber.org/protocol/disco#info") then
+         if Local_Name = To_Universal_String ("query") then
+            if Self.Stack.Last_Element.Get_Kind = Disco then
+               if Previous (Current) /= No_Element then
+                  if Self.Stack.Element
+                    (To_Index (Previous (Current))).Get_Kind = XMPP.Objects.IQ
+                  then
+                     XMPP.IQS.XMPP_IQ_Access
+                      (Self.Stack.Element (To_Index (Previous (Current))))
+                       .Append_Item (Self.Stack.Last_Element);
+
+                     Self.Stack.Delete_Last;
+                  end if;
+               end if;
+            end if;
+         end if;
+
       elsif Namespace_URI = To_Universal_String ("jabber:client") then
          --  Calling IQ Handler
          if Local_Name = To_Universal_String ("iq") then
@@ -587,6 +608,15 @@ package body XMPP.Sessions is
          --  nothing to do here for group tag
          elsif Local_Name = To_Universal_String ("group") then
             null;
+         end if;
+
+      elsif Namespace_URI
+        = To_Universal_String ("http://jabber.org/protocol/disco#info") then
+         if Local_Name = To_Universal_String ("query") then
+            if Self.Stack.Last_Element.Get_Kind = Objects.IQ then
+               Self.Stack.Append
+                 (XMPP.Objects.XMPP_Object_Access (XMPP.Discoes.Create));
+            end if;
          end if;
 
       --  Here is the end of actual object parsing.
