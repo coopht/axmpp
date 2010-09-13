@@ -100,7 +100,7 @@ package body XMPP.Rosters is
    --------------
    --  Create  --
    --------------
-   function Create return not null Xmpp_Roster_Access is
+   function Create return not null XMPP_Roster_Access is
    begin
       return new XMPP_Roster;
    end Create;
