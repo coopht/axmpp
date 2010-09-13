@@ -42,6 +42,7 @@ package XMPP.Objects is
    type Object_Kind is
      (Bind,
       Challenge,
+      Disco,
       IQ,
       IQ_Session,
       Error,
