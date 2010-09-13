@@ -168,7 +168,7 @@ package body XMPP.IQS is
 
       else
          Ada.Wide_Wide_Text_IO.Put_Line
-           ("Unknwown parameter : " & Parameter.To_Wide_Wide_String);
+           ("XMPP_IQ : Unknown parameter : " & Parameter.To_Wide_Wide_String);
       end if;
    end Set_Content;
 
