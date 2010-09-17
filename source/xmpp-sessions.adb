@@ -62,9 +62,11 @@ package body XMPP.Sessions is
 
    use League.Strings;
 
-   use type Ada.Streams.Stream_Element_Offset;
    use XMPP.Objects;
    use XMPP.Objects.Object_Vectors;
+
+   use type Ada.Streams.Stream_Element_Offset;
+   use type XMPP.IQS.IQ_Kind;
 
    -------------------------
    --  Proceed_SASL_Auth  --
@@ -394,6 +396,8 @@ package body XMPP.Sessions is
             --       & XMPP.Objects.Object_Kind'Wide_Wide_Image
             --       (Self.Stack.Last_Element.Get_Kind));
             Self.Stream_Handler.IQ
+              (XMPP.IQS.XMPP_IQ_Access (Self.Stack.Last_Element));
+            Self.Process_IQ
               (XMPP.IQS.XMPP_IQ_Access (Self.Stack.Last_Element));
             Self.Stack.Delete_Last;
 
@@ -855,5 +859,52 @@ package body XMPP.Sessions is
 
       Self.Send_Object (Bind_IQ);
    end Bind_Resource;
+
+   ----------------------------
+   --  Establish_IQ_Session  --
+   ----------------------------
+   procedure Establish_IQ_Session (Self : not null access XMPP_Session) is
+      IQ : XMPP.IQS.XMPP_IQ (XMPP.IQS.Set);
+      S  : XMPP.IQ_Sessions.XMPP_IQ_Session_Access
+        := new XMPP.IQ_Sessions.XMPP_IQ_Session;
+
+   begin
+      IQ.Set_Id (League.Strings.To_Universal_String ("sess_1"));
+      IQ.Append_Item (S);
+      Self.Send_Object (IQ);
+   end Establish_IQ_Session;
+
+   ------------------
+   --  Process_IQ  --
+   ------------------
+   procedure Process_IQ (Self : in out XMPP_Session;
+                         IQ   : not null XMPP.IQS.XMPP_IQ_Access) is
+   begin
+      Ada.Wide_Wide_Text_IO.Put_Line ("IQ Arrived !!!");
+
+      if IQ.Get_IQ_Kind = XMPP.IQS.Result then
+         for J in 0 .. IQ.Items_Count - 1 loop
+
+            --  Resource Binded
+            if IQ.Item_At (J).Get_Kind = XMPP.Objects.Bind then
+               Self.Stream_Handler.Bind_Resource_State
+                 (XMPP.Binds.XMPP_Bind_Access (IQ.Item_At (J)).Get_JID,
+                 XMPP.Binds.Success);
+
+            --  Session established
+            elsif IQ.Item_At (J).Get_Kind = XMPP.Objects.IQ_Session then
+               declare
+                  S : XMPP.IQ_Sessions.XMPP_IQ_Session_Access
+                    := XMPP.IQ_Sessions.XMPP_IQ_Session_Access
+                        (IQ.Item_At (J));
+
+               begin
+                  Self.Stream_Handler.Session_State
+                    (XMPP.IQ_Sessions.Established);
+               end;
+            end if;
+         end loop;
+      end if;
+   end Process_IQ;
 
 end XMPP.Sessions;

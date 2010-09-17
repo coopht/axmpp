@@ -56,6 +56,7 @@ with XML.SAX.Parse_Exceptions;
 with XML.SAX.Simple_Readers;
 
 with XMPP.Challenges;
+with XMPP.IQS;
 with XMPP.Null_Objects;
 with XMPP.Objects;
 
@@ -191,5 +192,10 @@ package XMPP.Sessions is
    procedure Bind_Resource (Self        : not null access XMPP_Session;
                             Resource_Id : League.Strings.Universal_String
                               := League.Strings.Empty_Universal_String);
+
+   procedure Establish_IQ_Session (Self : not null access XMPP_Session);
+
+   procedure Process_IQ (Self : in out XMPP_Session;
+                         IQ   : not null XMPP.IQS.XMPP_IQ_Access);
 
 end XMPP.Sessions;
