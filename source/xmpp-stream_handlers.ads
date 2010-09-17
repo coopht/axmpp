@@ -33,6 +33,10 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
+with League.Strings;
+
+with XMPP.Binds;
+with XMPP.IQ_Sessions;
 with XMPP.IQS;
 with XMPP.Messages;
 with XMPP.Presences;
@@ -59,6 +63,15 @@ package XMPP.Stream_Handlers is
      (Self   : in out XMPP_Stream_Handler;
       Object : not null XMPP.Stream_Features.XMPP_Stream_Feature_Access)
       is null;
+
+   not overriding procedure Bind_Resource_State
+     (Self   : in out XMPP_Stream_Handler;
+      JID    : League.Strings.Universal_String;
+      Status : XMPP.Binds.Bind_State) is null;
+
+   not overriding procedure Session_State
+     (Self   : in out XMPP_Stream_Handler;
+      Status : XMPP.IQ_Sessions.Session_State) is null;
 
    not overriding procedure Error
      (Self : in out XMPP_Stream_Handler) is null;
