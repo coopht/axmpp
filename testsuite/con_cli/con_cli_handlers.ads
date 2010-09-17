@@ -33,6 +33,10 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
+with League.Strings;
+
+with XMPP.Binds;
+with XMPP.IQ_Sessions;
 with XMPP.IQS;
 with XMPP.Presences;
 with XMPP.Stream_Handlers;
@@ -60,9 +64,6 @@ package Con_Cli_Handlers is
      (Self   : in out Con_Cli_Handler;
       Object : not null XMPP.Stream_Features.XMPP_Stream_Feature_Access);
 
-   overriding procedure IQ (Self : in out Con_Cli_Handler;
-                            IQ   : not null XMPP.IQS.XMPP_IQ_Access);
-
    overriding procedure Presence
      (Self : in out Con_Cli_Handler;
       Data : not null XMPP.Presences.XMPP_Presence_Access);
@@ -71,9 +72,14 @@ package Con_Cli_Handlers is
      (Self   : in out Con_Cli_Handler;
       Object : not null access Con_Cli.Session'Class);
 
-   procedure Establish_IQ_Session (Self : in out Con_Cli_Handler);
-
    procedure Set_Presence (Self : in out Con_Cli_Handler);
+
+   procedure Bind_Resource_State (Self   : in out Con_Cli_Handler;
+                                  JID    : League.Strings.Universal_String;
+                                  Status : XMPP.Binds.Bind_State);
+
+   procedure Session_State (Self   : in out Con_Cli_Handler;
+                            Status : XMPP.IQ_Sessions.Session_State);
 
 private
 

@@ -51,6 +51,9 @@ package body Con_Cli_Handlers is
    use XMPP.IQS;
    use XMPP.Objects;
 
+   use type XMPP.Binds.Bind_State;
+   use type XMPP.IQ_Sessions.Session_State;
+
    -----------------
    --  Connected  --
    -----------------
@@ -63,67 +66,6 @@ package body Con_Cli_Handlers is
       Self.Object.Bind_Resource
         (League.Strings.To_Universal_String ("con_cli_resource"));
    end Connected;
-
-   ----------------------------
-   --  Establish_IQ_Session  --
-   ----------------------------
-   procedure Establish_IQ_Session (Self : in out Con_Cli_Handler) is
-      IQ : XMPP.IQS.XMPP_IQ (XMPP.IQS.Set);
-      S  : XMPP.IQ_Sessions.XMPP_IQ_Session_Access
-        := new XMPP.IQ_Sessions.XMPP_IQ_Session;
-
-   begin
-      IQ.Set_Id (League.Strings.To_Universal_String ("sess_1"));
-      IQ.Append_Item (S);
-      Self.Object.Send_Object (IQ);
-   end Establish_IQ_Session;
-
-   ----------
-   --  IQ  --
-   ----------
-   overriding procedure IQ (Self : in out Con_Cli_Handler;
-                            IQ   : not null XMPP.IQS.XMPP_IQ_Access) is
-   begin
-      Ada.Wide_Wide_Text_IO.Put_Line ("IQ Arrived !!!");
-
-      if IQ.Get_IQ_Kind = XMPP.IQS.Result then
-         for J in 0 .. IQ.Items_Count - 1 loop
-
-            --  Resource Binded
-            if IQ.Item_At (J).Get_Kind = XMPP.Objects.Bind then
-               declare
-                  Bind_Object : XMPP.Binds.XMPP_Bind_Access
-                    := XMPP.Binds.XMPP_Bind_Access (IQ.Item_At (J));
-
-               begin
-                  Ada.Wide_Wide_Text_IO.Put_Line
-                    ("Resource Binded Success: "
-                       & Bind_Object.Get_JID.To_Wide_Wide_String);
-
-                  --  After resource binded successfull establishing session
-                  Self.Establish_IQ_Session;
-               end;
-
-            --  Session established
-            elsif IQ.Item_At (J).Get_Kind = XMPP.Objects.IQ_Session then
-               declare
-                  S : XMPP.IQ_Sessions.XMPP_IQ_Session_Access
-                    := XMPP.IQ_Sessions.XMPP_IQ_Session_Access
-                        (IQ.Item_At (J));
-
-               begin
-                  Ada.Wide_Wide_Text_IO.Put_Line ("Session established !!!");
-
-                  Self.Object.Request_Roster;
-
-                  --  After session successfully established,
-                  --  sending presence
-                  Self.Set_Presence;
-               end;
-            end if;
-         end loop;
-      end if;
-   end IQ;
 
    ----------------
    --  Presence  --
@@ -182,5 +124,38 @@ package body Con_Cli_Handlers is
    begin
       Ada.Wide_Wide_Text_IO.Put_Line ("Stream_Features called");
    end Stream_Features;
+
+   ---------------------------
+   --  Bind_Resource_State  --
+   ---------------------------
+   procedure Bind_Resource_State (Self   : in out Con_Cli_Handler;
+                                  JID    : League.Strings.Universal_String;
+                                  Status : XMPP.Binds.Bind_State) is
+   begin
+      if Status = XMPP.Binds.Success then
+         Ada.Wide_Wide_Text_IO.Put_Line
+           ("Resource Binded Success: " & JID.To_Wide_Wide_String);
+
+         --  After resource binded successfull establishing session
+         Self.Object.Establish_IQ_Session;
+      end if;
+   end Bind_Resource_State;
+
+   ---------------------
+   --  Session_State  --
+   ---------------------
+   procedure Session_State (Self   : in out Con_Cli_Handler;
+                            Status : XMPP.IQ_Sessions.Session_State) is
+   begin
+      if Status = XMPP.IQ_Sessions.Established then
+         Ada.Wide_Wide_Text_IO.Put_Line ("Session established !!!");
+
+         Self.Object.Request_Roster;
+
+         --  After session successfully established,
+         --  sending presence
+         Self.Set_Presence;
+      end if;
+   end Session_State;
 
 end Con_Cli_Handlers;
