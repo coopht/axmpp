@@ -39,6 +39,8 @@ with XMPP.Objects;
 
 package XMPP.IQ_Sessions is
 
+   type Session_State is (Established, Error);
+
    type XMPP_IQ_Session is new XMPP.Objects.XMPP_Object with private;
 
    type XMPP_IQ_Session_Access is access all XMPP_IQ_Session'Class;

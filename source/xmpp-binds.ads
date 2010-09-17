@@ -39,6 +39,8 @@ with XMPP.Objects;
 
 package XMPP.Binds is
 
+   type Bind_State is (Success, Error);
+
    type XMPP_Bind is new XMPP.Objects.XMPP_Object with private;
 
    type XMPP_Bind_Access is access all XMPP_Bind'Class;
