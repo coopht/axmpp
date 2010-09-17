@@ -188,4 +188,8 @@ package XMPP.Sessions is
 
    procedure Request_Roster (Self : not null access XMPP_Session);
 
+   procedure Bind_Resource (Self        : not null access XMPP_Session;
+                            Resource_Id : League.Strings.Universal_String
+                              := League.Strings.Empty_Universal_String);
+
 end XMPP.Sessions;

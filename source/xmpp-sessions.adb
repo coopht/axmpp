@@ -837,4 +837,23 @@ package body XMPP.Sessions is
            & "</iq>");
    end Request_Roster;
 
+   ---------------------
+   --  Bind_Resource  --
+   ---------------------
+   procedure Bind_Resource (Self        : not null access XMPP_Session;
+                            Resource_Id : League.Strings.Universal_String
+                              := League.Strings.Empty_Universal_String) is
+
+      Bind_IQ     : XMPP.IQS.XMPP_IQ (XMPP.IQS.Set);
+      Bind_Object : XMPP.Binds.XMPP_Bind_Access := new XMPP.Binds.XMPP_Bind;
+
+   begin
+      Bind_Object.Set_Resource (Resource_Id);
+
+      Bind_IQ.Set_Id (League.Strings.To_Universal_String ("bind_1"));
+      Bind_IQ.Append_Item (Bind_Object);
+
+      Self.Send_Object (Bind_IQ);
+   end Bind_Resource;
+
 end XMPP.Sessions;
