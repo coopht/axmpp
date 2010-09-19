@@ -187,7 +187,7 @@ package body XMPP.Sessions is
       Success : in out Boolean)
    is
    begin
-      Put_Line ("*** Text = [" & Text & "]");
+      --  Put_Line ("*** Text = [" & Text & "]");
       if not Self.Tag.Is_Empty and not Text.Is_Empty then
          Self.Stack.Last_Element.Set_Content (Self.Tag, Text);
          Self.Tag.Clear;
@@ -208,8 +208,8 @@ package body XMPP.Sessions is
         := Self.Stack.Last;
 
    begin
-      Put_Line ("<<< End_Element_QN = " & Qualified_Name);
-      Put_Line ("<<< End_Element_URI = " & Namespace_URI);
+      --  Put_Line ("<<< End_Element_QN = " & Qualified_Name);
+      --  Put_Line ("<<< End_Element_URI = " & Namespace_URI);
 
       --  Ada.Wide_Wide_Text_IO.Put_Line
       --    ("Stack size at begin : "
@@ -452,22 +452,22 @@ package body XMPP.Sessions is
    is
    begin
       --  DEBUG  --
-      Ada.Wide_Wide_Text_IO.Put
-        (">>> Start_Element_QN = "
-           & Qualified_Name.To_Wide_Wide_String & " (");
+      --  Ada.Wide_Wide_Text_IO.Put
+      --    (">>> Start_Element_QN = "
+      --       & Qualified_Name.To_Wide_Wide_String & " (");
 
-      Ada.Wide_Wide_Text_IO.Put
-        ("Namespace_URI = " & Namespace_URI.To_Wide_Wide_String & " ");
+      --  Ada.Wide_Wide_Text_IO.Put
+      --    ("Namespace_URI = " & Namespace_URI.To_Wide_Wide_String & " ");
 
-      for J in 1 .. Attributes.Length loop
-         Ada.Wide_Wide_Text_IO.Put
-           (Attributes.Local_Name (J).To_Wide_Wide_String
-              & "="
-              & Attributes.Value (J).To_Wide_Wide_String
-              & " ");
-      end loop;
+      --  for J in 1 .. Attributes.Length loop
+      --     Ada.Wide_Wide_Text_IO.Put
+      --       (Attributes.Local_Name (J).To_Wide_Wide_String
+      --          & "="
+      --          & Attributes.Value (J).To_Wide_Wide_String
+      --          & " ");
+      --  end loop;
 
-      Ada.Wide_Wide_Text_IO.Put_Line (")");
+      --  Ada.Wide_Wide_Text_IO.Put_Line (")");
 
       --  DEBUG  --
 
@@ -880,10 +880,17 @@ package body XMPP.Sessions is
    procedure Process_IQ (Self : in out XMPP_Session;
                          IQ   : not null XMPP.IQS.XMPP_IQ_Access) is
    begin
-      Ada.Wide_Wide_Text_IO.Put_Line ("IQ Arrived !!!");
+      Ada.Wide_Wide_Text_IO.Put_Line
+        ("XMPP.Session.Process_IQ : IQ arrived : "
+           & XMPP.IQS.IQ_Kind'Wide_Wide_Image
+              (IQ.Get_IQ_Kind));
 
       if IQ.Get_IQ_Kind = XMPP.IQS.Result then
          for J in 0 .. IQ.Items_Count - 1 loop
+            Ada.Wide_Wide_Text_IO.Put_Line
+              ("XMPP.Session.Process_IQ : IQ arrived : "
+                 & XMPP.Objects.Object_Kind'Wide_Wide_Image
+                    (IQ.Item_At (J).Get_Kind));
 
             --  Resource Binded
             if IQ.Item_At (J).Get_Kind = XMPP.Objects.Bind then
@@ -902,6 +909,17 @@ package body XMPP.Sessions is
                   Self.Stream_Handler.Session_State
                     (XMPP.IQ_Sessions.Established);
                end;
+
+            --  Roster arrived
+            elsif IQ.Item_At (J).Get_Kind = XMPP.Objects.Roster then
+               declare
+                  R : XMPP.Rosters.XMPP_Roster_Access
+                    := XMPP.Rosters.XMPP_Roster_Access (IQ.Item_At (J));
+
+               begin
+                  Self.Stream_Handler.Roster (R);
+               end;
+
             end if;
          end loop;
       end if;
