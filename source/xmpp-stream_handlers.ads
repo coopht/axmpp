@@ -40,6 +40,7 @@ with XMPP.IQ_Sessions;
 with XMPP.IQS;
 with XMPP.Messages;
 with XMPP.Presences;
+with XMPP.Rosters;
 with XMPP.Streams;
 with XMPP.Stream_Features;
 
@@ -83,6 +84,10 @@ package XMPP.Stream_Handlers is
    not overriding procedure Presence
      (Self : in out XMPP_Stream_Handler;
       Data : not null XMPP.Presences.XMPP_Presence_Access) is null;
+
+   not overriding procedure Roster
+     (Self : in out XMPP_Stream_Handler;
+      Data : not null XMPP.Rosters.XMPP_Roster_Access) is null;
 
    not overriding procedure IQ
      (Self : in out XMPP_Stream_Handler;
