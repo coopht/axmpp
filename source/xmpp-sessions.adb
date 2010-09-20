@@ -823,6 +823,9 @@ package body XMPP.Sessions is
    procedure Send_Object (Self   : not null access XMPP_Session;
                           Object : XMPP.Objects.XMPP_Object'Class) is
    begin
+      Ada.Wide_Wide_Text_IO.Put_Line
+        ("Sending Data : "
+           & Object.Serialize.To_Wide_Wide_String);
       Self.Send_Wide_Wide_String (Object.Serialize.To_Wide_Wide_String);
    end Send_Object;
 
@@ -924,5 +927,23 @@ package body XMPP.Sessions is
          end loop;
       end if;
    end Process_IQ;
+
+   -------------------------------------
+   --  Request_Discovery_Information  --
+   -------------------------------------
+   procedure Request_Discovery_Information
+     (Self : in out XMPP_Session;
+      JID  : League.Strings.Universal_String) is
+      IQ   : XMPP.IQS.XMPP_IQ (XMPP.IQS.Get);
+      D    : XMPP.Discoes.XMPP_Disco_Access := XMPP.Discoes.Create;
+
+   begin
+      IQ.Set_From (Self.JID & "@" & Self.Host);
+      IQ.Set_To (JID);
+      IQ.Set_Id (To_Universal_String ("info1"));
+      --  XXX: removed hardcoded ID;
+      IQ.Append_Item (D);
+      Self.Send_Object (IQ);
+   end Request_Discovery_Information;
 
 end XMPP.Sessions;

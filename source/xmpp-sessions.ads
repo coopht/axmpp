@@ -198,4 +198,8 @@ package XMPP.Sessions is
    procedure Process_IQ (Self : in out XMPP_Session;
                          IQ   : not null XMPP.IQS.XMPP_IQ_Access);
 
+   procedure Request_Discovery_Information
+     (Self : in out XMPP_Session;
+      JID  : League.Strings.Universal_String);
+
 end XMPP.Sessions;
