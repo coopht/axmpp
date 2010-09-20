@@ -59,7 +59,11 @@ package body XMPP.Discoes is
       return League.Strings.Universal_String
    is
    begin
-      return X : League.Strings.Universal_String;
+      return X : League.Strings.Universal_String do
+         X := To_Universal_String
+               ("<query xmlns='http://jabber.org/protocol/disco#info'/>");
+
+      end return;
    end Serialize;
 
    -------------------
@@ -101,5 +105,13 @@ package body XMPP.Discoes is
    begin
       return Self.Type_Of_Disco;
    end Get_Type;
+
+   ----------------
+   --  Set_Type  --
+   ----------------
+   procedure Set_Type (Self : in out XMPP_Disco; Val : Disco_Type) is
+   begin
+      Self.Type_Of_Disco := Val;
+   end Set_Type;
 
 end XMPP.Discoes;

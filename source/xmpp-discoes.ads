@@ -60,6 +60,8 @@ package XMPP.Discoes is
 
    function Get_Type (Self : XMPP_Disco) return Disco_Type;
 
+   procedure Set_Type (Self : in out XMPP_Disco; Val : Disco_Type);
+
 private
 
    type XMPP_Disco is new XMPP.Objects.XMPP_Object with
