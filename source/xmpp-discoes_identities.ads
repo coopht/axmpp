@@ -251,5 +251,9 @@ package XMPP.Discoes_Identities is
 
    subtype Identities_Vector is Identities_Vectors.Vector;
 
+   function Create (Category : League.Strings.Universal_String;
+                    I_Type   : League.Strings.Universal_String)
+     return Identity;
+
 end XMPP.Discoes_Identities;
 
