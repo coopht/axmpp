@@ -37,7 +37,7 @@ with Ada.Containers.Vectors;
 
 package XMPP.Discoes_Features is
 
-   type Disco_Feafures is
+   type Feature is
      (DNS_Srv,
       --  Support for DNS SRV lookups of XMPP services.
       --  RFC 3920: XMPP Core, RFC 3921: XMPP IM
@@ -685,6 +685,8 @@ package XMPP.Discoes_Features is
       --  RFC 3920: XMPP Core
 
    package Features_Vectors is
-      new Ada.Containers.Vectors (Natural, Disco_Feafures);
+      new Ada.Containers.Vectors (Natural, Feature);
+
+   subtype Features_Vector is Features_Vectors.Vector;
 
 end XMPP.Discoes_Features;
