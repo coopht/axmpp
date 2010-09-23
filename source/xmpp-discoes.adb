@@ -141,13 +141,37 @@ package body XMPP.Discoes is
       Self.Identities.Append (Val);
    end Add_Identity;
 
-   --------------------
-   --  Add_Features  --
-   --------------------
-   procedure Add_Features (Self : in out XMPP_Disco;
-                           Val  : XMPP.Discoes_Features.Feature) is
+   -------------------
+   --  Add_Feature  --
+   -------------------
+   procedure Add_Feature (Self : in out XMPP_Disco;
+                          Val  : XMPP.Discoes_Features.Feature) is
    begin
       Self.Features.Append (Val);
-   end Add_Features;
+   end Add_Feature;
+
+   -------------------
+   --  Add_Feature  --
+   -------------------
+   procedure Add_Feature (Self : in out XMPP_Disco;
+                          Val  : League.Strings.Universal_String) is
+   begin
+      if Val = To_Universal_String ("http://jabber.org/protocol/commands") then
+         Self.Add_Feature (XMPP.Discoes_Features.Protocol_Commands);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/disco#info") then
+         Self.Add_Feature (XMPP.Discoes_Features.Protocol_Disco_Info);
+
+      elsif Val = To_Universal_String ("msgoffline") then
+         Self.Add_Feature (XMPP.Discoes_Features.Msgoffline);
+
+      elsif Val = To_Universal_String ("vcard-temp") then
+         Self.Add_Feature (XMPP.Discoes_Features.Vcard_Temp);
+
+      else
+         raise Program_Error with "Feature is not implemented";
+      end if;
+   end Add_Feature;
 
 end XMPP.Discoes;

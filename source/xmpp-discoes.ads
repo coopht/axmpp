@@ -73,8 +73,11 @@ package XMPP.Discoes is
    procedure Add_Identity (Self : in out XMPP_Disco;
                            Val  : XMPP.Discoes_Identities.Identity);
 
-   procedure Add_Features (Self : in out XMPP_Disco;
-                           Val  : XMPP.Discoes_Features.Feature);
+   procedure Add_Feature (Self : in out XMPP_Disco;
+                          Val  : XMPP.Discoes_Features.Feature);
+
+   procedure Add_Feature (Self : in out XMPP_Disco;
+                          Val  : League.Strings.Universal_String);
 
 private
 

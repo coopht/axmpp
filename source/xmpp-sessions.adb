@@ -631,6 +631,13 @@ package body XMPP.Sessions is
                      (Attributes.Value (1), Attributes.Value (2)));
                return;
             end if;
+
+         elsif Local_Name = To_Universal_String ("feature") then
+            if Self.Stack.Last_Element.Get_Kind = Objects.Disco then
+               XMPP.Discoes.XMPP_Disco_Access
+                 (Self.Stack.Last_Element).Add_Feature (Attributes.Value (1));
+               return;
+            end if;
          end if;
 
       --  Here is the end of actual object parsing.
