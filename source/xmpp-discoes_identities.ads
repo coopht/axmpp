@@ -30,12 +30,14 @@
 --  <ImplementationNotes>
 --
 ------------------------------------------------------------------------------
---  $Revision$ $Author$
---  $Date$
+--  $Revision: 169 $ $Author: alexander.basov $
+--  $Date: 2010-09-21 22:30:48 +0400 (Втр, 21 Сен 2010) $
 ------------------------------------------------------------------------------
+with Ada.Containers.Indefinite_Vectors;
+
 with League.Strings;
 
-package XMPP.Discoes.Identities is
+package XMPP.Discoes_Identities is
 
    type Category_Type is
      (Account,
@@ -244,5 +246,8 @@ package XMPP.Discoes.Identities is
 
    end record;
 
-end XMPP.Discoes.Identities;
+   package Identities_Vectors is
+      new Ada.Containers.Indefinite_Vectors (Natural, Identity);
+
+end XMPP.Discoes_Identities;
 

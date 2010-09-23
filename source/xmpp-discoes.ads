@@ -35,6 +35,8 @@
 ------------------------------------------------------------------------------
 with League.Strings;
 
+with XMPP.Discoes_Features;
+with XMPP.Discoes_Identities;
 with XMPP.Objects;
 
 package XMPP.Discoes is
@@ -67,6 +69,8 @@ private
    type XMPP_Disco is new XMPP.Objects.XMPP_Object with
    record
       Type_Of_Disco : Disco_Type;
+      Identities    : XMPP.Discoes_Identities.Identities_Vectors.Vector;
+      Features      : XMPP.Discoes_Features.Features_Vectors.Vector;
    end record;
 
 end XMPP.Discoes;

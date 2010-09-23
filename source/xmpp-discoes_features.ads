@@ -30,10 +30,12 @@
 --  <ImplementationNotes>
 --
 ------------------------------------------------------------------------------
---  $Revision$ $Author$
---  $Date$
+--  $Revision: 170 $ $Author: alexander.basov $
+--  $Date: 2010-09-22 20:39:55 +0400 (Срд, 22 Сен 2010) $
 ------------------------------------------------------------------------------
-package XMPP.Discoes.Features is
+with Ada.Containers.Vectors;
+
+package XMPP.Discoes_Features is
 
    type Disco_Feafures is
      (DNS_Srv,
@@ -682,4 +684,7 @@ package XMPP.Discoes.Features is
       --  as described in RFC 3920.
       --  RFC 3920: XMPP Core
 
-end XMPP.Discoes.Features;
+   package Features_Vectors is
+      new Ada.Containers.Vectors (Natural, Disco_Feafures);
+
+end XMPP.Discoes_Features;
