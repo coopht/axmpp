@@ -249,5 +249,7 @@ package XMPP.Discoes_Identities is
    package Identities_Vectors is
       new Ada.Containers.Indefinite_Vectors (Natural, Identity);
 
+   subtype Identities_Vector is Identities_Vectors.Vector;
+
 end XMPP.Discoes_Identities;
 
