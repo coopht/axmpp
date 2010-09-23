@@ -64,13 +64,25 @@ package XMPP.Discoes is
 
    procedure Set_Type (Self : in out XMPP_Disco; Val : Disco_Type);
 
+   function Get_Identities (Self : XMPP_Disco)
+      return XMPP.Discoes_Identities.Identities_Vector;
+
+   function Get_Features (Self : XMPP_Disco)
+      return XMPP.Discoes_Features.Features_Vector;
+
+   procedure Add_Identity (Self : in out XMPP_Disco;
+                           Val  : XMPP.Discoes_Identities.Identity);
+
+   procedure Add_Features (Self : in out XMPP_Disco;
+                           Val  : XMPP.Discoes_Features.Feature);
+
 private
 
    type XMPP_Disco is new XMPP.Objects.XMPP_Object with
    record
       Type_Of_Disco : Disco_Type;
-      Identities    : XMPP.Discoes_Identities.Identities_Vectors.Vector;
-      Features      : XMPP.Discoes_Features.Features_Vectors.Vector;
+      Identities    : XMPP.Discoes_Identities.Identities_Vector;
+      Features      : XMPP.Discoes_Features.Features_Vector;
    end record;
 
 end XMPP.Discoes;

@@ -114,4 +114,40 @@ package body XMPP.Discoes is
       Self.Type_Of_Disco := Val;
    end Set_Type;
 
+   ----------------------
+   --  Get_Identities  --
+   ----------------------
+   function Get_Identities (Self : XMPP_Disco)
+      return XMPP.Discoes_Identities.Identities_Vector is
+   begin
+      return Self.Identities;
+   end Get_Identities;
+
+   --------------------
+   --  Get_Features  --
+   --------------------
+   function Get_Features (Self : XMPP_Disco)
+      return XMPP.Discoes_Features.Features_Vector is
+   begin
+      return Self.Features;
+   end Get_Features;
+
+   --------------------
+   --  Add_Identity  --
+   --------------------
+   procedure Add_Identity (Self : in out XMPP_Disco;
+                           Val  : XMPP.Discoes_Identities.Identity) is
+   begin
+      Self.Identities.Append (Val);
+   end Add_Identity;
+
+   --------------------
+   --  Add_Features  --
+   --------------------
+   procedure Add_Features (Self : in out XMPP_Disco;
+                           Val  : XMPP.Discoes_Features.Feature) is
+   begin
+      Self.Features.Append (Val);
+   end Add_Features;
+
 end XMPP.Discoes;
