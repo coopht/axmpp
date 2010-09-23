@@ -45,6 +45,7 @@ with XML.SAX.Readers;
 with XMPP.Binds;
 with XMPP.Challenges;
 with XMPP.Discoes;
+with XMPP.Discoes_Identities;
 with XMPP.IQS;
 with XMPP.IQ_Sessions;
 with XMPP.Messages;
@@ -620,6 +621,15 @@ package body XMPP.Sessions is
             if Self.Stack.Last_Element.Get_Kind = Objects.IQ then
                Self.Stack.Append
                  (XMPP.Objects.XMPP_Object_Access (XMPP.Discoes.Create));
+            end if;
+
+         elsif Local_Name = To_Universal_String ("identity") then
+            if Self.Stack.Last_Element.Get_Kind = Objects.Disco then
+               XMPP.Discoes.XMPP_Disco_Access
+                 (Self.Stack.Last_Element).Add_Identity
+                  (XMPP.Discoes_Identities.Create
+                     (Attributes.Value (1), Attributes.Value (2)));
+               return;
             end if;
          end if;
 
