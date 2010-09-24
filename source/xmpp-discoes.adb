@@ -33,6 +33,7 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
+with Ada.Characters.Conversions;
 with Ada.Wide_Wide_Text_IO;
 
 with League.Strings;
@@ -170,7 +171,10 @@ package body XMPP.Discoes is
          Self.Add_Feature (XMPP.Discoes_Features.Vcard_Temp);
 
       else
-         raise Program_Error with "Feature is not implemented";
+         raise Program_Error
+           with "XMPP.Discoes:Feature is not implemented : "
+                 & Ada.Characters.Conversions.To_String
+                    (Val.To_Wide_Wide_String);
       end if;
    end Add_Feature;
 
