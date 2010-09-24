@@ -33,6 +33,7 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
+with Ada.Characters.Conversions;
 
 package body XMPP.Discoes_Identities is
 
@@ -53,7 +54,9 @@ package body XMPP.Discoes_Identities is
             return (Account, Registered);
 
          else
-            raise Program_Error with "Unknown type of the Category";
+            raise Program_Error with "Unknown type of the Category"
+              & Ada.Characters.Conversions.To_String
+                 (I_Type.To_Wide_Wide_String);
          end if;
 
       --  elsif Category = To_Universal_String ("auth") then
@@ -81,14 +84,27 @@ package body XMPP.Discoes_Identities is
             return (Pubsub, Service);
 
          else
-            raise Program_Error with "Unknown type of the Category";
+            raise Program_Error with "Unknown type of the Category"
+              & Ada.Characters.Conversions.To_String
+                 (I_Type.To_Wide_Wide_String);
          end if;
 
-      --  elsif Category = To_Universal_String ("server") then
+      elsif Category = To_Universal_String ("server") then
+         if I_Type = To_Universal_String ("im") then
+            return (Server, IM);
+         else
+            raise Program_Error
+              with "Unknown type of the Category : "
+                     & Ada.Characters.Conversions.To_String
+                        (I_Type.To_Wide_Wide_String);
+         end if;
+
       --  elsif Category = To_Universal_String ("store") then
 
       else
-         raise Program_Error with "Identity of Category is not implemented";
+         raise Program_Error with "Identity of Category is not implemented : "
+           & Ada.Characters.Conversions.To_String
+              (Category.To_Wide_Wide_String);
       end if;
    end Create;
 
