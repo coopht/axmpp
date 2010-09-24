@@ -119,7 +119,13 @@ package body XMPP.IQS is
 
          end case;
 
-         X.Append ("' id='" & Self.Get_Id & "'>");
+         X.Append ("' id='" & Self.Get_Id & "'");
+
+         if not Self.To.Is_Empty then
+            X.Append (" to='" & Self.To  & "'");
+         end if;
+
+         X.Append (To_Universal_String (">"));
 
          --  Generating IQ body
          if Self.Items_Count > 0 then
