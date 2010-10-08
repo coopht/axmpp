@@ -354,6 +354,9 @@ package XMPP.Discoes_Features is
       --  See XEP-0045
       --  XEP-0045: Multi-User Chat
 
+      Protocol_Pubsub_Owner,
+      --  TODO: Add description
+
       Protocol_Muc_Owner,
       --  See XEP-0045
       --  XEP-0045: Multi-User Chat
@@ -381,6 +384,15 @@ package XMPP.Discoes_Features is
       Protocol_Physloc,
       --  DEPRECATED
       --  XEP-0080: User Geolocation
+
+      Protocol_Pubsub,
+      --  TODO : Add description
+
+      Presence,
+      --  TODO : Add description
+
+      Presence_Invisible,
+      --  TODO : Add description
 
       Protocol_Pubsub_Access_Authorize,
       --  The default node access model is authorize.
@@ -431,6 +443,9 @@ package XMPP.Discoes_Features is
       --  Any publisher may delete an item
       --  (not only the originating publisher).
       --  XEP-0060
+
+      Protocol_Pubsub_Delete_Items,
+      --  TODO: Add description
 
       Protocol_Pubsub_Delete_Nodes,
       --  Deletion of nodes is supported.
@@ -679,10 +694,12 @@ package XMPP.Discoes_Features is
       --  See XEP-0202
       --  XEP-0202: Entity Time
 
-      Xmllang);
+      XML_Lang,
       --  Application supports the 'xml:lang' attribute
       --  as described in RFC 3920.
       --  RFC 3920: XMPP Core
+      IQ);
+
 
    package Features_Vectors is
       new Ada.Containers.Vectors (Natural, Feature);

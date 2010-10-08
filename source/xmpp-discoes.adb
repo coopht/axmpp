@@ -164,12 +164,218 @@ package body XMPP.Discoes is
         ("http://jabber.org/protocol/disco#info") then
          Self.Add_Feature (XMPP.Discoes_Features.Protocol_Disco_Info);
 
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/disco#items") then
+         Self.Add_Feature (XMPP.Discoes_Features.Protocol_Disco_Items);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#access-authorize") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub_Access_Authorize);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#access-presence") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub_Access_Presence);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#access-whitelist") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub_Access_Whitelist);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#auto-create") then
+         Self.Add_Feature (XMPP.Discoes_Features.Protocol_Pubsub_Auto_Create);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#auto-subscribe") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub_Auto_Subscribe);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#collections") then
+         Self.Add_Feature (XMPP.Discoes_Features.Protocol_Pubsub_Collections);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#access-open") then
+         Self.Add_Feature (XMPP.Discoes_Features.Protocol_Pubsub_Access_Open);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#config-node") then
+         Self.Add_Feature (XMPP.Discoes_Features.Protocol_Pubsub_Access_Open);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#create-and-configure") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub_Create_And_Configure);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#create-nodes") then
+         Self.Add_Feature (XMPP.Discoes_Features.Protocol_Pubsub_Create_Nodes);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#delete-items") then
+         Self.Add_Feature (XMPP.Discoes_Features.Protocol_Pubsub_Delete_Items);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#delete-nodes") then
+         Self.Add_Feature (XMPP.Discoes_Features.Protocol_Pubsub_Delete_Nodes);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#filtered-notifications") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub_Filtered_Notifications);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#get-pending") then
+         Self.Add_Feature (XMPP.Discoes_Features.Protocol_Pubsub_Get_Pending);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#instant-nodes") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub_Instant_Nodes);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#item-ids") then
+         Self.Add_Feature (XMPP.Discoes_Features.Protocol_Pubsub_Item_Ids);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#last-published") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub_Last_Published);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#manage-subscriptions") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub_Manage_Subscription);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#member-affiliation") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub_Member_Affiliation);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#modify-affiliations") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub_Modify_Affiliations);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#multi-subscribe") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub_Multi_Subscribe);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#outcast-affiliation") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub_Outcast_Affiliation);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#owner") then
+         Self.Add_Feature (XMPP.Discoes_Features.Protocol_Pubsub_Owner);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#persistent-items") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub_Persistent_Items);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#presence-notifications") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub_Presence_Notifications);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#presence-subscribe") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub_Presence_Subscribe);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#publish") then
+         Self.Add_Feature (XMPP.Discoes_Features.Protocol_Pubsub_Publish);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#publisher-affiliation") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub_Publisher_Affiliation);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#purge-nodes") then
+         Self.Add_Feature (XMPP.Discoes_Features.Protocol_Pubsub_Purge_Nodes);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#retract-items") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub_Retract_Items);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#retrieve-affiliations") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub_Retrieve_Affiliations);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#retrieve-default") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub_Retrieve_Default);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#retrieve-items") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub_Retrieve_Items);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#retrieve-subscriptions") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub_Retrieve_Subscriptions);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#subscribe") then
+         Self.Add_Feature (XMPP.Discoes_Features.Protocol_Pubsub_Subscribe);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#subscription-notifications") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub_Subscription_Notifications);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/pubsub#subscription-options") then
+         Self.Add_Feature
+           (XMPP.Discoes_Features.Protocol_Pubsub_Subscription_Options);
+
+      elsif Val = To_Universal_String
+        ("iq") then
+         Self.Add_Feature (XMPP.Discoes_Features.IQ);
+
+      elsif Val = To_Universal_String
+        ("jabber:iq:last") then
+         Self.Add_Feature (XMPP.Discoes_Features.Jabber_Iq_Last);
+
       elsif Val = To_Universal_String ("msgoffline") then
          Self.Add_Feature (XMPP.Discoes_Features.Msgoffline);
 
       elsif Val = To_Universal_String ("vcard-temp") then
          Self.Add_Feature (XMPP.Discoes_Features.Vcard_Temp);
 
+      elsif Val = To_Universal_String ("jabber:iq:register") then
+         Self.Add_Feature (XMPP.Discoes_Features.Jabber_Iq_Roster);
+
+      elsif Val = To_Universal_String ("jabber:iq:time") then
+         Self.Add_Feature (XMPP.Discoes_Features.Jabber_Iq_Time);
+
+      elsif Val = To_Universal_String ("jabber:iq:version") then
+         Self.Add_Feature (XMPP.Discoes_Features.Jabber_Iq_Version);
+
+      elsif Val = To_Universal_String ("presence") then
+         Self.Add_Feature (XMPP.Discoes_Features.Presence);
+
+      elsif Val = To_Universal_String ("presence-invisible") then
+         Self.Add_Feature (XMPP.Discoes_Features.Presence_Invisible);
+
+      elsif Val = To_Universal_String ("urn:xmpp:time") then
+         Self.Add_Feature (XMPP.Discoes_Features.Urn_Xmpp_Time);
       else
          raise Program_Error
            with "XMPP.Discoes:Feature is not implemented : "
