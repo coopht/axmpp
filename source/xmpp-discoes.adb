@@ -345,6 +345,17 @@ package body XMPP.Discoes is
          Self.Add_Feature
            (XMPP.Discoes_Features.Protocol_Pubsub_Subscription_Options);
 
+      elsif Val = To_Universal_String ("http://jabber.org/protocol/muc") then
+         Self.Add_Feature (XMPP.Discoes_Features.Protocol_MUC);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/muc#unique") then
+         Self.Add_Feature (XMPP.Discoes_Features.Protocol_Muc_Unique);
+
+      elsif Val = To_Universal_String
+        ("http://jabber.org/protocol/rsm") then
+         Self.Add_Feature (XMPP.Discoes_Features.Protocol_RSM);
+
       elsif Val = To_Universal_String
         ("iq") then
          Self.Add_Feature (XMPP.Discoes_Features.IQ);
