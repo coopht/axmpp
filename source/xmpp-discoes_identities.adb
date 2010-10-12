@@ -59,12 +59,23 @@ package body XMPP.Discoes_Identities is
                  (I_Type.To_Wide_Wide_String);
          end if;
 
+      elsif Category = To_Universal_String ("conference") then
+         if I_Type = To_Universal_String ("text") then
+            return (Conference, Text);
+
+         elsif I_Type = To_Universal_String ("IRC") then
+            return (Conference, IRC);
+
+         else
+            raise Program_Error with "Unknown type of the Category : "
+              & Ada.Characters.Conversions.To_String
+                 (I_Type.To_Wide_Wide_String);
+         end if;
       --  elsif Category = To_Universal_String ("auth") then
       --  elsif Category = To_Universal_String ("automation") then
       --  elsif Category = To_Universal_String ("client") then
       --  elsif Category = To_Universal_String ("collaboration") then
       --  elsif Category = To_Universal_String ("component") then
-      --  elsif Category = To_Universal_String ("conference") then
       --  elsif Category = To_Universal_String ("directory") then
       --  elsif Category = To_Universal_String ("gateway") then
       --  elsif Category = To_Universal_String ("headline") then
