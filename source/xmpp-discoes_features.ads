@@ -232,6 +232,9 @@ package XMPP.Discoes_Features is
       --  See XEP-0144
       --  XEP-0144: Roster Item Exchange
 
+      Protocol_RSM,
+      --  TODO: Add description
+
       Protocol_Sipub,
       --  See XEP-0137
       --  XEP-0137: Publishing SI Requests
@@ -360,6 +363,9 @@ package XMPP.Discoes_Features is
       Protocol_Muc_Owner,
       --  See XEP-0045
       --  XEP-0045: Multi-User Chat
+
+      Protocol_Muc_Unique,
+      --  TODO: Add description
 
       Protocol_Muc_Register,
       --  Support for the muc#register FORM_TYPE in Multi-User Chat.
