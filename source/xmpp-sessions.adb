@@ -945,12 +945,11 @@ package body XMPP.Sessions is
       end if;
    end Process_IQ;
 
-   -------------------------------------
-   --  Request_Discovery_Information  --
-   -------------------------------------
-   procedure Request_Discovery_Information
-     (Self : in out XMPP_Session;
-      JID  : League.Strings.Universal_String) is
+   ----------------------------
+   --  Discover_Information  --
+   ----------------------------
+   procedure Discover_Information (Self : in out XMPP_Session;
+                                   JID  : League.Strings.Universal_String) is
       IQ   : XMPP.IQS.XMPP_IQ (XMPP.IQS.Get);
       D    : XMPP.Discoes.XMPP_Disco_Access := XMPP.Discoes.Create;
 
@@ -961,6 +960,6 @@ package body XMPP.Sessions is
       --  XXX: removed hardcoded ID;
       IQ.Append_Item (D);
       Self.Send_Object (IQ);
-   end Request_Discovery_Information;
+   end Discover_Information;
 
 end XMPP.Sessions;
