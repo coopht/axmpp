@@ -94,7 +94,7 @@ package body XMPP.Messages is
          end case;
 
          --  setting xml:lang attr
-         X.Append (" xml:lang=" & Self.Language & "'");
+         X.Append (" xml:lang='" & Self.Language & "'");
          X.Append (To_Universal_String (">"));
 
          --  setting 'subject' obj
@@ -103,15 +103,16 @@ package body XMPP.Messages is
          end if;
 
          --  setting 'body' attr
-         if not Self.Subject.Is_Empty then
+         if not Self.Message_Body.Is_Empty then
             X.Append ("<body>" & Self.Message_Body & "</body>");
          end if;
 
          --  setting 'thread' attr
-         if not Self.Subject.Is_Empty then
+         if not Self.Thread.Is_Empty then
             X.Append ("<thread>" & Self.Thread & "</thread>");
          end if;
 
+         X.Append (To_Universal_String ("</message>"));
       end return;
    end Serialize;
 
