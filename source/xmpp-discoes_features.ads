@@ -26,7 +26,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --
---  <Unit> XMPP.Discoes.Features
+--  <Unit> XMPP.Discoes_Features
 --  <ImplementationNotes>
 --
 ------------------------------------------------------------------------------
@@ -34,6 +34,8 @@
 --  $Date$
 ------------------------------------------------------------------------------
 with Ada.Containers.Vectors;
+
+with League.Strings;
 
 package XMPP.Discoes_Features is
 
@@ -706,6 +708,7 @@ package XMPP.Discoes_Features is
       --  RFC 3920: XMPP Core
       IQ);
 
+   function Image (X : Feature) return League.Strings.Universal_String;
 
    package Features_Vectors is
       new Ada.Containers.Vectors (Natural, Feature);
