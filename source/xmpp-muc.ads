@@ -26,62 +26,38 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --
---  <Unit> XMPP.Objects
+--  <Unit> XMPP.MUC
 --  <ImplementationNotes>
 --
 ------------------------------------------------------------------------------
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
+with XMPP.Objects;
+
 with League.Strings;
 
-with Ada.Containers.Vectors;
+package XMPP.MUC is
 
-package XMPP.Objects is
+   type XMPP_MUC is new XMPP.Objects.XMPP_Object with private;
 
-   type Object_Kind is
-     (Bind,
-      Challenge,
-      Disco,
-      IQ,
-      IQ_Session,
-      Error,
-      Message,
-      MUC,
-      Null_Object,
-      Presence,
-      Roster,
-      Roster_Item,
-      Stream,
-      Stream_Features);
+   type XMPP_MUC_Access is access all XMPP_MUC'Class;
 
-   type XMPP_Object is limited interface;
+   overriding function Get_Kind (Self : XMPP_MUC) return Objects.Object_Kind;
 
-   type XMPP_Object_Access is access all XMPP_Object'Class;
+   overriding function Serialize (Self : in XMPP_MUC)
+     return League.Strings.Universal_String;
 
-   package Object_Vectors is new Ada.Containers.Vectors
-     (Natural, XMPP_Object_Access);
+   overriding procedure Set_Content
+     (Self      : in out XMPP_MUC;
+      Parameter : League.Strings.Universal_String;
+      Value     : League.Strings.Universal_String);
 
-   ----------------
-   --  Get_Kind  --
-   ----------------
-   not overriding
-   function Get_Kind (Self : XMPP_Object) return XMPP.Objects.Object_Kind
-      is abstract;
-   -----------------
-   --  Serialize  --
-   -----------------
-   not overriding
-   function Serialize (Self : in XMPP_Object)
-      return League.Strings.Universal_String is abstract;
+private
 
-   -------------------
-   --  Set_Content  --
-   -------------------
-   not overriding
-   procedure Set_Content (Self      : in out XMPP_Object;
-                          Parameter : League.Strings.Universal_String;
-                          Value     : League.Strings.Universal_String)
-      is abstract;
+   type XMPP_MUC is new XMPP.Objects.XMPP_Object with
+   record
+      null;
+   end record;
 
-end XMPP.Objects;
+end XMPP.MUC;

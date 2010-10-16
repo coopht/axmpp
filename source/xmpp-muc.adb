@@ -26,62 +26,38 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --
---  <Unit> XMPP.Objects
+--  <Unit> XMPP.MUC
 --  <ImplementationNotes>
 --
 ------------------------------------------------------------------------------
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with League.Strings;
-
-with Ada.Containers.Vectors;
-
-package XMPP.Objects is
-
-   type Object_Kind is
-     (Bind,
-      Challenge,
-      Disco,
-      IQ,
-      IQ_Session,
-      Error,
-      Message,
-      MUC,
-      Null_Object,
-      Presence,
-      Roster,
-      Roster_Item,
-      Stream,
-      Stream_Features);
-
-   type XMPP_Object is limited interface;
-
-   type XMPP_Object_Access is access all XMPP_Object'Class;
-
-   package Object_Vectors is new Ada.Containers.Vectors
-     (Natural, XMPP_Object_Access);
+package body XMPP.MUC is
 
    ----------------
    --  Get_Kind  --
    ----------------
-   not overriding
-   function Get_Kind (Self : XMPP_Object) return XMPP.Objects.Object_Kind
-      is abstract;
+   overriding function Get_Kind (Self : XMPP_MUC) return Objects.Object_Kind is
+   begin
+      return XMPP.Objects.MUC;
+   end Get_Kind;
+
    -----------------
    --  Serialize  --
    -----------------
-   not overriding
-   function Serialize (Self : in XMPP_Object)
-      return League.Strings.Universal_String is abstract;
+   overriding function Serialize (Self : in XMPP_MUC)
+     return League.Strings.Universal_String is
+   begin
+      return X : League.Strings.Universal_String;
+   end Serialize;
 
-   -------------------
-   --  Set_Content  --
-   -------------------
-   not overriding
-   procedure Set_Content (Self      : in out XMPP_Object;
-                          Parameter : League.Strings.Universal_String;
-                          Value     : League.Strings.Universal_String)
-      is abstract;
+   overriding procedure Set_Content
+     (Self      : in out XMPP_MUC;
+      Parameter : League.Strings.Universal_String;
+      Value     : League.Strings.Universal_String) is
+   begin
+      raise Program_Error with "Not yet implemented";
+   end Set_Content;
 
-end XMPP.Objects;
+end XMPP.MUC;
