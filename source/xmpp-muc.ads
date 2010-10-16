@@ -45,7 +45,7 @@ package XMPP.MUC is
 
    overriding function Get_Kind (Self : XMPP_MUC) return Objects.Object_Kind;
 
-   overriding function Serialize (Self : in XMPP_MUC)
+   overriding function Serialize (Self : XMPP_MUC)
      return League.Strings.Universal_String;
 
    overriding procedure Set_Content
@@ -53,11 +53,18 @@ package XMPP.MUC is
       Parameter : League.Strings.Universal_String;
       Value     : League.Strings.Universal_String);
 
+   procedure Set_Conf_Server_JID (Self : in out XMPP_MUC;
+                                  Srv  : League.Strings.Universal_String);
+   --  Sets JID of conference server
+
+   function Get_Conf_Server_JID (Self : XMPP_MUC)
+      return League.Strings.Universal_String;
+
 private
 
    type XMPP_MUC is new XMPP.Objects.XMPP_Object with
    record
-      null;
+      Conf_Server_JID : League.Strings.Universal_String;
    end record;
 
 end XMPP.MUC;

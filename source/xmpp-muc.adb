@@ -46,12 +46,15 @@ package body XMPP.MUC is
    -----------------
    --  Serialize  --
    -----------------
-   overriding function Serialize (Self : in XMPP_MUC)
+   overriding function Serialize (Self : XMPP_MUC)
      return League.Strings.Universal_String is
    begin
       return X : League.Strings.Universal_String;
    end Serialize;
 
+   -------------------
+   --  Set_Content  --
+   -------------------
    overriding procedure Set_Content
      (Self      : in out XMPP_MUC;
       Parameter : League.Strings.Universal_String;
@@ -59,5 +62,23 @@ package body XMPP.MUC is
    begin
       raise Program_Error with "Not yet implemented";
    end Set_Content;
+
+   ---------------------------
+   --  Set_Conf_Server_JID  --
+   ---------------------------
+   procedure Set_Conf_Server_JID (Self : in out XMPP_MUC;
+                                  Srv  : League.Strings.Universal_String) is
+   begin
+      Self.Conf_Server_JID := Srv;
+   end Set_Conf_Server_JID;
+
+   ---------------------------
+   --  Get_Conf_Server_JID  --
+   ---------------------------
+   function Get_Conf_Server_JID (Self : XMPP_MUC)
+      return League.Strings.Universal_String is
+   begin
+      return Self.Conf_Server_JID;
+   end Get_Conf_Server_JID;
 
 end XMPP.MUC;
