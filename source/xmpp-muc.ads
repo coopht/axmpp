@@ -33,9 +33,10 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with XMPP.Objects;
-
 with League.Strings;
+
+with XMPP.Discoes;
+with XMPP.Objects;
 
 package XMPP.MUC is
 
@@ -60,11 +61,14 @@ package XMPP.MUC is
    function Get_Conf_Server_JID (Self : XMPP_MUC)
       return League.Strings.Universal_String;
 
+   procedure Chat_Support_Query (Self : in out XMPP_MUC);
+
 private
 
    type XMPP_MUC is new XMPP.Objects.XMPP_Object with
    record
       Conf_Server_JID : League.Strings.Universal_String;
+      Disco           : XMPP.Discoes.XMPP_Disco;
    end record;
 
 end XMPP.MUC;

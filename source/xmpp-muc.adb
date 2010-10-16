@@ -33,6 +33,8 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
+with XMPP.Discoes_Features;
+
 package body XMPP.MUC is
 
    ----------------
@@ -80,5 +82,13 @@ package body XMPP.MUC is
    begin
       return Self.Conf_Server_JID;
    end Get_Conf_Server_JID;
+
+   --------------------------
+   --  Chat_Support_Query  --
+   --------------------------
+   procedure Chat_Support_Query (Self : in out XMPP_MUC) is
+   begin
+      Self.Disco.Add_Feature (XMPP.Discoes_Features.Protocol_Disco_Info);
+   end Chat_Support_Query;
 
 end XMPP.MUC;
