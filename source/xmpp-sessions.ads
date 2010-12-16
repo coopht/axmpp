@@ -144,7 +144,7 @@ package XMPP.Sessions is
       Attributes     : XML.SAX.Attributes.SAX_Attributes;
       Success        : in out Boolean);
 
-   overriding procedure Error
+   overriding procedure Fatal_Error
     (Self       : in out XMPP_Session;
      Occurrence : XML.SAX.Parse_Exceptions.SAX_Parse_Exception;
      Success    : in out Boolean);

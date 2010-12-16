@@ -127,7 +127,6 @@ package body XMPP.Sessions is
          XML.SAX.Simple_Readers.Put_Line := Put_Line'Access;
 
          Self.Source.Set_Socket (Self.Get_Socket);
-         Self.Reader.Set_Input_Source (Self.Source'Access);
       end if;
 
       Self.Open_Stream;
@@ -157,6 +156,10 @@ package body XMPP.Sessions is
              & "' >";
 
    begin
+      --  Ada.Wide_Wide_Text_IO.Put_Line (" !!! Opening_Stream !!!");
+      --  We need to reset parser each time we start new xml stream
+      Self.Reader.Set_Input_Source (Self.Source'Access);
+
       --  Sending open stream stanza
       Self.Send
         (XMPP.Utils.To_Stream_Element_Array
@@ -666,17 +669,28 @@ package body XMPP.Sessions is
       end if;
    end Start_Element;
 
-   -------------
-   --  Error  --
-   -------------
-   overriding procedure Error
+   overriding procedure Fatal_Error
     (Self       : in out XMPP_Session;
      Occurrence : XML.SAX.Parse_Exceptions.SAX_Parse_Exception;
-     Success    : in out Boolean)
-   is
+     Success    : in out Boolean) is
+
    begin
-      Put_Line ("EEE (Error) " & Occurrence.Message & "'");
-   end Error;
+      Put_Line ("Fatal_Error: " & Occurrence.Message);
+      Ada.Wide_Wide_Text_IO.Put_Line
+        ("         Line   : "
+           & Natural'Wide_Wide_Image (Occurrence.Line));
+
+      Ada.Wide_Wide_Text_IO.Put_Line
+        ("         Column : "
+           & Natural'Wide_Wide_Image (Occurrence.Column));
+
+      Ada.Wide_Wide_Text_IO.Put_Line
+        ("Locator ("
+           & Natural'Wide_Wide_Image (Self.Locator.Line)
+           & ":"
+           & Natural'Wide_Wide_Image (Self.Locator.Column)
+           & ")");
+   end Fatal_Error;
 
    ------------------------
    --  Proceed_TLS_Auth  --
