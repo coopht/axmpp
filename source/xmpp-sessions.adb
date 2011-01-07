@@ -119,11 +119,10 @@ package body XMPP.Sessions is
    begin
       --  After we connected, initialize parser.
 
-      Ada.Text_IO.Put_Line ("On_Connect");
-
+      Ada.Text_IO.Put_Line ("On_Connect!");
       if not Self.Source.Is_TLS_Established then
-         Self.Reader.Set_Content_Handler
-           (XML.SAX.Readers.SAX_Content_Handler_Access (Self));
+
+         Ada.Text_IO.Put_Line ("Reset Parser");
          XML.SAX.Simple_Readers.Put_Line := Put_Line'Access;
 
          Self.Source.Set_Socket (Self.Get_Socket);
@@ -158,6 +157,8 @@ package body XMPP.Sessions is
    begin
       --  Ada.Wide_Wide_Text_IO.Put_Line (" !!! Opening_Stream !!!");
       --  We need to reset parser each time we start new xml stream
+      Self.Reader.Set_Content_Handler
+        (XML.SAX.Readers.SAX_Content_Handler_Access (Self));
       Self.Reader.Set_Input_Source (Self.Source'Access);
 
       --  Sending open stream stanza
