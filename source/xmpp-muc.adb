@@ -50,8 +50,11 @@ package body XMPP.MUC is
    -----------------
    overriding function Serialize (Self : XMPP_MUC)
      return League.Strings.Universal_String is
+      X : League.Strings.Universal_String;
+
    begin
-      return X : League.Strings.Universal_String;
+
+      return X;
    end Serialize;
 
    -------------------
@@ -84,11 +87,11 @@ package body XMPP.MUC is
    end Get_Conf_Server_JID;
 
    --------------------------
-   --  Chat_Support_Query  --
+   --  MUC_Support_Query  --
    --------------------------
-   procedure Chat_Support_Query (Self : in out XMPP_MUC) is
+   procedure MUC_Support_Query (Self : in out XMPP_MUC) is
    begin
       Self.Disco.Add_Feature (XMPP.Discoes_Features.Protocol_Disco_Info);
-   end Chat_Support_Query;
+   end MUC_Support_Query;
 
 end XMPP.MUC;

@@ -61,7 +61,7 @@ package XMPP.MUC is
    function Get_Conf_Server_JID (Self : XMPP_MUC)
       return League.Strings.Universal_String;
 
-   procedure Chat_Support_Query (Self : in out XMPP_MUC);
+   procedure MUC_Support_Query (Self : in out XMPP_MUC);
 
 private
 
