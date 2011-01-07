@@ -201,11 +201,11 @@ package body GNUTLS is
    -------------------
    procedure Global_Init
    is
-      Ret : Integer := Integer (gnutls_global_init);
+      Ret : Interfaces.C.int := gnutls_global_init;
 
    begin
       if Ret /= 0 then
-         gnutls_perror (Interfaces.C.int (Ret));
+         gnutls_perror (Ret);
          raise GNUTLS_Error
            with "Some error occuered during gnutls initialization";
       end if;
@@ -218,11 +218,12 @@ package body GNUTLS is
      (SC : out Anon_Client_Credentials)
    is
       Tmp : aliased Anon_Client_Credentials;
-      Ret : Integer
-        := Integer (gnutls_anon_allocate_client_credentials (Tmp'Access));
+      Ret : Interfaces.C.int
+        := gnutls_anon_allocate_client_credentials (Tmp'Access);
+
    begin
       if Ret /= 0 then
-         gnutls_perror (Interfaces.C.int (Ret));
+         gnutls_perror (Ret);
          raise GNUTLS_Error with "cannot do Anon_Allocate_Client_Credentials";
       end if;
 
@@ -237,12 +238,12 @@ package body GNUTLS is
      (SC : out Certificate_Client_Credentials)
    is
       Tmp : aliased Certificate_Client_Credentials;
-      Ret : Integer
-        := Integer (gnutls_certificate_allocate_credentials (Tmp'Access));
+      Ret : Interfaces.C.int
+        := gnutls_certificate_allocate_credentials (Tmp'Access);
 
    begin
       if Ret /= 0 then
-         gnutls_perror (Interfaces.C.int (Ret));
+         gnutls_perror (Ret);
          raise GNUTLS_Error with "Certificate_Allocate_Credentials failed";
       end if;
 
@@ -255,11 +256,11 @@ package body GNUTLS is
    procedure Init (S : out Session; CE : Connection_End)
    is
       Tmp : aliased Session;
-      Ret : Integer := Integer (gnutls_init (Tmp'Access, CE));
+      Ret : Interfaces.C.int := gnutls_init (Tmp'Access, CE);
 
    begin
       if Ret /= 0 then
-         gnutls_perror (Interfaces.C.int (Ret));
+         gnutls_perror (Ret);
          raise GNUTLS_Error with "Cannot do Init";
       end if;
       S := Tmp;
@@ -274,14 +275,12 @@ package body GNUTLS is
    is
       X : Interfaces.C.char_array (1 .. 256);
       pragma Warnings (Off, X);
-      Ret : Integer
-        := Integer (gnutls_priority_set_direct (S,
-                                                Interfaces.C.To_C (Priorities),
-                                                X));
+      Ret : Interfaces.C.int
+        := gnutls_priority_set_direct (S, Interfaces.C.To_C (Priorities), X);
 
    begin
       if Ret /= 0 then
-         gnutls_perror (Interfaces.C.int (Ret));
+         gnutls_perror (Ret);
          Error_Pos := Interfaces.C.To_Ada (X);
          raise GNUTLS_Error with "Priority_Set_Direct error";
       end if;
@@ -294,11 +293,11 @@ package body GNUTLS is
                               T    : Credentials_Type;
                               Cred : Anon_Client_Credentials)
    is
-      Ret : Integer := Integer (gnutls_credentials_set_anon (S, T, Cred));
+      Ret : Interfaces.C.int := gnutls_credentials_set_anon (S, T, Cred);
 
    begin
       if  Ret /= 0 then
-         gnutls_perror (Interfaces.C.int (Ret));
+         gnutls_perror (Ret);
          raise GNUTLS_Error with "Credentials_Set error";
       end if;
    end Credentials_Set;
@@ -308,11 +307,11 @@ package body GNUTLS is
                               T    : Credentials_Type;
                               Cred : Certificate_Client_Credentials)
    is
-      Ret : Integer := Integer (gnutls_credentials_set (S, T, Cred));
+      Ret : Interfaces.C.int := gnutls_credentials_set (S, T, Cred);
 
    begin
       if  Ret /= 0 then
-         gnutls_perror (Interfaces.C.int (Ret));
+         gnutls_perror (Ret);
          raise GNUTLS_Error with "Credentials_Set error";
       end if;
    end Credentials_Set;
@@ -335,11 +334,10 @@ package body GNUTLS is
    -----------------
    procedure Handshake (S : Session)
    is
-      Ret : Integer
-        := Integer (gnutls_handshake (S));
+      Ret : Interfaces.C.int := gnutls_handshake (S);
    begin
       if Ret /= 0 then
-         gnutls_perror (Interfaces.C.int (Ret));
+         gnutls_perror (Ret);
          raise GNUTLS_Error with "Handshake failed";
       end if;
    end Handshake;
@@ -412,11 +410,11 @@ package body GNUTLS is
    -----------
    procedure Bye (S : Session; How : Close_Request)
    is
-      Ret : Integer := Integer (gnutls_bye (S, How));
+      Ret : Interfaces.C.int := gnutls_bye (S, How);
 
    begin
       if Ret /= 0 then
-         gnutls_perror (Interfaces.C.int (Ret));
+         gnutls_perror (Ret);
          raise GNUTLS_Error with "Bye failed";
       end if;
    end Bye;
@@ -461,11 +459,11 @@ package body GNUTLS is
    ----------------------------
 
    procedure Set_Default_Priority (S : Session) is
-      Ret : Integer := Integer (gnutls_set_default_priority (S));
+      Ret : Interfaces.C.int := gnutls_set_default_priority (S);
 
    begin
       if Ret /= 0 then
-         gnutls_perror (Interfaces.C.int (Ret));
+         gnutls_perror (Ret);
          raise GNUTLS_Error with "Set_Default_Priority failed";
       end if;
    end Set_Default_Priority;
@@ -476,12 +474,12 @@ package body GNUTLS is
 
    procedure KX_Set_Priority (S : Session; KX_Prio : KX_Algorithm_Array)
    is
-      Ret : Integer
-        := Integer (gnutls_kx_set_priority
-                      (S, KX_Prio (KX_Prio'First)'Address));
+      Ret : Interfaces.C.int
+        := gnutls_kx_set_priority (S, KX_Prio (KX_Prio'First)'Address);
+
    begin
       if Ret /= 0 then
-         gnutls_perror (Interfaces.C.int (Ret));
+         gnutls_perror (Ret);
          raise GNUTLS_Error with "KX_Set_Priority failed";
       end if;
    end KX_Set_Priority;
@@ -492,12 +490,12 @@ package body GNUTLS is
 
    procedure Cipher_Set_Priority (S : Session; Prio : Cipher_Algorithm_Array)
    is
-      Ret : Integer
-        := Integer (gnutls_cipher_set_priority (S, Prio (Prio'First)'Address));
+      Ret : Interfaces.C.int
+        := gnutls_cipher_set_priority (S, Prio (Prio'First)'Address);
 
    begin
       if Ret /= 0 then
-         gnutls_perror (Interfaces.C.int (Ret));
+         gnutls_perror (Ret);
          raise GNUTLS_Error with "Cipher_Set_Priority failed";
       end if;
    end Cipher_Set_Priority;
@@ -507,12 +505,12 @@ package body GNUTLS is
    -----------------------------
 
    procedure Protocol_Set_Priority (S : Session; PA : Protocol_Array) is
-      Ret : Integer
-        := Integer (gnutls_protocol_set_priority (S, PA (PA'First)'Address));
+      Ret : Interfaces.C.int
+        := gnutls_protocol_set_priority (S, PA (PA'First)'Address);
 
    begin
       if Ret /= 0 then
-         gnutls_perror (Interfaces.C.int (Ret));
+         gnutls_perror (Ret);
          raise GNUTLS_Error with "Protocol_Set_Priority failed";
       end if;
    end Protocol_Set_Priority;
@@ -523,13 +521,12 @@ package body GNUTLS is
 
    procedure Compression_Set_Priority (S  : Session;
                                        CM : Compression_Method_Array) is
-      Ret : Integer
-        := Integer (gnutls_compression_set_priority
-                      (S, CM (CM'First)'Address));
+      Ret : Interfaces.C.int
+        := gnutls_compression_set_priority (S, CM (CM'First)'Address);
 
    begin
       if Ret /= 0 then
-         gnutls_perror (Interfaces.C.int (Ret));
+         gnutls_perror (Ret);
          raise GNUTLS_Error with "Compression_Set_Priority failed";
       end if;
    end Compression_Set_Priority;
@@ -539,12 +536,12 @@ package body GNUTLS is
    ------------------------
 
    procedure Mac_Set_Priority (S : Session; MA : Mac_Algorithm_Array) is
-      Ret : Integer
-        := Integer (gnutls_mac_set_priority (S, MA (MA'First)'Address));
+      Ret : Interfaces.C.int
+        := gnutls_mac_set_priority (S, MA (MA'First)'Address);
 
    begin
       if Ret /= 0 then
-         gnutls_perror (Interfaces.C.int (Ret));
+         gnutls_perror (Ret);
          raise GNUTLS_Error with "Mac_Set_Priority failed";
       end if;
    end Mac_Set_Priority;
