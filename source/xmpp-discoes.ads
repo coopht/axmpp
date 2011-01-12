@@ -41,8 +41,6 @@ with XMPP.Objects;
 
 package XMPP.Discoes is
 
-   type Disco_Type is (Info, Items);
-
    type XMPP_Disco is new XMPP.Objects.XMPP_Object with private;
 
    type XMPP_Disco_Access is access all XMPP_Disco'Class;
@@ -60,9 +58,10 @@ package XMPP.Discoes is
 
    function Create return not null XMPP_Disco_Access;
 
-   function Get_Type (Self : XMPP_Disco) return Disco_Type;
+   function Get_Type (Self : XMPP_Disco) return XMPP.Discoes_Features.Feature;
 
-   procedure Set_Type (Self : in out XMPP_Disco; Val : Disco_Type);
+   procedure Set_Type (Self : in out XMPP_Disco;
+                       Val  : XMPP.Discoes_Features.Feature);
 
    function Get_Identities (Self : XMPP_Disco)
       return XMPP.Discoes_Identities.Identities_Vector;
@@ -83,7 +82,7 @@ private
 
    type XMPP_Disco is new XMPP.Objects.XMPP_Object with
    record
-      Type_Of_Disco : Disco_Type;
+      Type_Of_Disco : XMPP.Discoes_Features.Feature;
       Identities    : XMPP.Discoes_Identities.Identities_Vector;
       Features      : XMPP.Discoes_Features.Features_Vector;
    end record;

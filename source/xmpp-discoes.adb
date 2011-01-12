@@ -61,13 +61,13 @@ package body XMPP.Discoes is
    is
    begin
       case Self.Type_Of_Disco is
-         when Info =>
+         when XMPP.Discoes_Features.Protocol_Disco_Info =>
             return
               To_Universal_String
                ("<query xmlns='http://jabber.org/protocol/disco#info'/>");
 
 
-         when Items =>
+         when XMPP.Discoes_Features.Protocol_Disco_Items =>
             return
               To_Universal_String
                ("<query xmlns='http://jabber.org/protocol/disco#items'/>");
@@ -88,10 +88,10 @@ package body XMPP.Discoes is
                           Value     : League.Strings.Universal_String) is
    begin
       if Parameter = To_Universal_String ("disco#info") then
-         Self.Type_Of_Disco := Info;
+         Self.Type_Of_Disco := XMPP.Discoes_Features.Protocol_Disco_Info;
 
       elsif Parameter = To_Universal_String ("disco#items") then
-         Self.Type_Of_Disco := Items;
+         Self.Type_Of_Disco := XMPP.Discoes_Features.Protocol_Disco_Items;
 
       --  Added ignoring of tag itself
       elsif Parameter = To_Universal_String ("query") then
@@ -114,7 +114,8 @@ package body XMPP.Discoes is
    ----------------
    --  Get_Type  --
    ----------------
-   function Get_Type (Self : XMPP_Disco) return Disco_Type is
+   function Get_Type (Self : XMPP_Disco) return XMPP.Discoes_Features.Feature
+   is
    begin
       return Self.Type_Of_Disco;
    end Get_Type;
@@ -122,7 +123,8 @@ package body XMPP.Discoes is
    ----------------
    --  Set_Type  --
    ----------------
-   procedure Set_Type (Self : in out XMPP_Disco; Val : Disco_Type) is
+   procedure Set_Type (Self : in out XMPP_Disco;
+                       Val  : XMPP.Discoes_Features.Feature) is
    begin
       Self.Type_Of_Disco := Val;
    end Set_Type;

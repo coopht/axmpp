@@ -45,6 +45,7 @@ with XML.SAX.Readers;
 with XMPP.Binds;
 with XMPP.Challenges;
 with XMPP.Discoes;
+with XMPP.Discoes_Features;
 with XMPP.Discoes_Identities;
 with XMPP.IQS;
 with XMPP.IQ_Sessions;
@@ -969,7 +970,7 @@ package body XMPP.Sessions is
       D  : XMPP.Discoes.XMPP_Disco_Access := XMPP.Discoes.Create;
 
    begin
-      D.Set_Type (XMPP.Discoes.Info);
+      D.Set_Type (XMPP.Discoes_Features.Protocol_Disco_Items);
       IQ.Set_From (Self.JID & "@" & Self.Host);
       IQ.Set_To (JID);
       IQ.Set_Id (To_Universal_String ("info1"));
@@ -987,7 +988,7 @@ package body XMPP.Sessions is
       D  : XMPP.Discoes.XMPP_Disco_Access := XMPP.Discoes.Create;
 
    begin
-      D.Set_Type (XMPP.Discoes.Items);
+      D.Set_Type (XMPP.Discoes_Features.Protocol_Disco_Items);
       IQ.Set_From (Self.JID & "@" & Self.Host);
       IQ.Set_To (JID);
       IQ.Set_Id (To_Universal_String ("info1"));
