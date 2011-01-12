@@ -965,10 +965,11 @@ package body XMPP.Sessions is
    ----------------------------
    procedure Discover_Information (Self : in out XMPP_Session;
                                    JID  : League.Strings.Universal_String) is
-      IQ   : XMPP.IQS.XMPP_IQ (XMPP.IQS.Get);
-      D    : XMPP.Discoes.XMPP_Disco_Access := XMPP.Discoes.Create;
+      IQ : XMPP.IQS.XMPP_IQ (XMPP.IQS.Get);
+      D  : XMPP.Discoes.XMPP_Disco_Access := XMPP.Discoes.Create;
 
    begin
+      D.Set_Type (XMPP.Discoes.Info);
       IQ.Set_From (Self.JID & "@" & Self.Host);
       IQ.Set_To (JID);
       IQ.Set_Id (To_Universal_String ("info1"));
@@ -976,5 +977,23 @@ package body XMPP.Sessions is
       IQ.Append_Item (D);
       Self.Send_Object (IQ);
    end Discover_Information;
+
+   ----------------------
+   --  Discover_Items  --
+   ----------------------
+   procedure Discover_Items (Self : in out XMPP_Session;
+                             JID  : League.Strings.Universal_String) is
+      IQ : XMPP.IQS.XMPP_IQ (XMPP.IQS.Get);
+      D  : XMPP.Discoes.XMPP_Disco_Access := XMPP.Discoes.Create;
+
+   begin
+      D.Set_Type (XMPP.Discoes.Items);
+      IQ.Set_From (Self.JID & "@" & Self.Host);
+      IQ.Set_To (JID);
+      IQ.Set_Id (To_Universal_String ("info1"));
+      --  XXX: removed hardcoded ID;
+      IQ.Append_Item (D);
+      Self.Send_Object (IQ);
+   end Discover_Items;
 
 end XMPP.Sessions;
