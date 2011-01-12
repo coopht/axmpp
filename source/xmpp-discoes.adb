@@ -60,11 +60,23 @@ package body XMPP.Discoes is
       return League.Strings.Universal_String
    is
    begin
-      return X : League.Strings.Universal_String do
-         X := To_Universal_String
+      case Self.Type_Of_Disco is
+         when Info =>
+            return
+              To_Universal_String
                ("<query xmlns='http://jabber.org/protocol/disco#info'/>");
 
-      end return;
+
+         when Items =>
+            return
+              To_Universal_String
+               ("<query xmlns='http://jabber.org/protocol/disco#items'/>");
+
+         when others =>
+            raise Program_Error
+              with "Unknow service discovery information type";
+
+      end case;
    end Serialize;
 
    -------------------
