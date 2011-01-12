@@ -401,6 +401,24 @@ package body XMPP.Discoes is
 
       elsif Val = To_Universal_String ("urn:xmpp:time") then
          Self.Add_Feature (XMPP.Discoes_Features.Urn_Xmpp_Time);
+
+      elsif Val = To_Universal_String ("muc_public") then
+         Self.Add_Feature (XMPP.Discoes_Features.Muc_Public);
+
+      elsif Val = To_Universal_String ("muc_temporary") then
+         Self.Add_Feature (XMPP.Discoes_Features.Muc_Temporary);
+
+      elsif Val = To_Universal_String ("muc_open") then
+         Self.Add_Feature (XMPP.Discoes_Features.Muc_Open);
+
+      elsif Val = To_Universal_String ("muc_semianonymous") then
+         Self.Add_Feature (XMPP.Discoes_Features.Muc_Semianonymous);
+
+      elsif Val = To_Universal_String ("muc_moderated") then
+         Self.Add_Feature (XMPP.Discoes_Features.Muc_Moderated);
+
+      elsif Val = To_Universal_String ("muc_unsecured") then
+         Self.Add_Feature (XMPP.Discoes_Features.Muc_Unsecured);
       else
          raise Program_Error
            with "XMPP.Discoes:Feature is not implemented : "
