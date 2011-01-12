@@ -970,7 +970,7 @@ package body XMPP.Sessions is
       D  : XMPP.Discoes.XMPP_Disco_Access := XMPP.Discoes.Create;
 
    begin
-      D.Set_Type (XMPP.Discoes_Features.Protocol_Disco_Items);
+      D.Set_Type (XMPP.Discoes_Features.Protocol_Disco_Info);
       IQ.Set_From (Self.JID & "@" & Self.Host);
       IQ.Set_To (JID);
       IQ.Set_Id (To_Universal_String ("info1"));
