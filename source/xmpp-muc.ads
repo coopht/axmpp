@@ -54,11 +54,11 @@ package XMPP.MUC is
       Parameter : League.Strings.Universal_String;
       Value     : League.Strings.Universal_String);
 
-   procedure Set_Conf_Server_JID (Self : in out XMPP_MUC;
-                                  Srv  : League.Strings.Universal_String);
+   procedure Set_Conf_Server (Self : in out XMPP_MUC;
+                              Srv  : League.Strings.Universal_String);
    --  Sets JID of conference server
 
-   function Get_Conf_Server_JID (Self : XMPP_MUC)
+   function Get_Conf_Server (Self : XMPP_MUC)
       return League.Strings.Universal_String;
 
    procedure MUC_Support_Query (Self : in out XMPP_MUC);
@@ -67,8 +67,8 @@ private
 
    type XMPP_MUC is new XMPP.Objects.XMPP_Object with
    record
-      Conf_Server_JID : League.Strings.Universal_String;
-      Disco           : XMPP.Discoes.XMPP_Disco;
+      Conf_Server : League.Strings.Universal_String;
+      Disco       : XMPP.Discoes.XMPP_Disco;
    end record;
 
 end XMPP.MUC;
