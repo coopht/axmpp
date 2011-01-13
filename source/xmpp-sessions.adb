@@ -374,10 +374,12 @@ package body XMPP.Sessions is
             end if;
          end if;
 
-
       --  Service discovery
       elsif Namespace_URI
-        = To_Universal_String ("http://jabber.org/protocol/disco#info") then
+        = To_Universal_String ("http://jabber.org/protocol/disco#info") or
+        Namespace_URI
+        = To_Universal_String ("http://jabber.org/protocol/disco#items")
+      then
          if Local_Name = To_Universal_String ("query") then
             if Self.Stack.Last_Element.Get_Kind = Disco then
                if Previous (Current) /= No_Element then
@@ -645,6 +647,25 @@ package body XMPP.Sessions is
             end if;
          end if;
 
+      elsif Namespace_URI
+        = To_Universal_String ("http://jabber.org/protocol/disco#items") then
+         if Local_Name = To_Universal_String ("query") then
+            if Self.Stack.Last_Element.Get_Kind = Objects.IQ then
+               Self.Stack.Append
+                (XMPP.Objects.XMPP_Object_Access (XMPP.Services.Create));
+            end if;
+
+         elsif Local_Name = To_Universal_String ("item") then
+            if Self.Stack.Last_Element.Get_Kind = Objects.Disco then
+               XMPP.Services.XMPP_Service_Access
+                 (Self.Stack.Last_Element).Add_Item
+                 ((JID => Attributes.Value (To_Universal_String ("jid")),
+                   Name => Attributes.Value (To_Universal_String ("name")),
+                   Node => Attributes.Value (To_Universal_String ("node"))));
+               return;
+            end if;
+         end if;
+
       --  Here is the end of actual object parsing.
       else
          Ada.Wide_Wide_Text_IO.Put_Line
@@ -671,6 +692,9 @@ package body XMPP.Sessions is
       end if;
    end Start_Element;
 
+   -------------------
+   --  Fatal_Error  --
+   -------------------
    overriding procedure Fatal_Error
     (Self       : in out XMPP_Session;
      Occurrence : XML.SAX.Parse_Exceptions.SAX_Parse_Exception;

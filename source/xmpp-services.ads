@@ -33,6 +33,8 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
+with Ada.Containers.Vectors;
+
 with League.Strings;
 
 with XMPP.Services_Features;
@@ -40,6 +42,16 @@ with XMPP.Services_Identities;
 with XMPP.Objects;
 
 package XMPP.Services is
+
+   type Service_Item is record
+      JID  : League.Strings.Universal_String;
+      Name : League.Strings.Universal_String;
+      Node : League.Strings.Universal_String;
+   end record;
+
+   package Service_Items_Package is
+      new Ada.Containers.Vectors (Natural, Service_Item);
+
 
    type XMPP_Service is new XMPP.Objects.XMPP_Object with private;
 
@@ -79,6 +91,11 @@ package XMPP.Services is
    procedure Add_Feature (Self : in out XMPP_Service;
                           Val  : League.Strings.Universal_String);
 
+   function Get_Items (Self : XMPP_Service)
+      return Service_Items_Package.Vector;
+
+   procedure Add_Item (Self : in out XMPP_Service; Item : in Service_Item);
+
 private
 
    type XMPP_Service is new XMPP.Objects.XMPP_Object with
@@ -86,6 +103,7 @@ private
       Type_Of_Service : XMPP.Services_Features.Feature;
       Identities      : XMPP.Services_Identities.Identities_Vector;
       Features        : XMPP.Services_Features.Features_Vector;
+      Items           : Service_Items_Package.Vector;
    end record;
 
 end XMPP.Services;

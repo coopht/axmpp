@@ -430,4 +430,21 @@ package body XMPP.Services is
       end if;
    end Add_Feature;
 
+   ----------------
+   --  Add_Item  --
+   ----------------
+   procedure Add_Item (Self : in out XMPP_Service; Item : Service_Item) is
+   begin
+      Self.Items.Append (Item);
+   end Add_Item;
+
+   -----------------
+   --  Get_Items  --
+   -----------------
+   function Get_Items (Self : XMPP_Service)
+      return Service_Items_Package.Vector is
+   begin
+      return Self.Items;
+   end Get_Items;
+
 end XMPP.Services;
