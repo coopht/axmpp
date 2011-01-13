@@ -942,8 +942,7 @@ package body XMPP.Sessions is
    begin
       Ada.Wide_Wide_Text_IO.Put_Line
         ("XMPP.Session.Process_IQ : IQ arrived : "
-           & XMPP.IQS.IQ_Kind'Wide_Wide_Image
-              (IQ.Get_IQ_Kind));
+           & XMPP.IQS.IQ_Kind'Wide_Wide_Image (IQ.Get_IQ_Kind));
 
       if IQ.Get_IQ_Kind = XMPP.IQS.Result then
          for J in 0 .. IQ.Items_Count - 1 loop
@@ -955,41 +954,23 @@ package body XMPP.Sessions is
             --  Resource Binded
             if IQ.Item_At (J).Get_Kind = XMPP.Objects.Bind then
                Self.Stream_Handler.Bind_Resource_State
-                 (XMPP.Binds.XMPP_Bind_Access (IQ.Item_At (J)).Get_JID,
+                (XMPP.Binds.XMPP_Bind_Access (IQ.Item_At (J)).Get_JID,
                  XMPP.Binds.Success);
 
             --  Session established
             elsif IQ.Item_At (J).Get_Kind = XMPP.Objects.IQ_Session then
-               declare
-                  S : XMPP.IQ_Sessions.XMPP_IQ_Session_Access
-                    := XMPP.IQ_Sessions.XMPP_IQ_Session_Access
-                        (IQ.Item_At (J));
-
-               begin
-                  Self.Stream_Handler.Session_State
-                    (XMPP.IQ_Sessions.Established);
-               end;
+               Self.Stream_Handler.Session_State
+                (XMPP.IQ_Sessions.Established);
 
             --  Roster arrived
             elsif IQ.Item_At (J).Get_Kind = XMPP.Objects.Roster then
-               declare
-                  R : XMPP.Rosters.XMPP_Roster_Access
-                    := XMPP.Rosters.XMPP_Roster_Access (IQ.Item_At (J));
-
-               begin
-                  Self.Stream_Handler.Roster (R);
-               end;
+               Self.Stream_Handler.Roster
+                (XMPP.Rosters.XMPP_Roster_Access (IQ.Item_At (J)));
 
             --  Roster arrived
             elsif IQ.Item_At (J).Get_Kind = XMPP.Objects.Disco then
-               declare
-                  S : XMPP.Services.XMPP_Service_Access
-                    := XMPP.Services.XMPP_Service_Access (IQ.Item_At (J));
-
-               begin
-                  Self.Stream_Handler.Service_Information (S);
-               end;
-
+               Self.Stream_Handler.Service_Information
+                (XMPP.Services.XMPP_Service_Access (IQ.Item_At (J)));
             end if;
          end loop;
       end if;

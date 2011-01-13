@@ -47,14 +47,14 @@ begin
    S.Set_JID (League.Strings.To_Universal_String ("uim-test"));
 
    --  For local testing
-   --  S.Set_Host (League.Strings.To_Universal_String ("zion"));
-   --  S.Set_Password (League.Strings.To_Universal_String ("123"));
-   --  S.Set_Host_Addr (League.Strings.To_Universal_String ("127.0.0.1"));
+   S.Set_Host (League.Strings.To_Universal_String ("zion"));
+   S.Set_Password (League.Strings.To_Universal_String ("123"));
+   S.Set_Host_Addr (League.Strings.To_Universal_String ("127.0.0.1"));
 
    --  for jabber.ru testing
-   S.Set_Host (League.Strings.To_Universal_String ("jabber.ru"));
-   S.Set_Password (League.Strings.To_Universal_String ("123456"));
-   S.Set_Host_Addr (League.Strings.To_Universal_String ("77.88.57.177"));
+   --  S.Set_Host (League.Strings.To_Universal_String ("jabber.ru"));
+   --  S.Set_Password (League.Strings.To_Universal_String ("123456"));
+   --  S.Set_Host_Addr (League.Strings.To_Universal_String ("77.88.57.177"));
 
    S.Set_Stream_Handler (H);
    H.Set_Session_Object (S);
