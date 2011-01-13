@@ -44,9 +44,9 @@ with XML.SAX.Readers;
 
 with XMPP.Binds;
 with XMPP.Challenges;
-with XMPP.Discoes;
-with XMPP.Discoes_Features;
-with XMPP.Discoes_Identities;
+with XMPP.Services;
+with XMPP.Services_Features;
+with XMPP.Services_Identities;
 with XMPP.IQS;
 with XMPP.IQ_Sessions;
 with XMPP.Messages;
@@ -625,21 +625,21 @@ package body XMPP.Sessions is
          if Local_Name = To_Universal_String ("query") then
             if Self.Stack.Last_Element.Get_Kind = Objects.IQ then
                Self.Stack.Append
-                 (XMPP.Objects.XMPP_Object_Access (XMPP.Discoes.Create));
+                 (XMPP.Objects.XMPP_Object_Access (XMPP.Services.Create));
             end if;
 
          elsif Local_Name = To_Universal_String ("identity") then
             if Self.Stack.Last_Element.Get_Kind = Objects.Disco then
-               XMPP.Discoes.XMPP_Disco_Access
+               XMPP.Services.XMPP_Service_Access
                  (Self.Stack.Last_Element).Add_Identity
-                  (XMPP.Discoes_Identities.Create
+                  (XMPP.Services_Identities.Create
                      (Attributes.Value (1), Attributes.Value (2)));
                return;
             end if;
 
          elsif Local_Name = To_Universal_String ("feature") then
             if Self.Stack.Last_Element.Get_Kind = Objects.Disco then
-               XMPP.Discoes.XMPP_Disco_Access
+               XMPP.Services.XMPP_Service_Access
                  (Self.Stack.Last_Element).Add_Feature (Attributes.Value (1));
                return;
             end if;
@@ -967,10 +967,10 @@ package body XMPP.Sessions is
    procedure Discover_Information (Self : in out XMPP_Session;
                                    JID  : League.Strings.Universal_String) is
       IQ : XMPP.IQS.XMPP_IQ (XMPP.IQS.Get);
-      D  : XMPP.Discoes.XMPP_Disco_Access := XMPP.Discoes.Create;
+      D  : XMPP.Services.XMPP_Service_Access := XMPP.Services.Create;
 
    begin
-      D.Set_Type (XMPP.Discoes_Features.Protocol_Disco_Info);
+      D.Set_Type (XMPP.Services_Features.Protocol_Disco_Info);
       IQ.Set_From (Self.JID & "@" & Self.Host);
       IQ.Set_To (JID);
       IQ.Set_Id (To_Universal_String ("info1"));
@@ -985,10 +985,10 @@ package body XMPP.Sessions is
    procedure Discover_Items (Self : in out XMPP_Session;
                              JID  : League.Strings.Universal_String) is
       IQ : XMPP.IQS.XMPP_IQ (XMPP.IQS.Get);
-      D  : XMPP.Discoes.XMPP_Disco_Access := XMPP.Discoes.Create;
+      D  : XMPP.Services.XMPP_Service_Access := XMPP.Services.Create;
 
    begin
-      D.Set_Type (XMPP.Discoes_Features.Protocol_Disco_Items);
+      D.Set_Type (XMPP.Services_Features.Protocol_Disco_Items);
       IQ.Set_From (Self.JID & "@" & Self.Host);
       IQ.Set_To (JID);
       IQ.Set_Id (To_Universal_String ("info1"));

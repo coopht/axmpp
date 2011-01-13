@@ -33,7 +33,7 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with XMPP.Discoes_Features;
+with XMPP.Services_Features;
 
 package body XMPP.MUC is
 
@@ -91,7 +91,7 @@ package body XMPP.MUC is
    --------------------------
    procedure MUC_Support_Query (Self : in out XMPP_MUC) is
    begin
-      Self.Disco.Add_Feature (XMPP.Discoes_Features.Protocol_Disco_Info);
+      Self.Service.Add_Feature (XMPP.Services_Features.Protocol_Disco_Info);
    end MUC_Support_Query;
 
 end XMPP.MUC;

@@ -37,7 +37,7 @@ with Ada.Containers.Vectors;
 
 with League.Strings;
 
-package XMPP.Discoes_Features is
+package XMPP.Services_Features is
 
    type Feature is
      (DNS_Srv,
@@ -715,4 +715,4 @@ package XMPP.Discoes_Features is
 
    subtype Features_Vector is Features_Vectors.Vector;
 
-end XMPP.Discoes_Features;
+end XMPP.Services_Features;

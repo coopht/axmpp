@@ -37,7 +37,7 @@ with Ada.Containers.Indefinite_Vectors;
 
 with League.Strings;
 
-package XMPP.Discoes_Identities is
+package XMPP.Services_Identities is
 
    type Category_Type is
      (Account,
@@ -255,5 +255,5 @@ package XMPP.Discoes_Identities is
                     I_Type   : League.Strings.Universal_String)
      return Identity;
 
-end XMPP.Discoes_Identities;
+end XMPP.Services_Identities;
 

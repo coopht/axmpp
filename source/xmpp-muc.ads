@@ -35,7 +35,7 @@
 ------------------------------------------------------------------------------
 with League.Strings;
 
-with XMPP.Discoes;
+with XMPP.Services;
 with XMPP.Objects;
 
 package XMPP.MUC is
@@ -68,7 +68,7 @@ private
    type XMPP_MUC is new XMPP.Objects.XMPP_Object with
    record
       Conf_Server : League.Strings.Universal_String;
-      Disco       : XMPP.Discoes.XMPP_Disco;
+      Service     : XMPP.Services.XMPP_Service;
    end record;
 
 end XMPP.MUC;

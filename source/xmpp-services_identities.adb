@@ -35,7 +35,7 @@
 ------------------------------------------------------------------------------
 with Ada.Characters.Conversions;
 
-package body XMPP.Discoes_Identities is
+package body XMPP.Services_Identities is
 
    use League.Strings;
 
@@ -119,5 +119,5 @@ package body XMPP.Discoes_Identities is
       end if;
    end Create;
 
-end XMPP.Discoes_Identities;
+end XMPP.Services_Identities;
 

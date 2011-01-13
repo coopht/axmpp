@@ -26,32 +26,66 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --
---  <Unit> XMPP.Discoes_Features
+--  <Unit> XMPP.Servicees
 --  <ImplementationNotes>
 --
 ------------------------------------------------------------------------------
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-package body XMPP.Discoes_Features is
+with League.Strings;
 
-   -------------
-   --  Image  --
-   -------------
-   function Image (X : Feature) return League.Strings.Universal_String is
-   begin
-      case X is
-         when Protocol_Disco_Info =>
-            return League.Strings.To_Universal_String
-                    ("http://jabber.org/protocol/disco#info");
+with XMPP.Services_Features;
+with XMPP.Services_Identities;
+with XMPP.Objects;
 
-         when Protocol_Disco_Items =>
-            return League.Strings.To_Universal_String
-                    ("http://jabber.org/protocol/disco#items");
+package XMPP.Services is
 
-         when others =>
-            raise Program_Error with "Not yet implemented";
-      end case;
-   end Image;
+   type XMPP_Service is new XMPP.Objects.XMPP_Object with private;
 
-end XMPP.Discoes_Features;
+   type XMPP_Service_Access is access all XMPP_Service'Class;
+
+   overriding function Get_Kind (Self : XMPP_Service)
+      return Objects.Object_Kind;
+
+   overriding function Serialize (Self : in XMPP_Service)
+      return League.Strings.Universal_String;
+
+   overriding
+   procedure Set_Content (Self      : in out XMPP_Service;
+                          Parameter : League.Strings.Universal_String;
+                          Value     : League.Strings.Universal_String);
+
+   function Create return not null XMPP_Service_Access;
+
+   function Get_Type (Self : XMPP_Service)
+      return XMPP.Services_Features.Feature;
+
+   procedure Set_Type (Self : in out XMPP_Service;
+                       Val  : XMPP.Services_Features.Feature);
+
+   function Get_Identities (Self : XMPP_Service)
+      return XMPP.Services_Identities.Identities_Vector;
+
+   function Get_Features (Self : XMPP_Service)
+      return XMPP.Services_Features.Features_Vector;
+
+   procedure Add_Identity (Self : in out XMPP_Service;
+                           Val  : XMPP.Services_Identities.Identity);
+
+   procedure Add_Feature (Self : in out XMPP_Service;
+                          Val  : XMPP.Services_Features.Feature);
+
+   procedure Add_Feature (Self : in out XMPP_Service;
+                          Val  : League.Strings.Universal_String);
+
+private
+
+   type XMPP_Service is new XMPP.Objects.XMPP_Object with
+   record
+      Type_Of_Service : XMPP.Services_Features.Feature;
+      Identities      : XMPP.Services_Identities.Identities_Vector;
+      Features        : XMPP.Services_Features.Features_Vector;
+   end record;
+
+end XMPP.Services;

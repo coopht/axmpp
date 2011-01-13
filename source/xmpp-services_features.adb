@@ -26,65 +26,32 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --
---  <Unit> XMPP.Discoes
+--  <Unit> XMPP.Discoes_Features
 --  <ImplementationNotes>
 --
 ------------------------------------------------------------------------------
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with League.Strings;
+package body XMPP.Services_Features is
 
-with XMPP.Discoes_Features;
-with XMPP.Discoes_Identities;
-with XMPP.Objects;
+   -------------
+   --  Image  --
+   -------------
+   function Image (X : Feature) return League.Strings.Universal_String is
+   begin
+      case X is
+         when Protocol_Disco_Info =>
+            return League.Strings.To_Universal_String
+                    ("http://jabber.org/protocol/disco#info");
 
-package XMPP.Discoes is
+         when Protocol_Disco_Items =>
+            return League.Strings.To_Universal_String
+                    ("http://jabber.org/protocol/disco#items");
 
-   type XMPP_Disco is new XMPP.Objects.XMPP_Object with private;
+         when others =>
+            raise Program_Error with "Not yet implemented";
+      end case;
+   end Image;
 
-   type XMPP_Disco_Access is access all XMPP_Disco'Class;
-
-   overriding function Get_Kind (Self : XMPP_Disco)
-      return Objects.Object_Kind;
-
-   overriding function Serialize (Self : in XMPP_Disco)
-      return League.Strings.Universal_String;
-
-   overriding
-   procedure Set_Content (Self      : in out XMPP_Disco;
-                          Parameter : League.Strings.Universal_String;
-                          Value     : League.Strings.Universal_String);
-
-   function Create return not null XMPP_Disco_Access;
-
-   function Get_Type (Self : XMPP_Disco) return XMPP.Discoes_Features.Feature;
-
-   procedure Set_Type (Self : in out XMPP_Disco;
-                       Val  : XMPP.Discoes_Features.Feature);
-
-   function Get_Identities (Self : XMPP_Disco)
-      return XMPP.Discoes_Identities.Identities_Vector;
-
-   function Get_Features (Self : XMPP_Disco)
-      return XMPP.Discoes_Features.Features_Vector;
-
-   procedure Add_Identity (Self : in out XMPP_Disco;
-                           Val  : XMPP.Discoes_Identities.Identity);
-
-   procedure Add_Feature (Self : in out XMPP_Disco;
-                          Val  : XMPP.Discoes_Features.Feature);
-
-   procedure Add_Feature (Self : in out XMPP_Disco;
-                          Val  : League.Strings.Universal_String);
-
-private
-
-   type XMPP_Disco is new XMPP.Objects.XMPP_Object with
-   record
-      Type_Of_Disco : XMPP.Discoes_Features.Feature;
-      Identities    : XMPP.Discoes_Identities.Identities_Vector;
-      Features      : XMPP.Discoes_Features.Features_Vector;
-   end record;
-
-end XMPP.Discoes;
+end XMPP.Services_Features;
