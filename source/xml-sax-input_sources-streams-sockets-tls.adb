@@ -133,12 +133,12 @@ package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
                   Last := Buffer'First + Length - 1;
 
                   Ada.Text_IO.Put_Line ("=================================");
-                  Ada.Text_IO.Put_Line
-                    ("Data of"
-                     & Ada.Streams.Stream_Element_Offset'Image (Buffer'First)
-                     & " .."
-                     & Ada.Streams.Stream_Element_Offset'Image (Last)
-                     & " received from GNUTLS.Record_Recv");
+                  --  Ada.Text_IO.Put_Line
+                  --    ("Data of"
+                  --   & Ada.Streams.Stream_Element_Offset'Image (Buffer'First)
+                  --     & " .."
+                  --     & Ada.Streams.Stream_Element_Offset'Image (Last)
+                  --     & " received from GNUTLS.Record_Recv");
 
                   Ada.Text_IO.Put
                     ("Recieved from GNUTLS.Record_Recv : ");
