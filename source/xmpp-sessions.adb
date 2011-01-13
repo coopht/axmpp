@@ -980,6 +980,16 @@ package body XMPP.Sessions is
                   Self.Stream_Handler.Roster (R);
                end;
 
+            --  Roster arrived
+            elsif IQ.Item_At (J).Get_Kind = XMPP.Objects.Disco then
+               declare
+                  S : XMPP.Services.XMPP_Service_Access
+                    := XMPP.Services.XMPP_Service_Access (IQ.Item_At (J));
+
+               begin
+                  Self.Stream_Handler.Service_Information (S);
+               end;
+
             end if;
          end loop;
       end if;
