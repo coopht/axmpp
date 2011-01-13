@@ -41,6 +41,7 @@ with XMPP.IQS;
 with XMPP.Messages;
 with XMPP.Presences;
 with XMPP.Rosters;
+with XMPP.Services;
 with XMPP.Streams;
 with XMPP.Stream_Features;
 
@@ -92,6 +93,11 @@ package XMPP.Stream_Handlers is
    not overriding procedure IQ
      (Self : in out XMPP_Stream_Handler;
       IQ   : not null XMPP.IQS.XMPP_IQ_Access) is null;
+
+   not overriding procedure Service_Information
+     (Self : in out XMPP_Stream_Handler;
+      Info : not null XMPP.Services.XMPP_Service_Access) is null;
+
 
    not overriding procedure End_Stream
      (Self : in out XMPP_Stream_Handler) is null;
