@@ -27,7 +27,8 @@
 ------------------------------------------------------------------------------
 --
 --  <Unit> XMPP.MUC
---  <ImplementationNotes>
+--  <ImplementationNotes> Implements Multi-User Chat (XEP-0045)
+--  http://xmpp.org/extensions/xep-0045.html
 --
 ------------------------------------------------------------------------------
 --  $Revision$ $Author$
