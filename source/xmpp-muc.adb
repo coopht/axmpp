@@ -68,30 +68,4 @@ package body XMPP.MUC is
       raise Program_Error with "Not yet implemented";
    end Set_Content;
 
-   -----------------------
-   --  Set_Conf_Server  --
-   -----------------------
-   procedure Set_Conf_Server (Self : in out XMPP_MUC;
-                              Srv  : League.Strings.Universal_String) is
-   begin
-      Self.Conf_Server := Srv;
-   end Set_Conf_Server;
-
-   -----------------------
-   --  Get_Conf_Server  --
-   -----------------------
-   function Get_Conf_Server (Self : XMPP_MUC)
-      return League.Strings.Universal_String is
-   begin
-      return Self.Conf_Server;
-   end Get_Conf_Server;
-
-   --------------------------
-   --  MUC_Support_Query  --
-   --------------------------
-   procedure MUC_Support_Query (Self : in out XMPP_MUC) is
-   begin
-      Self.Service.Add_Feature (XMPP.Services_Features.Protocol_Disco_Info);
-   end MUC_Support_Query;
-
 end XMPP.MUC;
