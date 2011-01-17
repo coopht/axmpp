@@ -98,7 +98,6 @@ package XMPP.Stream_Handlers is
      (Self : in out XMPP_Stream_Handler;
       Info : not null XMPP.Services.XMPP_Service_Access) is null;
 
-
    not overriding procedure End_Stream
      (Self : in out XMPP_Stream_Handler) is null;
 
