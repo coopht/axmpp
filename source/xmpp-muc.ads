@@ -41,6 +41,14 @@ with XMPP.Objects;
 
 package XMPP.MUC is
 
+   type MUC_Affilation is (Admin, Member, None, Outcast, Owner);
+   type MUC_Role is (Moderator, None, Participant, Visitor);
+
+   type MUC_Item is record
+      Affilation : MUC_Affilation := None;
+      Role       : MUC_Role := None;
+   end record;
+
    type XMPP_MUC is new XMPP.Objects.XMPP_Object with private;
 
    type XMPP_MUC_Access is access all XMPP_MUC'Class;
@@ -55,11 +63,14 @@ package XMPP.MUC is
       Parameter : League.Strings.Universal_String;
       Value     : League.Strings.Universal_String);
 
+   function Create return XMPP_MUC_Access;
+
+   procedure Set_Item (Self : in out XMPP_MUC; Item : MUC_Item);
+
 private
 
    type XMPP_MUC is new XMPP.Objects.XMPP_Object with
    record
-      Room : League.Strings.Universal_String;
+      Item : MUC_Item;
    end record;
-
 end XMPP.MUC;

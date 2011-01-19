@@ -50,11 +50,9 @@ package body XMPP.MUC is
    -----------------
    overriding function Serialize (Self : XMPP_MUC)
      return League.Strings.Universal_String is
-      X : League.Strings.Universal_String;
-
    begin
-
-      return X;
+      return League.Strings.To_Universal_String
+              ("<x xmlns='http://jabber.org/protocol/muc'/>");
    end Serialize;
 
    -------------------
@@ -67,5 +65,21 @@ package body XMPP.MUC is
    begin
       raise Program_Error with "Not yet implemented";
    end Set_Content;
+
+   --------------
+   --  Create  --
+   --------------
+   function Create return XMPP_MUC_Access is
+   begin
+      return new XMPP_MUC;
+   end Create;
+
+   ----------------
+   --  Set_Item  --
+   ----------------
+   procedure Set_Item (Self : in out XMPP_MUC; Item : MUC_Item) is
+   begin
+      Self.Item := Item;
+   end Set_Item;
 
 end XMPP.MUC;
