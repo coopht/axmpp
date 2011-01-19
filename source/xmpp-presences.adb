@@ -36,6 +36,7 @@
 with Ada.Wide_Wide_Text_IO;
 
 with League.Strings;
+with XML.SAX.Pretty_Writers;
 
 with XMPP.Objects;
 
@@ -111,6 +112,10 @@ package body XMPP.Presences is
          end case;
 
          Result.Append (To_Universal_String ("</show>"));
+      end if;
+
+      if Self.Multi_Chat then
+         Result.Append (Self.MUC.Serialize);
       end if;
 
       Result.Append (To_Universal_String ("</presence>"));
@@ -291,5 +296,30 @@ package body XMPP.Presences is
       return Self.Type_Of_Presence;
    end Get_Type;
 
-end XMPP.Presences;
+   ---------------------
+   --  Is_Multi_Chat  --
+   ---------------------
+   function Is_Multi_Chat (Self : XMPP_Presence) return Boolean is
+   begin
+      return Self.Multi_Chat;
+   end Is_Multi_Chat;
 
+   ----------------------
+   --  Set_Multi_Chat  --
+   ----------------------
+   procedure Set_Multi_Chat (Self : in out XMPP_Presence;
+                             MUC  : XMPP.MUC.XMPP_MUC) is
+   begin
+      Self.MUC := MUC;
+      Self.Multi_Chat := True;
+   end Set_Multi_Chat;
+
+   ---------------
+   --  Get_MUC  --
+   ---------------
+   function Get_MUC (Self : XMPP_Presence) return XMPP.MUC.XMPP_MUC is
+   begin
+      return Self.MUC;
+   end Get_MUC;
+
+end XMPP.Presences;

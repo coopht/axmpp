@@ -35,6 +35,7 @@
 ------------------------------------------------------------------------------
 with League.Strings;
 
+with XMPP.MUC;
 with XMPP.Objects;
 
 package XMPP.Presences is
@@ -98,6 +99,13 @@ package XMPP.Presences is
 
    function Create return XMPP_Presence_Access;
 
+   function Is_Multi_Chat (Self : XMPP_Presence) return Boolean;
+
+   procedure Set_Multi_Chat (Self : in out XMPP_Presence;
+                             MUC  : XMPP.MUC.XMPP_MUC);
+
+   function Get_MUC (Self : XMPP_Presence) return XMPP.MUC.XMPP_MUC;
+
 private
 
    type XMPP_Presence is new XMPP.Objects.XMPP_Object with
@@ -108,6 +116,8 @@ private
       Status           : League.Strings.Universal_String;
       Priority         : Priority_Type := -129;
       Type_Of_Presence : Presence_Type := Unavailable;
+      MUC              : XMPP.MUC.XMPP_MUC;
+      Multi_Chat       : Boolean := False;
    end record;
 end XMPP.Presences;
 
