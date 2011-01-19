@@ -50,6 +50,7 @@ with XMPP.Services_Identities;
 with XMPP.IQS;
 with XMPP.IQ_Sessions;
 with XMPP.Messages;
+with XMPP.MUC;
 with XMPP.Networks;
 with XMPP.Null_Objects;
 with XMPP.Objects;
@@ -69,6 +70,9 @@ package body XMPP.Sessions is
 
    use type Ada.Streams.Stream_Element_Offset;
    use type XMPP.IQS.IQ_Kind;
+
+   function TUS (Item : Wide_Wide_String) return Universal_String
+     renames League.Strings.To_Universal_String;
 
    -------------------------
    --  Proceed_SASL_Auth  --
@@ -396,6 +400,34 @@ package body XMPP.Sessions is
             end if;
          end if;
 
+      elsif Namespace_URI
+        = To_Universal_String ("http://jabber.org/protocol/muc#user") then
+         if Local_Name = To_Universal_String ("x") then
+            if Self.Stack.Last_Element.Get_Kind = XMPP.Objects.MUC then
+               if Previous (Current) /= No_Element then
+                  if Self.Stack.Element
+                    (To_Index (Previous (Current))).Get_Kind
+                                                        = XMPP.Objects.Presence
+                  then
+                     declare
+                        M : access XMPP.MUC.XMPP_MUC
+                          := XMPP.MUC.XMPP_MUC_Access
+                          (Self.Stack.Last_Element);
+
+                        P : XMPP.Presences.XMPP_Presence_Access
+                          := XMPP.Presences.XMPP_Presence_Access
+                              (Self.Stack.Element
+                                (To_Index (Previous (Current))));
+                     begin
+                        P.Set_Multi_Chat (M.all);
+                     end;
+
+                     Self.Stack.Delete_Last;
+                  end if;
+               end if;
+            end if;
+         end if;
+
       elsif Namespace_URI = To_Universal_String ("jabber:client") then
          --  Calling IQ Handler
          if Local_Name = To_Universal_String ("iq") then
@@ -663,6 +695,55 @@ package body XMPP.Sessions is
                    Name => Attributes.Value (To_Universal_String ("name")),
                    Node => Attributes.Value (To_Universal_String ("node"))));
                return;
+            end if;
+         end if;
+
+      elsif Namespace_URI
+        = To_Universal_String ("http://jabber.org/protocol/muc#user") then
+         if Local_Name = To_Universal_String ("x") then
+            if Self.Stack.Last_Element.Get_Kind = Objects.Presence then
+               Self.Stack.Append
+                (XMPP.Objects.XMPP_Object_Access (XMPP.MUC.Create));
+            end if;
+         elsif Local_Name = To_Universal_String ("item") then
+            if Self.Stack.Last_Element.Get_Kind = Objects.MUC then
+               declare
+                  Item       : XMPP.MUC.MUC_Item;
+                  Affilation : Universal_String
+                    := Attributes.Value (TUS ("affilation"));
+
+                  Role       : Universal_String
+                    := Attributes.Value (TUS ("role"));
+
+               begin
+                  --  Setting affilation
+                  if Affilation = TUS ("admin") then
+                     Item.Affilation := XMPP.MUC.Admin;
+                  elsif Affilation = TUS ("member") then
+                     Item.Affilation := XMPP.MUC.Member;
+                  elsif Affilation = TUS ("none") then
+                     Item.Affilation := XMPP.MUC.None;
+                  elsif Affilation = TUS ("outcast") then
+                     Item.Affilation := XMPP.MUC.Outcast;
+                  elsif Affilation = TUS ("owner") then
+                     Item.Affilation := XMPP.MUC.Owner;
+                  end if;
+
+                  --  Setting role
+                  if Role = TUS ("moderator") then
+                     Item.Role := XMPP.MUC.Moderator;
+                  elsif Role = TUS ("none") then
+                     Item.Role := XMPP.MUC.None;
+                  elsif Role = TUS ("participant") then
+                     Item.Role := XMPP.MUC.Participant;
+                  elsif Role = TUS ("Visitor") then
+                     Item.Role := XMPP.MUC.Visitor;
+                  end if;
+
+                  XMPP.MUC.XMPP_MUC_Access
+                   (Self.Stack.Last_Element).Set_Item (Item);
+                  return;
+               end;
             end if;
          end if;
 
