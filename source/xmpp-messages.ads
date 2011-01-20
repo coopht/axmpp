@@ -4,7 +4,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --                                                                          --
--- Copyright © 2010 Alexander Basov <coopht@gmail.com>                      --
+-- Copyright © 2010 - 2011 Alexander Basov <coopht@gmail.com>               --
 --                                                                          --
 -- This is free software;  you can  redistribute it and/or modify it under  --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
