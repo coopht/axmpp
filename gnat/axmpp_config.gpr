@@ -4,16 +4,16 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --                                                                          --
--- Copyright © 2010 Alexander Basov <coopht@gmail.com>                      --
+-- Copyright © 2011 Alexander Basov <coopht@gmail.com>                      --
 --                                                                          --
 -- This is free software;  you can  redistribute it and/or modify it under  --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
 -- ware  Foundation;  either version 2,  or (at your option) any later ver- --
--- sion. UIM is distributed in the hope that it will be useful, but WITH- --
+-- sion. AXMPP is distributed in the hope that it will be useful, but WITH- --
 -- OUT ANY WARRANTY;  without even the  implied warranty of MERCHANTABILITY --
 -- or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License --
 -- for  more details.  You should have  received  a copy of the GNU General --
--- Public License distributed with UIM;  see file COPYING.  If not, write   --
+-- Public License distributed with AXMPP;  see file COPYING.  If not, write --
 -- to  the  Free Software Foundation,  51  Franklin  Street,  Fifth  Floor, --
 -- Boston, MA 02110-1301, USA.                                              --
 --                                                                          --
@@ -26,27 +26,24 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --
---  <Unit> Agnutls
+--  <Unit> AXMPP_Config
 --  <ImplementationNotes>
 --
 ------------------------------------------------------------------------------
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with "axmpp_config";
 
-project Agnutls is
+project AXMPP_Config is
 
-   for Languages use ("Ada");
-   for Library_Name use "agnutls";
-   for Library_Kind use "dynamic";
-   for Source_Dirs use ("../agnutls/");
-   for Library_Dir use "../.libs";
-   for Library_ALI_Dir use "../.libs";
-   for Object_Dir use "../.objs";
+   Default_Switches
+      := ("-g",
+          "-gnato",
+          "-fstack-check",
+          "-gnat05",
+          "-gnatW8",
+          "-gnatyaAbcdefhiIkmnoOprsStux");
 
-   package Compiler is
-      for Default_Switches ("Ada") use AXMPP_Config.Default_Switches;
-   end Compiler;
-
-end Agnutls;
+   for Source_Files use ();
+   -- disable warning : there are no Ada sources in this project
+end AXMPP_Config;

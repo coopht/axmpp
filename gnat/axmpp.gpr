@@ -35,6 +35,7 @@
 ------------------------------------------------------------------------------
 with "matreshka_xml";
 with "agnutls";
+with "axmpp_config";
 
 project AXMPP is
 
@@ -46,15 +47,7 @@ project AXMPP is
    for Object_Dir use "../.objs";
 
    package Compiler is
-      for Default_Switches ("ada")
-         use ("-O0",
-	      "-g",
-	      "-ggdb3",
-	      "-fPIC",
-	      "-gnaty3aAbceghiIklmnorsSuxy",
-	      "-gnat05",
-	      "-gnatW8");
-
+      for Default_Switches ("Ada") use AXMPP_Config.Default_Switches;
    end Compiler;
 
 end AXMPP;
