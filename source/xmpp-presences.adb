@@ -35,11 +35,6 @@
 ------------------------------------------------------------------------------
 with Ada.Wide_Wide_Text_IO;
 
-with League.Strings;
-with XML.SAX.Pretty_Writers;
-
-with XMPP.Objects;
-
 package body XMPP.Presences is
 
    use League.Strings;
@@ -53,18 +48,87 @@ package body XMPP.Presences is
    end Create;
 
    ----------------
+   --  Get_From  --
+   ----------------
+   function Get_From (Self : XMPP_Presence)
+      return League.Strings.Universal_String is
+   begin
+      return Self.From;
+   end Get_From;
+
+   ----------------
    --  Get_Kind  --
    ----------------
    overriding function Get_Kind (Self : XMPP_Presence)
       return Objects.Object_Kind is
+      pragma Unreferenced (Self);
+
    begin
       return XMPP.Objects.Presence;
    end Get_Kind;
 
+   ---------------
+   --  Get_MUC  --
+   ---------------
+   function Get_MUC (Self : XMPP_Presence) return XMPP.MUC.XMPP_MUC is
+   begin
+      return Self.MUC;
+   end Get_MUC;
+
+   --------------------
+   --  Get_Priority  --
+   --------------------
+   function Get_Priority (Self : XMPP_Presence) return Priority_Type is
+   begin
+      return Self.Priority;
+   end Get_Priority;
+
+   ----------------
+   --  Get_Show  --
+   ----------------
+   function Get_Show (Self : XMPP_Presence) return Show_Kind is
+   begin
+      return Self.Show;
+   end Get_Show;
+
+   ------------------
+   --  Get_Status  --
+   ------------------
+   function Get_Status (Self : XMPP_Presence)
+      return League.Strings.Universal_String is
+   begin
+      return Self.Status;
+   end Get_Status;
+
+   --------------
+   --  Get_To  --
+   --------------
+   function Get_To (Self : XMPP_Presence)
+      return League.Strings.Universal_String is
+   begin
+      return Self.To;
+   end Get_To;
+
+   ----------------
+   --  Get_Type  --
+   ----------------
+   function Get_Type (Self : XMPP_Presence) return Presence_Type is
+   begin
+      return Self.Type_Of_Presence;
+   end Get_Type;
+
+   ---------------------
+   --  Is_Multi_Chat  --
+   ---------------------
+   function Is_Multi_Chat (Self : XMPP_Presence) return Boolean is
+   begin
+      return Self.Multi_Chat;
+   end Is_Multi_Chat;
+
    -----------------
    --  Serialize  --
    -----------------
-   overriding function Serialize (Self : in XMPP_Presence)
+   overriding function Serialize (Self : XMPP_Presence)
       return League.Strings.Universal_String is
 
       Result : League.Strings.Universal_String
@@ -194,83 +258,6 @@ package body XMPP.Presences is
    end Set_Content;
 
    ----------------
-   --  Set_Show  --
-   ----------------
-   procedure Set_Show (Self : in out XMPP_Presence; Show : Show_Kind) is
-   begin
-      Self.Show := Show;
-   end Set_Show;
-
-   ----------------
-   --  Get_Show  --
-   ----------------
-   function Get_Show (Self : XMPP_Presence) return Show_Kind is
-   begin
-      return Self.Show;
-   end Get_Show;
-
-   ------------------
-   --  Set_Status  --
-   ------------------
-   procedure Set_Status (Self   : in out XMPP_Presence;
-                         Status : League.Strings.Universal_String) is
-   begin
-      Self.Status := Status;
-   end Set_Status;
-
-   ------------------
-   --  Get_Status  --
-   ------------------
-   function Get_Status (Self : XMPP_Presence)
-      return League.Strings.Universal_String is
-   begin
-      return Self.Status;
-   end Get_Status;
-
-   --------------------
-   --  Set_Priority  --
-   --------------------
-   procedure Set_Priority (Self : in out XMPP_Presence; P : Priority_Type) is
-   begin
-      Self.Priority := P;
-   end Set_Priority;
-
-   --------------------
-   --  Get_Priority  --
-   --------------------
-   function Get_Priority (Self : XMPP_Presence) return Priority_Type is
-   begin
-      return Self.Priority;
-   end Get_Priority;
-
-   --------------
-   --  Get_To  --
-   --------------
-   function Get_To (Self : XMPP_Presence)
-      return League.Strings.Universal_String is
-   begin
-      return Self.To;
-   end Get_To;
-
-   ----------------
-   --  Get_From  --
-   ----------------
-   function Get_From (Self : XMPP_Presence)
-      return League.Strings.Universal_String is
-   begin
-      return Self.From;
-   end Get_From;
-
-   --------------
-   --  Set_To  --
-   --------------
-   procedure Set_To (Self  : in out XMPP_Presence;
-                     Value : League.Strings.Universal_String) is
-   begin
-      Self.To := Value;
-   end Set_To;
-
-   ----------------
    --  Set_From  --
    ----------------
    procedure Set_From (Self  : in out XMPP_Presence;
@@ -278,31 +265,6 @@ package body XMPP.Presences is
    begin
       Self.From := Value;
    end Set_From;
-
-   ----------------
-   --  Set_Type  --
-   ----------------
-   procedure Set_Type (Self : in out XMPP_Presence; Value : Presence_Type) is
-   begin
-      Self.Type_Of_Presence := Value;
-   end Set_Type;
-
-
-   ----------------
-   --  Get_Type  --
-   ----------------
-   function Get_Type (Self : XMPP_Presence) return Presence_Type is
-   begin
-      return Self.Type_Of_Presence;
-   end Get_Type;
-
-   ---------------------
-   --  Is_Multi_Chat  --
-   ---------------------
-   function Is_Multi_Chat (Self : XMPP_Presence) return Boolean is
-   begin
-      return Self.Multi_Chat;
-   end Is_Multi_Chat;
 
    ----------------------
    --  Set_Multi_Chat  --
@@ -314,12 +276,46 @@ package body XMPP.Presences is
       Self.Multi_Chat := True;
    end Set_Multi_Chat;
 
-   ---------------
-   --  Get_MUC  --
-   ---------------
-   function Get_MUC (Self : XMPP_Presence) return XMPP.MUC.XMPP_MUC is
+   --------------------
+   --  Set_Priority  --
+   --------------------
+   procedure Set_Priority (Self : in out XMPP_Presence; P : Priority_Type) is
    begin
-      return Self.MUC;
-   end Get_MUC;
+      Self.Priority := P;
+   end Set_Priority;
+
+   ----------------
+   --  Set_Show  --
+   ----------------
+   procedure Set_Show (Self : in out XMPP_Presence; Show : Show_Kind) is
+   begin
+      Self.Show := Show;
+   end Set_Show;
+
+   ------------------
+   --  Set_Status  --
+   ------------------
+   procedure Set_Status (Self   : in out XMPP_Presence;
+                         Status : League.Strings.Universal_String) is
+   begin
+      Self.Status := Status;
+   end Set_Status;
+
+   --------------
+   --  Set_To  --
+   --------------
+   procedure Set_To (Self  : in out XMPP_Presence;
+                     Value : League.Strings.Universal_String) is
+   begin
+      Self.To := Value;
+   end Set_To;
+
+   ----------------
+   --  Set_Type  --
+   ----------------
+   procedure Set_Type (Self : in out XMPP_Presence; Value : Presence_Type) is
+   begin
+      Self.Type_Of_Presence := Value;
+   end Set_Type;
 
 end XMPP.Presences;

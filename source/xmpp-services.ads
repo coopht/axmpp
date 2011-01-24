@@ -52,7 +52,6 @@ package XMPP.Services is
    package Service_Items_Package is
       new Ada.Containers.Vectors (Natural, Service_Item);
 
-
    type XMPP_Service is new XMPP.Objects.XMPP_Object with private;
 
    type XMPP_Service_Access is access all XMPP_Service'Class;
@@ -60,7 +59,7 @@ package XMPP.Services is
    overriding function Get_Kind (Self : XMPP_Service)
       return Objects.Object_Kind;
 
-   overriding function Serialize (Self : in XMPP_Service)
+   overriding function Serialize (Self : XMPP_Service)
       return League.Strings.Universal_String;
 
    overriding
@@ -94,7 +93,7 @@ package XMPP.Services is
    function Get_Items (Self : XMPP_Service)
       return Service_Items_Package.Vector;
 
-   procedure Add_Item (Self : in out XMPP_Service; Item : in Service_Item);
+   procedure Add_Item (Self : in out XMPP_Service; Item : Service_Item);
 
 private
 

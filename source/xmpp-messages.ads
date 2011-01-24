@@ -52,7 +52,7 @@ package XMPP.Messages is
    overriding function Get_Kind (Self : XMPP_Message)
       return Objects.Object_Kind;
 
-   overriding function Serialize (Self : in XMPP_Message)
+   overriding function Serialize (Self : XMPP_Message)
       return League.Strings.Universal_String;
 
    overriding
@@ -129,4 +129,3 @@ private
    end record;
 
 end XMPP.Messages;
-

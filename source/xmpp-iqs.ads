@@ -49,7 +49,7 @@ package XMPP.IQS is
 
    overriding function Get_Kind (Self : XMPP_IQ) return Objects.Object_Kind;
 
-   overriding function Serialize (Self : in XMPP_IQ)
+   overriding function Serialize (Self : XMPP_IQ)
       return League.Strings.Universal_String;
 
    overriding

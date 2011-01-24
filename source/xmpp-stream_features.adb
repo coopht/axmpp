@@ -35,19 +35,9 @@
 ------------------------------------------------------------------------------
 with Ada.Wide_Wide_Text_IO;
 
-with League.Strings;
-
-with XMPP.Objects;
-
 package body XMPP.Stream_Features is
 
    use type League.Strings.Universal_String;
-
-   function Create return XMPP_Stream_Feature_Access is
-   begin
-      return new XMPP_Stream_Feature;
-   end Create;
-
 
    ---------------------
    --  Add_Mechanism  --
@@ -67,6 +57,24 @@ package body XMPP.Stream_Features is
       end if;
    end Add_Mechanism;
 
+   --------------
+   --  Create  --
+   --------------
+   function Create return XMPP_Stream_Feature_Access is
+   begin
+      return new XMPP_Stream_Feature;
+   end Create;
+
+   ----------------
+   --  Get_Kind  --
+   ----------------
+   overriding function Get_Kind (Self : XMPP_Stream_Feature)
+      return XMPP.Objects.Object_Kind is
+      pragma Unreferenced (Self);
+   begin
+      return XMPP.Objects.Stream_Features;
+   end Get_Kind;
+
    -------------------------
    --  Is_Bind_Supported  --
    -------------------------
@@ -83,23 +91,12 @@ package body XMPP.Stream_Features is
       return Self.Session_Supported;
    end Is_Session_Supported;
 
-   ----------------
-   --  Get_Kind  --
-   ----------------
-   overriding
-   function Get_Kind (Self : XMPP_Stream_Feature)
-      return XMPP.Objects.Object_Kind
-   is
-   begin
-      return XMPP.Objects.Stream_Features;
-   end Get_Kind;
-
    -----------------
    --  Serialize  --
    -----------------
-   function Serialize (Self : in XMPP_Stream_Feature)
-      return League.Strings.Universal_String
-   is
+   overriding function Serialize (Self : XMPP_Stream_Feature)
+      return League.Strings.Universal_String is
+      pragma Unreferenced (Self);
    begin
       return League.Strings.To_Universal_String ("");
    end Serialize;
@@ -137,7 +134,7 @@ package body XMPP.Stream_Features is
    procedure Set_Has_TLS (Self  : in out XMPP_Stream_Feature;
                           Value : Boolean := True) is
    begin
-      Self.Has_TLS := True;
+      Self.Has_TLS := Value;
    end Set_Has_TLS;
 
 end XMPP.Stream_Features;

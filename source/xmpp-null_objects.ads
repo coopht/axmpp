@@ -50,7 +50,7 @@ package XMPP.Null_Objects is
    --  Serialize  --
    -----------------
    overriding
-   function Serialize (Self : in XMPP_Null_Object)
+   function Serialize (Self : XMPP_Null_Object)
       return League.Strings.Universal_String;
 
    -------------------

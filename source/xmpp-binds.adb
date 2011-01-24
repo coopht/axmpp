@@ -35,10 +35,6 @@
 ------------------------------------------------------------------------------
 with Ada.Wide_Wide_Text_IO;
 
-with League.Strings;
-
-with XMPP.Objects;
-
 package body XMPP.Binds is
 
    use League.Strings;
@@ -51,19 +47,38 @@ package body XMPP.Binds is
       return new XMPP_Bind;
    end Create;
 
+   ---------------
+   --  Get_JID  --
+   ---------------
+   function Get_JID (Self : XMPP_Bind) return League.Strings.Universal_String
+   is
+   begin
+      return Self.JID;
+   end Get_JID;
+
    ----------------
    --  Get_Kind  --
    ----------------
    overriding function Get_Kind (Self : XMPP_Bind) return Objects.Object_Kind
    is
+      pragma Unreferenced (Self);
    begin
       return XMPP.Objects.Bind;
    end Get_Kind;
 
+   --------------------
+   --  Get_Resource  --
+   --------------------
+   function Get_Resource (Self : XMPP_Bind)
+      return League.Strings.Universal_String is
+   begin
+      return Self.Resource;
+   end Get_Resource;
+
    -----------------
    --  Serialize  --
    -----------------
-   overriding function Serialize (Self : in XMPP_Bind)
+   overriding function Serialize (Self : XMPP_Bind)
       return League.Strings.Universal_String is
    begin
       return X : League.Strings.Universal_String do
@@ -95,15 +110,6 @@ package body XMPP.Binds is
       end if;
    end Set_Content;
 
-   --------------------
-   --  Set_Resource  --
-   --------------------
-   procedure Set_Resource (Self : in out XMPP_Bind;
-                           Res  : League.Strings.Universal_String) is
-   begin
-      Self.Resource := Res;
-   end Set_Resource;
-
    ---------------
    --  Set_JID  --
    ---------------
@@ -114,21 +120,12 @@ package body XMPP.Binds is
    end Set_JID;
 
    --------------------
-   --  Get_Resource  --
+   --  Set_Resource  --
    --------------------
-   function Get_Resource (Self : XMPP_Bind)
-      return League.Strings.Universal_String is
+   procedure Set_Resource (Self : in out XMPP_Bind;
+                           Res  : League.Strings.Universal_String) is
    begin
-      return Self.Resource;
-   end Get_Resource;
-
-   ---------------
-   --  Set_JID  --
-   ---------------
-   function Get_JID (Self : XMPP_Bind) return League.Strings.Universal_String
-   is
-   begin
-      return Self.JID;
-   end Get_JID;
+      Self.Resource := Res;
+   end Set_Resource;
 
 end XMPP.Binds;

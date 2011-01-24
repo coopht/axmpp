@@ -72,7 +72,7 @@ package XMPP.Objects is
    --  Serialize  --
    -----------------
    not overriding
-   function Serialize (Self : in XMPP_Object)
+   function Serialize (Self : XMPP_Object)
       return League.Strings.Universal_String is abstract;
 
    -------------------

@@ -58,7 +58,7 @@ package XMPP.Stream_Features is
    overriding function Get_Kind (Self : XMPP_Stream_Feature)
       return XMPP.Objects.Object_Kind;
 
-   overriding function Serialize (Self : in XMPP_Stream_Feature)
+   overriding function Serialize (Self : XMPP_Stream_Feature)
       return League.Strings.Universal_String;
 
    procedure Set_Has_TLS (Self  : in out XMPP_Stream_Feature;

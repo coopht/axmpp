@@ -35,13 +35,45 @@
 ------------------------------------------------------------------------------
 with Ada.Wide_Wide_Text_IO;
 
-with League.Strings;
-
-with XMPP.Objects;
-
 package body XMPP.Roster_Items is
 
    use League.Strings;
+
+   --------------------
+   --  Append_Group  --
+   --------------------
+   procedure Append_Group (Self  : in out XMPP_Roster_Item;
+                           Value : League.Strings.Universal_String) is
+   begin
+      --  Self.Groups.Append (Value);
+      null;
+   end Append_Group;
+
+   --------------
+   --  Create  --
+   --------------
+   function Create return not null XMPP_Roster_Item_Access is
+   begin
+      return new XMPP_Roster_Item;
+   end Create;
+
+   ------------------
+   --  Get_Groups  --
+   ------------------
+   function Get_Groups (Self : XMPP_Roster_Item)
+      return League.String_Vectors.Universal_String_Vector is
+   begin
+      return Self.Groups;
+   end Get_Groups;
+
+   ---------------
+   --  Get_JID  --
+   ---------------
+   function Get_JID (Self : XMPP_Roster_Item)
+      return League.Strings.Universal_String is
+   begin
+      return Self.JID;
+   end Get_JID;
 
    ----------------
    --  Get_Kind  --
@@ -49,16 +81,36 @@ package body XMPP.Roster_Items is
    overriding function Get_Kind (Self : XMPP_Roster_Item)
       return Objects.Object_Kind
    is
+      pragma Unreferenced (Self);
    begin
       return XMPP.Objects.Roster_Item;
    end Get_Kind;
 
+   ----------------
+   --  Get_Name  --
+   ----------------
+   function Get_Name (Self : XMPP_Roster_Item)
+      return League.Strings.Universal_String is
+   begin
+      return Self.Name;
+   end Get_Name;
+
+   ------------------------
+   --  Get_Subscription  --
+   ------------------------
+   function Get_Subscription (Self : XMPP_Roster_Item)
+      return Subscription_Type is
+   begin
+      return Self.Subscription;
+   end Get_Subscription;
+
    -----------------
    --  Serialize  --
    -----------------
-   overriding function Serialize (Self : in XMPP_Roster_Item)
+   overriding function Serialize (Self : XMPP_Roster_Item)
       return League.Strings.Universal_String
    is
+      pragma Unreferenced (Self);
    begin
       return X : League.Strings.Universal_String;
    end Serialize;
@@ -90,42 +142,6 @@ package body XMPP.Roster_Items is
       end if;
    end Set_Content;
 
-   ------------------------
-   --  Set_Subscription  --
-   ------------------------
-   procedure Set_Subscription (Self  : in out XMPP_Roster_Item;
-                               Value : Subscription_Type) is
-   begin
-      Self.Subscription := Value;
-   end Set_Subscription;
-
-   ------------------------
-   --  Get_Subscription  --
-   ------------------------
-   function Get_Subscription (Self : XMPP_Roster_Item)
-      return Subscription_Type is
-   begin
-      return Self.Subscription;
-   end Get_Subscription;
-
-   ---------------
-   --  Get_JID  --
-   ---------------
-   function Get_JID (Self : XMPP_Roster_Item)
-      return League.Strings.Universal_String is
-   begin
-      return Self.JID;
-   end Get_JID;
-
-   ----------------
-   --  Get_Name  --
-   ----------------
-   function Get_Name (Self : XMPP_Roster_Item)
-      return League.Strings.Universal_String is
-   begin
-      return Self.Name;
-   end Get_Name;
-
    ---------------
    --  Set_JID  --
    ---------------
@@ -144,31 +160,13 @@ package body XMPP.Roster_Items is
       Self.Name := Value;
    end Set_Name;
 
-   --------------
-   --  Create  --
-   --------------
-   function Create return not null XMPP_Roster_Item_Access is
+   ------------------------
+   --  Set_Subscription  --
+   ------------------------
+   procedure Set_Subscription (Self  : in out XMPP_Roster_Item;
+                               Value : Subscription_Type) is
    begin
-      return new XMPP_Roster_Item;
-   end Create;
-
-   --------------------
-   --  Append_Group  --
-   --------------------
-   procedure Append_Group (Self  : in out XMPP_Roster_Item;
-                           Value : League.Strings.Universal_String) is
-   begin
-      --  Self.Groups.Append (Value);
-      null;
-   end Append_Group;
-
-   ------------------
-   --  Get_Groups  --
-   ------------------
-   function Get_Groups (Self : XMPP_Roster_Item)
-      return League.String_Vectors.Universal_String_Vector is
-   begin
-      return Self.Groups;
-   end Get_Groups;
+      Self.Subscription := Value;
+   end Set_Subscription;
 
 end XMPP.Roster_Items;

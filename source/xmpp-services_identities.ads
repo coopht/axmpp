@@ -256,4 +256,3 @@ package XMPP.Services_Identities is
      return Identity;
 
 end XMPP.Services_Identities;
-

@@ -35,10 +35,6 @@
 ------------------------------------------------------------------------------
 with Ada.Wide_Wide_Text_IO;
 
-with League.Strings;
-
-with XMPP.Objects;
-
 package body XMPP.Streams is
 
    use type League.Strings.Universal_String;
@@ -53,6 +49,8 @@ package body XMPP.Streams is
    ----------------
    overriding
    function Get_Kind (Self : XMPP_Stream) return XMPP.Objects.Object_Kind is
+      pragma Unreferenced (Self);
+
    begin
       return XMPP.Objects.Stream;
    end Get_Kind;
@@ -60,9 +58,10 @@ package body XMPP.Streams is
    -----------------
    --  Serialize  --
    -----------------
-   function Serialize (Self : in XMPP_Stream)
-      return League.Strings.Universal_String
-   is
+   overriding function Serialize (Self : XMPP_Stream)
+      return League.Strings.Universal_String is
+      pragma Unreferenced (Self);
+
    begin
       return League.Strings.To_Universal_String ("");
    end Serialize;

@@ -44,17 +44,17 @@ package XMPP.Base64 is
    --  RFC 1521, MIME Base64 encode/decode
    --  Assumes Ada.Streams.Stream_Element is a byte.
 
-   procedure Decode (Source  : in     String;
-                     Target  :    out Ada.Streams.Stream_Element_Array;
-                     Last    :    out Ada.Streams.Stream_Element_Offset);
+   procedure Decode (Source  :     String;
+                     Target  : out Ada.Streams.Stream_Element_Array;
+                     Last    : out Ada.Streams.Stream_Element_Offset);
    --  decode Source into Target(Target'first .. Last)
    --  Note: it may be appropriate to prescan Source for '=',
    --  indicating termination, or for illegitimate characters,
    --  indicating corruption, before calling Decode.
 
-   procedure Encode (Source  : in     Ada.Streams.Stream_Element_Array;
-                     Target  :    out String;
-                     Last    :    out Natural);
+   procedure Encode (Source  :     Ada.Streams.Stream_Element_Array;
+                     Target  : out String;
+                     Last    : out Natural);
    --  Target is filled in four character increments, except that
    --  a CR-LF pair is inserted after every 76 characters.
    --  Target'length must be at least:

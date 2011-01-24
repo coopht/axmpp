@@ -33,14 +33,23 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with XMPP.Services_Features;
 
 package body XMPP.MUC is
+
+   --------------
+   --  Create  --
+   --------------
+   function Create return XMPP_MUC_Access is
+   begin
+      return new XMPP_MUC;
+   end Create;
 
    ----------------
    --  Get_Kind  --
    ----------------
    overriding function Get_Kind (Self : XMPP_MUC) return Objects.Object_Kind is
+      pragma Unreferenced (Self);
+
    begin
       return XMPP.Objects.MUC;
    end Get_Kind;
@@ -49,7 +58,9 @@ package body XMPP.MUC is
    --  Serialize  --
    -----------------
    overriding function Serialize (Self : XMPP_MUC)
-     return League.Strings.Universal_String is
+      return League.Strings.Universal_String is
+      pragma Unreferenced (Self);
+
    begin
       return League.Strings.To_Universal_String
               ("<x xmlns='http://jabber.org/protocol/muc'/>");
@@ -65,14 +76,6 @@ package body XMPP.MUC is
    begin
       raise Program_Error with "Not yet implemented";
    end Set_Content;
-
-   --------------
-   --  Create  --
-   --------------
-   function Create return XMPP_MUC_Access is
-   begin
-      return new XMPP_MUC;
-   end Create;
 
    ----------------
    --  Set_Item  --

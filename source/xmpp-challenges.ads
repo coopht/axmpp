@@ -48,7 +48,7 @@ package XMPP.Challenges is
    function Get_Kind (Self : XMPP_Challenge) return XMPP.Objects.Object_Kind;
 
    overriding
-   function Serialize (Self : in XMPP_Challenge)
+   function Serialize (Self : XMPP_Challenge)
       return League.Strings.Universal_String;
 
    overriding
@@ -105,6 +105,6 @@ private
    end record;
 
    procedure Parse_Challenge (Self      : in out XMPP_Challenge;
-                              Challenge : in String);
+                              Challenge : String);
 
 end XMPP.Challenges;

@@ -36,125 +36,9 @@
 with Ada.Characters.Conversions;
 with Ada.Wide_Wide_Text_IO;
 
-with League.Strings;
-
-with XMPP.Objects;
-
 package body XMPP.Services is
 
    use League.Strings;
-
-   ----------------
-   --  Get_Kind  --
-   ----------------
-   overriding function Get_Kind (Self : XMPP_Service)
-      return Objects.Object_Kind is
-   begin
-      return XMPP.Objects.Disco;
-   end Get_Kind;
-
-   -----------------
-   --  Serialize  --
-   -----------------
-   overriding function Serialize (Self : in XMPP_Service)
-      return League.Strings.Universal_String
-   is
-   begin
-      case Self.Type_Of_Service is
-         when XMPP.Services_Features.Protocol_Disco_Info =>
-            return
-              To_Universal_String
-               ("<query xmlns='http://jabber.org/protocol/disco#info'/>");
-
-
-         when XMPP.Services_Features.Protocol_Disco_Items =>
-            return
-              To_Universal_String
-               ("<query xmlns='http://jabber.org/protocol/disco#items'/>");
-
-         when others =>
-            raise Program_Error
-              with "Unknow service discovery information type";
-
-      end case;
-   end Serialize;
-
-   -------------------
-   --  Set_Content  --
-   -------------------
-   overriding
-   procedure Set_Content (Self      : in out XMPP_Service;
-                          Parameter : League.Strings.Universal_String;
-                          Value     : League.Strings.Universal_String) is
-   begin
-      if Parameter = To_Universal_String ("disco#info") then
-         Self.Type_Of_Service := XMPP.Services_Features.Protocol_Disco_Info;
-
-      elsif Parameter = To_Universal_String ("disco#items") then
-         Self.Type_Of_Service := XMPP.Services_Features.Protocol_Disco_Items;
-
-      --  Added ignoring of tag itself
-      elsif Parameter = To_Universal_String ("query") then
-         null;
-
-      else
-         Ada.Wide_Wide_Text_IO.Put_Line ("XMPP_Service: Unknown parameter : "
-                                           & Parameter.To_Wide_Wide_String);
-      end if;
-   end Set_Content;
-
-   --------------
-   --  Create  --
-   --------------
-   function Create return not null XMPP_Service_Access is
-   begin
-      return new XMPP_Service;
-   end Create;
-
-   ----------------
-   --  Get_Type  --
-   ----------------
-   function Get_Type (Self : XMPP_Service)
-      return XMPP.Services_Features.Feature is
-   begin
-      return Self.Type_Of_Service;
-   end Get_Type;
-
-   ----------------
-   --  Set_Type  --
-   ----------------
-   procedure Set_Type (Self : in out XMPP_Service;
-                       Val  : XMPP.Services_Features.Feature) is
-   begin
-      Self.Type_Of_Service := Val;
-   end Set_Type;
-
-   ----------------------
-   --  Get_Identities  --
-   ----------------------
-   function Get_Identities (Self : XMPP_Service)
-      return XMPP.Services_Identities.Identities_Vector is
-   begin
-      return Self.Identities;
-   end Get_Identities;
-
-   --------------------
-   --  Get_Features  --
-   --------------------
-   function Get_Features (Self : XMPP_Service)
-      return XMPP.Services_Features.Features_Vector is
-   begin
-      return Self.Features;
-   end Get_Features;
-
-   --------------------
-   --  Add_Identity  --
-   --------------------
-   procedure Add_Identity (Self : in out XMPP_Service;
-                           Val  : XMPP.Services_Identities.Identity) is
-   begin
-      Self.Identities.Append (Val);
-   end Add_Identity;
 
    -------------------
    --  Add_Feature  --
@@ -430,6 +314,15 @@ package body XMPP.Services is
       end if;
    end Add_Feature;
 
+   --------------------
+   --  Add_Identity  --
+   --------------------
+   procedure Add_Identity (Self : in out XMPP_Service;
+                           Val  : XMPP.Services_Identities.Identity) is
+   begin
+      Self.Identities.Append (Val);
+   end Add_Identity;
+
    ----------------
    --  Add_Item  --
    ----------------
@@ -437,6 +330,32 @@ package body XMPP.Services is
    begin
       Self.Items.Append (Item);
    end Add_Item;
+
+   --------------
+   --  Create  --
+   --------------
+   function Create return not null XMPP_Service_Access is
+   begin
+      return new XMPP_Service;
+   end Create;
+
+   --------------------
+   --  Get_Features  --
+   --------------------
+   function Get_Features (Self : XMPP_Service)
+      return XMPP.Services_Features.Features_Vector is
+   begin
+      return Self.Features;
+   end Get_Features;
+
+   ----------------------
+   --  Get_Identities  --
+   ----------------------
+   function Get_Identities (Self : XMPP_Service)
+      return XMPP.Services_Identities.Identities_Vector is
+   begin
+      return Self.Identities;
+   end Get_Identities;
 
    -----------------
    --  Get_Items  --
@@ -446,5 +365,85 @@ package body XMPP.Services is
    begin
       return Self.Items;
    end Get_Items;
+
+   ----------------
+   --  Get_Kind  --
+   ----------------
+   overriding function Get_Kind (Self : XMPP_Service)
+      return Objects.Object_Kind is
+      pragma Unreferenced (Self);
+
+   begin
+      return XMPP.Objects.Disco;
+   end Get_Kind;
+
+   ----------------
+   --  Get_Type  --
+   ----------------
+   function Get_Type (Self : XMPP_Service)
+      return XMPP.Services_Features.Feature is
+   begin
+      return Self.Type_Of_Service;
+   end Get_Type;
+
+   -----------------
+   --  Serialize  --
+   -----------------
+   overriding function Serialize (Self : XMPP_Service)
+      return League.Strings.Universal_String
+   is
+   begin
+      case Self.Type_Of_Service is
+         when XMPP.Services_Features.Protocol_Disco_Info =>
+            return
+              To_Universal_String
+               ("<query xmlns='http://jabber.org/protocol/disco#info'/>");
+
+         when XMPP.Services_Features.Protocol_Disco_Items =>
+            return
+              To_Universal_String
+               ("<query xmlns='http://jabber.org/protocol/disco#items'/>");
+
+         when others =>
+            raise Program_Error
+              with "Unknow service discovery information type";
+
+      end case;
+   end Serialize;
+
+   -------------------
+   --  Set_Content  --
+   -------------------
+   overriding
+   procedure Set_Content (Self      : in out XMPP_Service;
+                          Parameter : League.Strings.Universal_String;
+                          Value     : League.Strings.Universal_String) is
+      pragma Unreferenced (Value);
+
+   begin
+      if Parameter = To_Universal_String ("disco#info") then
+         Self.Type_Of_Service := XMPP.Services_Features.Protocol_Disco_Info;
+
+      elsif Parameter = To_Universal_String ("disco#items") then
+         Self.Type_Of_Service := XMPP.Services_Features.Protocol_Disco_Items;
+
+      --  Added ignoring of tag itself
+      elsif Parameter = To_Universal_String ("query") then
+         null;
+
+      else
+         Ada.Wide_Wide_Text_IO.Put_Line ("XMPP_Service: Unknown parameter : "
+                                           & Parameter.To_Wide_Wide_String);
+      end if;
+   end Set_Content;
+
+   ----------------
+   --  Set_Type  --
+   ----------------
+   procedure Set_Type (Self : in out XMPP_Service;
+                       Val  : XMPP.Services_Features.Feature) is
+   begin
+      Self.Type_Of_Service := Val;
+   end Set_Type;
 
 end XMPP.Services;

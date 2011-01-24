@@ -59,7 +59,7 @@ package XMPP.Presences is
    overriding function Get_Kind (Self : XMPP_Presence)
       return Objects.Object_Kind;
 
-   overriding function Serialize (Self : in XMPP_Presence)
+   overriding function Serialize (Self : XMPP_Presence)
       return League.Strings.Universal_String;
 
    overriding
@@ -120,4 +120,3 @@ private
       Multi_Chat       : Boolean := False;
    end record;
 end XMPP.Presences;
-

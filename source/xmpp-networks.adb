@@ -36,8 +36,6 @@
 with Ada.Characters.Conversions;
 with Ada.Exceptions;
 with Ada.Text_IO;
-with Ada.Unchecked_Conversion;
-with GNUTLS;
 
 package body XMPP.Networks is
 
@@ -51,7 +49,7 @@ package body XMPP.Networks is
    -------------------
    task type Reader_Task (Object : not null access Network) is
       entry Start;
-      entry Stop;
+      --  entry Stop;
    end Reader_Task;
 
    -------------------
@@ -70,17 +68,17 @@ package body XMPP.Networks is
       loop
          exit when Object.Time_To_Stop;
 
-         select
-            accept Stop do
-               Close_Selector (Object.Selector);
-               Object.Time_To_Stop := True;
-               return;
-            end Stop;
-         or
-            delay 0.0;
+         --  select
+         --     accept Stop do
+         --        Close_Selector (Object.Selector);
+         --        Object.Time_To_Stop := True;
+         --        return;
+         --     end Stop;
+         --  or
+         --  delay 0.0;
 
-            Object.Recieve;
-         end select;
+         Object.Recieve;
+         --  end select;
       end loop;
 
    exception
@@ -93,48 +91,12 @@ package body XMPP.Networks is
 
    RT : Reader_Task_Access;
 
-   ------------
-   --  Send  --
-   ------------
-   procedure Send (Self   : not null access Network'Class;
-                   Data   : Ada.Streams.Stream_Element_Array;
-                   Via_TLS : Boolean := False)
-   is
-   begin
-      if not Via_TLS then
-         Self.Channel.Write (Data);
-
-      else
-         Ada.Text_IO.Put_Line ("Sendinging data via TLS");
-
-         declare
-            Tmp : Ada.Streams.Stream_Element_Array := Data;
-
-            E   : GNAT.Sockets.Vector_Element :=
-              (Base   => Tmp (Tmp'First)'Unchecked_Access,
-               Length => Tmp'Length);
-
-            P : GNAT.Sockets.Vector_Type (0 .. 0);
-            L : Ada.Streams.Stream_Element_Count := 1;
-
-         begin
-            P (0) := E;
-            GNUTLS.Record_Send (Self.TLS, P, L);
-         end;
-      end if;
-
-   exception
-      when E : others =>
-         Ada.Text_IO.Put_Line
-           (Exception_Name (E) & ": " & Exception_Message (E));
-   end Send;
-
    ---------------
    --  Connect  --
    ---------------
    procedure Connect (Self : not null access Network'Class;
-                      Host : in Wide_Wide_String;
-                      Port : in Natural)
+                      Host : Wide_Wide_String;
+                      Port : Natural)
    is
       No_Block : GNAT.Sockets.Request_Type (GNAT.Sockets.Non_Blocking_IO);
 
@@ -187,6 +149,26 @@ package body XMPP.Networks is
            (Exception_Name (E) & ": " & Exception_Message (E));
    end Disconnect;
 
+   -------------------
+   --  Get_Channel  --
+   -------------------
+   function Get_Channel (Self : not null access Network'Class)
+     return Stream_Access
+   is
+   begin
+      return Self.Channel;
+   end Get_Channel;
+
+   ------------------
+   --  Get_Socket  --
+   ------------------
+   function Get_Socket (Self : not null access Network'Class)
+      return Socket_Type
+   is
+   begin
+      return Self.Sock;
+   end Get_Socket;
+
    ------------
    --  Idle  --
    ------------
@@ -195,6 +177,36 @@ package body XMPP.Networks is
       RT := new Reader_Task (Self'Unchecked_Access);
       RT.Start;
    end Idle;
+
+   -----------------
+   --  Read_Data  --
+   -----------------
+   not overriding
+   procedure Read_Data (Self : not null access Network)
+   is
+      Buffer : Ada.Streams.Stream_Element_Array (1 .. 4096);
+      Last   : Ada.Streams.Stream_Element_Count := 0;
+
+      --  for debug
+      --  X      : GNAT.Sockets.Request_Type (GNAT.Sockets.N_Bytes_To_Read);
+   begin
+      delay (0.1);
+      --  for debug
+      --  Getting how much data available in Socket
+      --  GNAT.Sockets.Control_Socket (Self.Get_Socket, X);
+      --  Ada.Text_IO.Put_Line ("Data_Size for reading :" & X.Size'Img);
+
+      GNAT.Sockets.Receive_Socket (Self.Sock, Buffer, Last);
+
+      Ada.Text_IO.Put_Line ("Offset : " & Last'Img);
+
+      Self.On_Recieve (Buffer (1 .. Last));
+   exception
+      when E : others =>
+         Ada.Text_IO.Put_Line
+           ("Gotcha : " & Exception_Name (E) & " : " & Exception_Message (E));
+         Self.On_Recieve (Buffer (1 .. 1));
+   end Read_Data;
 
    ---------------
    --  Recieve  --
@@ -239,55 +251,41 @@ package body XMPP.Networks is
            (Exception_Name (E) & ": " & Exception_Message (E));
    end Recieve;
 
-   -------------------
-   --  Get_Channel  --
-   -------------------
-   function Get_Channel (Self : not null access Network'Class)
-     return Stream_Access
+   ------------
+   --  Send  --
+   ------------
+   procedure Send (Self   : not null access Network'Class;
+                   Data   : Ada.Streams.Stream_Element_Array;
+                   Via_TLS : Boolean := False)
    is
    begin
-      return Self.Channel;
-   end Get_Channel;
+      if not Via_TLS then
+         Self.Channel.Write (Data);
 
-   ------------------
-   --  Get_Socket  --
-   ------------------
-   function Get_Socket (Self : not null access Network'Class)
-      return Socket_Type
-   is
-   begin
-      return Self.Sock;
-   end Get_Socket;
+      else
+         Ada.Text_IO.Put_Line ("Sendinging data via TLS");
 
-   -----------------
-   --  Read_Data  --
-   -----------------
-   not overriding
-   procedure Read_Data (Self : not null access Network)
-   is
-      Buffer : Ada.Streams.Stream_Element_Array (1 .. 4096);
-      Last   : Ada.Streams.Stream_Element_Count := 0;
+         declare
+            Tmp : Ada.Streams.Stream_Element_Array := Data;
 
-      --  for debug
-      --  X      : GNAT.Sockets.Request_Type (GNAT.Sockets.N_Bytes_To_Read);
-   begin
-      delay (0.1);
-      --  for debug
-      --  Getting how much data available in Socket
-      --  GNAT.Sockets.Control_Socket (Self.Get_Socket, X);
-      --  Ada.Text_IO.Put_Line ("Data_Size for reading :" & X.Size'Img);
+            E   : constant GNAT.Sockets.Vector_Element :=
+              (Base   => Tmp (Tmp'First)'Unchecked_Access,
+               Length => Tmp'Length);
 
-      GNAT.Sockets.Receive_Socket (Self.Sock, Buffer, Last);
+            P : GNAT.Sockets.Vector_Type (0 .. 0);
+            L : Ada.Streams.Stream_Element_Count := 1;
 
-      Ada.Text_IO.Put_Line ("Offset : " & Last'Img);
+         begin
+            P (0) := E;
+            GNUTLS.Record_Send (Self.TLS, P, L);
+         end;
+      end if;
 
-      Self.On_Recieve (Buffer (1 .. Last));
    exception
       when E : others =>
          Ada.Text_IO.Put_Line
-           ("Gotcha : " & Exception_Name (E) & " : " & Exception_Message (E));
-         Self.On_Recieve (Buffer (1 .. 1));
-   end Read_Data;
+           (Exception_Name (E) & ": " & Exception_Message (E));
+   end Send;
 
    -----------------------
    --  Set_TLS_Session  --

@@ -47,7 +47,7 @@ package XMPP.Rosters is
    overriding function Get_Kind (Self : XMPP_Roster)
       return Objects.Object_Kind;
 
-   overriding function Serialize (Self : in XMPP_Roster)
+   overriding function Serialize (Self : XMPP_Roster)
       return League.Strings.Universal_String;
 
    overriding

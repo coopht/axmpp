@@ -35,35 +35,43 @@
 ------------------------------------------------------------------------------
 with Ada.Wide_Wide_Text_IO;
 
-with League.Strings;
-
-with XMPP.Objects;
-
 package body XMPP.IQS is
 
    use League.Strings;
 
+   -------------------
+   --  Append_Item  --
+   -------------------
+   procedure Append_Item
+     (Self : in out XMPP_IQ;
+      Item : not null access XMPP.Objects.XMPP_Object'Class) is
+   begin
+      Self.Item_List.Append (XMPP.Objects.XMPP_Object_Access (Item));
+   end Append_Item;
+
+   --------------
+   --  Create  --
+   --------------
    function Create (X : IQ_Kind) return XMPP_IQ_Access is
    begin
       return new XMPP_IQ (X);
    end Create;
 
+   ----------------
+   --  Get_Body  --
+   ----------------
+   function Get_Body (Self : XMPP_IQ) return League.Strings.Universal_String is
+   begin
+      return Self.IQ_Body;
+   end Get_Body;
 
    ----------------
-   --  Get_Kind  --
+   --  Get_From  --
    ----------------
-   overriding function Get_Kind (Self : XMPP_IQ) return Objects.Object_Kind is
+   function Get_From (Self : XMPP_IQ) return League.Strings.Universal_String is
    begin
-      return Objects.IQ;
-   end Get_Kind;
-
-   -------------------
-   --  Get_IQ_Kind  --
-   -------------------
-   function Get_IQ_Kind (Self : XMPP_IQ) return IQ_Kind is
-   begin
-      return Self.Kind_Of_IQ;
-   end Get_IQ_Kind;
+      return Self.From;
+   end Get_From;
 
    --------------
    --  Get_Id  --
@@ -73,27 +81,53 @@ package body XMPP.IQS is
       return Self.Id;
    end Get_Id;
 
-   --------------
-   --  Set_Id  --
-   --------------
-   procedure Set_Id (Self : in out XMPP_IQ;
-                     Val  : League.Strings.Universal_String) is
+   -------------------
+   --  Get_IQ_Kind  --
+   -------------------
+   function Get_IQ_Kind (Self : XMPP_IQ) return IQ_Kind is
    begin
-      Self.Id := Val;
-   end Set_Id;
+      return Self.Kind_Of_IQ;
+   end Get_IQ_Kind;
+
+   ----------------
+   --  Get_Kind  --
+   ----------------
+   overriding function Get_Kind (Self : XMPP_IQ) return Objects.Object_Kind is
+      pragma Unreferenced (Self);
+
+   begin
+      return Objects.IQ;
+   end Get_Kind;
+
+   --------------
+   --  Get_To  --
+   --------------
+   function Get_To (Self : XMPP_IQ) return League.Strings.Universal_String is
+   begin
+      return Self.To;
+   end Get_To;
+
+   ---------------
+   --  Item_At  --
+   ---------------
+   function Item_At (Self : XMPP_IQ; Pos : Natural)
+     return not null access XMPP.Objects.XMPP_Object'Class is
+   begin
+      return Self.Item_List.Element (Pos);
+   end Item_At;
 
    -------------------
-   --  Set_IQ_Kind  --
+   --  Items_Count  --
    -------------------
-   procedure Set_IQ_Kind (Self : in out XMPP_IQ; Val : IQ_Kind) is
+   function Items_Count (Self : XMPP_IQ) return Natural is
    begin
-      Self.Kind_Of_IQ := Val;
-   end Set_IQ_Kind;
+      return Natural (Self.Item_List.Length);
+   end Items_Count;
 
    -----------------
    --  Serialize  --
    -----------------
-   overriding function Serialize (Self : in XMPP_IQ)
+   overriding function Serialize (Self : XMPP_IQ)
       return League.Strings.Universal_String is
    begin
       return X : League.Strings.Universal_String do
@@ -113,9 +147,6 @@ package body XMPP.IQS is
 
             when Error =>
                X.Append (To_Universal_String ("error"));
-
-            when others =>
-               raise Program_Error with "Unknown IQ type";
 
          end case;
 
@@ -137,6 +168,15 @@ package body XMPP.IQS is
          X.Append (To_Universal_String ("</iq>"));
       end return;
    end Serialize;
+
+   ----------------
+   --  Set_Body  --
+   ----------------
+   procedure Set_Body (Self : in out XMPP_IQ;
+                       Val  : League.Strings.Universal_String) is
+   begin
+      Self.IQ_Body := Val;
+   end Set_Body;
 
    -------------------
    --  Set_Content  --
@@ -179,50 +219,6 @@ package body XMPP.IQS is
    end Set_Content;
 
    ----------------
-   --  Set_Body  --
-   ----------------
-   procedure Set_Body (Self : in out XMPP_IQ;
-                       Val  : League.Strings.Universal_String) is
-   begin
-      Self.IQ_Body := Val;
-   end Set_Body;
-
-   ----------------
-   --  Get_Body  --
-   ----------------
-   function Get_Body (Self : XMPP_IQ) return League.Strings.Universal_String is
-   begin
-      return Self.IQ_Body;
-   end Get_Body;
-
-   -------------------
-   --  Append_Item  --
-   -------------------
-   procedure Append_Item
-     (Self : in out XMPP_IQ;
-      Item : not null access XMPP.Objects.XMPP_Object'Class) is
-   begin
-      Self.Item_List.Append (XMPP.Objects.XMPP_Object_Access (Item));
-   end Append_Item;
-
-   -------------------
-   --  Items_Count  --
-   -------------------
-   function Items_Count (Self : XMPP_IQ) return Natural is
-   begin
-      return Natural (Self.Item_List.Length);
-   end Items_Count;
-
-   ---------------
-   --  Item_At  --
-   ---------------
-   function Item_At (Self : XMPP_IQ; Pos : Natural)
-     return not null access XMPP.Objects.XMPP_Object'Class is
-   begin
-      return Self.Item_List.Element (Pos);
-   end Item_At;
-
-   ----------------
    --  Set_From  --
    ----------------
    procedure Set_From (Self : in out XMPP_IQ;
@@ -231,13 +227,22 @@ package body XMPP.IQS is
       Self.From := Val;
    end Set_From;
 
-   ----------------
-   --  Get_From  --
-   ----------------
-   function Get_From (Self : XMPP_IQ) return League.Strings.Universal_String is
+   --------------
+   --  Set_Id  --
+   --------------
+   procedure Set_Id (Self : in out XMPP_IQ;
+                     Val  : League.Strings.Universal_String) is
    begin
-      return Self.From;
-   end Get_From;
+      Self.Id := Val;
+   end Set_Id;
+
+   -------------------
+   --  Set_IQ_Kind  --
+   -------------------
+   procedure Set_IQ_Kind (Self : in out XMPP_IQ; Val : IQ_Kind) is
+   begin
+      Self.Kind_Of_IQ := Val;
+   end Set_IQ_Kind;
 
    --------------
    --  Set_To  --
@@ -248,13 +253,4 @@ package body XMPP.IQS is
       Self.To := Val;
    end Set_To;
 
-   --------------
-   --  Get_To  --
-   --------------
-   function Get_To (Self : XMPP_IQ) return League.Strings.Universal_String is
-   begin
-      return Self.To;
-   end Get_To;
-
 end XMPP.IQS;
-

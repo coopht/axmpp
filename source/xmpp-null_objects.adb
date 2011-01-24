@@ -41,6 +41,8 @@ package body XMPP.Null_Objects is
    overriding
    function Get_Kind (Self : XMPP_Null_Object) return XMPP.Objects.Object_Kind
    is
+      pragma Unreferenced (Self);
+
    begin
       return XMPP.Objects.Null_Object;
    end Get_Kind;
@@ -49,12 +51,11 @@ package body XMPP.Null_Objects is
    --  Serialize  --
    -----------------
    overriding
-   function Serialize (Self : in XMPP_Null_Object)
+   function Serialize (Self : XMPP_Null_Object)
       return League.Strings.Universal_String
    is
+      pragma Unreferenced (Self);
    begin
-      raise Program_Error
-        with "There is no serialize procedure for XMPP_Null_Object";
       return X : League.Strings.Universal_String;
    end Serialize;
 

@@ -33,8 +33,6 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with Ada.Streams;
-
 with GNUTLS;
 
 with League.Strings;

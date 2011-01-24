@@ -37,7 +37,6 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with Ada.Streams;
 
 package body XMPP.Base64 is
 
@@ -56,9 +55,9 @@ package body XMPP.Base64 is
          '2' => 54, '3' => 55, '4' => 56, '5' => 57, '6' => 58, '7' => 59,
          '8' => 60, '9' => 61, '+' => 62, '/' => 63, others => 0);
 
-   procedure Decode (Source  : in     String;
-                     Target  :    out Ada.Streams.Stream_Element_Array;
-                     Last    :    out Ada.Streams.Stream_Element_Offset) is
+   procedure Decode (Source  :     String;
+                     Target  : out Ada.Streams.Stream_Element_Array;
+                     Last    : out Ada.Streams.Stream_Element_Offset) is
       --  decode Source into Target(Target'first .. Last)
       --  Note: it may be appropriate to prescan Source for '=',
       --  indicating termination, or for illegitimate characters,
@@ -114,13 +113,12 @@ package body XMPP.Base64 is
       end loop;
    end Decode;
 
-
    To_String : constant array (Six_Bits) of Character
      := "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-   procedure Encode (Source  : in     Ada.Streams.Stream_Element_Array;
-                     Target  :    out String;
-                     Last    :    out Natural) is
+   procedure Encode (Source  :     Ada.Streams.Stream_Element_Array;
+                     Target  : out String;
+                     Last    : out Natural) is
       --  Target is filled in four character increments, except that
       --  a CR-LF pair is inserted after every 76 characters.
       --  Target'length must be at least:
@@ -173,4 +171,3 @@ package body XMPP.Base64 is
    end Encode;
 
 end XMPP.Base64;
-

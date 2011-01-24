@@ -36,7 +36,6 @@
 ------------------------------------------------------------------------------
 with League.Strings;
 
-with XMPP.Services;
 with XMPP.Objects;
 
 package XMPP.MUC is

@@ -49,7 +49,7 @@ package XMPP.Binds is
 
    overriding function Get_Kind (Self : XMPP_Bind) return Objects.Object_Kind;
 
-   overriding function Serialize (Self : in XMPP_Bind)
+   overriding function Serialize (Self : XMPP_Bind)
       return League.Strings.Universal_String;
 
    overriding

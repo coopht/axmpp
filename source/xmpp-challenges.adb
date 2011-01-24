@@ -40,10 +40,7 @@ with Ada.Wide_Wide_Text_IO;
 
 with GNAT.MD5;
 
-with League.Strings;
-
 with XMPP.Base64;
-with XMPP.Objects;
 with XMPP.Utils;
 
 package body XMPP.Challenges is
@@ -94,26 +91,28 @@ package body XMPP.Challenges is
 
             --  TODO:
             --        CNonce should not be hardcoded.
-            C_Nonce : Wide_Wide_String := "1a2f0ee81279451956625d2368";
-            SY     : String
+            C_Nonce : constant Wide_Wide_String
+              := "1a2f0ee81279451956625d2368";
+
+            SY     : constant String
               := Hex_To_Oct (GNAT.MD5.Digest
                                (ACC.To_String
                                   (Self.JID.To_Wide_Wide_String & ":"
                                      & Self.Host.To_Wide_Wide_String & ":"
                                      & Self.Password.To_Wide_Wide_String)));
 
-            HA1 : String
+            HA1 : constant String
               := GNAT.MD5.Digest
                   (SY & ":"
                      & ACC.To_String (Self.Nonce.To_Wide_Wide_String)
                      & ":" & ACC.To_String (C_Nonce));
 
-            HA2 : String
+            HA2 : constant String
               := GNAT.MD5.Digest
                   (ACC.To_String ("AUTHENTICATE:xmpp/"
                                     & Self.Host.To_Wide_Wide_String));
 
-            Z   : String
+            Z   : constant String
               := GNAT.MD5.Digest
                   (HA1 & ":"
                      & ACC.To_String (Self.Nonce.To_Wide_Wide_String)
@@ -121,7 +120,7 @@ package body XMPP.Challenges is
                      & ACC.To_String (C_Nonce) & ":auth:"
                      & HA2);
 
-            Realm_Reply : Wide_Wide_String
+            Realm_Reply : constant Wide_Wide_String
               := "username=""" & Self.JID.To_Wide_Wide_String
               & """,realm=""" & Self.Host.To_Wide_Wide_String
               & """,nonce=""" & Self.Nonce.To_Wide_Wide_String
@@ -133,8 +132,8 @@ package body XMPP.Challenges is
               & Self.Charset.To_Wide_Wide_String;
 
             --  Calculating buffer size for base64 encoded string
-            X : Integer := 4 * (Realm_Reply'Length + 2) / 3;
-            Y : Integer := X + 2 * (X / 76);
+            X : constant Integer := 4 * (Realm_Reply'Length + 2) / 3;
+            Y : constant Integer := X + 2 * (X / 76);
 
             Realm_Reply_Base_64 : String (Realm_Reply'First .. Y);
             Len                 : Natural;
@@ -170,6 +169,8 @@ package body XMPP.Challenges is
    ----------------
    overriding
    function Get_Kind (Self : XMPP_Challenge) return XMPP.Objects.Object_Kind is
+      pragma Unreferenced (Self);
+
    begin
       return XMPP.Objects.Challenge;
    end Get_Kind;
@@ -178,7 +179,7 @@ package body XMPP.Challenges is
    --  Parse_Challenge  --
    -----------------------
    procedure Parse_Challenge (Self      : in out XMPP_Challenge;
-                              Challenge : in String) is
+                              Challenge : String) is
 
       function Drop_Quotes (Str : String) return String;
 
@@ -208,14 +209,14 @@ package body XMPP.Challenges is
       for J in Challenge'Range loop
          if Challenge (J) = ',' then
             declare
-               T : String := Challenge (Pos .. J - 1);
+               T : constant String := Challenge (Pos .. J - 1);
 
             begin
                for X in T'Range loop
                   if T (X) = '=' then
                      declare
-                        Param : String := T (T'First .. X - 1);
-                        Val   : String := T (X + 1 .. T'Last);
+                        Param : constant String := T (T'First .. X - 1);
+                        Val   : constant String := T (X + 1 .. T'Last);
 
                      begin
                         if Param = "nonce" then
@@ -256,12 +257,31 @@ package body XMPP.Challenges is
    --  Serialize  --
    -----------------
    overriding
-   function Serialize (Self : in XMPP_Challenge)
+   function Serialize (Self : XMPP_Challenge)
       return League.Strings.Universal_String is
+      pragma Unreferenced (Self);
+
    begin
-      raise Program_Error with "not yet implemented";
       return X : League.Strings.Universal_String;
    end Serialize;
+
+   ---------------------
+   --  Set_Algorithm  --
+   ---------------------
+   procedure Set_Algorithm (Self      : in out XMPP_Challenge;
+                            Algorithm : League.Strings.Universal_String) is
+   begin
+      Self.Algorithm := Algorithm;
+   end Set_Algorithm;
+
+   -------------------
+   --  Set_Charset  --
+   -------------------
+   procedure Set_Charset (Self    : in out XMPP_Challenge;
+                          Charset : League.Strings.Universal_String) is
+   begin
+      Self.Charset := Charset;
+   end Set_Charset;
 
    -------------------
    --  Set_Content  --
@@ -302,50 +322,14 @@ package body XMPP.Challenges is
       end if;
    end Set_Content;
 
-   -----------------
-   --  Set_Realm  --
-   -----------------
-   procedure Set_Realm (Self : in out XMPP_Challenge;
-                        Realm : League.Strings.Universal_String) is
+   ----------------
+   --  Set_Host  --
+   ----------------
+   procedure Set_Host (Self : in out XMPP_Challenge;
+                       Host : League.Strings.Universal_String) is
    begin
-      Self.Realm := Realm;
-   end Set_Realm;
-
-   -----------------
-   --  Set_Nonce  --
-   -----------------
-   procedure Set_Nonce (Self  : in out XMPP_Challenge;
-                        Nonce : League.Strings.Universal_String) is
-   begin
-      Self.Nonce := Nonce;
-   end Set_Nonce;
-
-   ---------------
-   --  Set_Qop  --
-   ---------------
-   procedure Set_Qop (Self : in out XMPP_Challenge;
-                      Qop  : League.Strings.Universal_String) is
-   begin
-      Self.Qop := Qop;
-   end Set_Qop;
-
-   -------------------
-   --  Set_Charset  --
-   -------------------
-   procedure Set_Charset (Self    : in out XMPP_Challenge;
-                          Charset : League.Strings.Universal_String) is
-   begin
-      Self.Charset := Charset;
-   end Set_Charset;
-
-   ---------------------
-   --  Set_Algorithm  --
-   ---------------------
-   procedure Set_Algorithm (Self      : in out XMPP_Challenge;
-                            Algorithm : League.Strings.Universal_String) is
-   begin
-      Self.Algorithm := Algorithm;
-   end Set_Algorithm;
+      Self.Host := Host;
+   end Set_Host;
 
    ---------------
    --  Set_JID  --
@@ -356,14 +340,14 @@ package body XMPP.Challenges is
       Self.JID := JID;
    end Set_JID;
 
-   ----------------
-   --  Set_Host  --
-   ----------------
-   procedure Set_Host (Self : in out XMPP_Challenge;
-                       Host : League.Strings.Universal_String) is
+   -----------------
+   --  Set_Nonce  --
+   -----------------
+   procedure Set_Nonce (Self  : in out XMPP_Challenge;
+                        Nonce : League.Strings.Universal_String) is
    begin
-      Self.Host := Host;
-   end Set_Host;
+      Self.Nonce := Nonce;
+   end Set_Nonce;
 
    --------------------
    --  Set_Password  --
@@ -373,6 +357,24 @@ package body XMPP.Challenges is
    begin
       Self.Password := Password;
    end Set_Password;
+
+   ---------------
+   --  Set_Qop  --
+   ---------------
+   procedure Set_Qop (Self : in out XMPP_Challenge;
+                      Qop  : League.Strings.Universal_String) is
+   begin
+      Self.Qop := Qop;
+   end Set_Qop;
+
+   -----------------
+   --  Set_Realm  --
+   -----------------
+   procedure Set_Realm (Self : in out XMPP_Challenge;
+                        Realm : League.Strings.Universal_String) is
+   begin
+      Self.Realm := Realm;
+   end Set_Realm;
 
    --------------------
    --  Set_RSP_Auth  --

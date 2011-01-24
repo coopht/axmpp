@@ -54,7 +54,7 @@ package XMPP.Streams is
    --  Serialize  --
    -----------------
    overriding
-   function Serialize (Self : in XMPP_Stream)
+   function Serialize (Self : XMPP_Stream)
       return League.Strings.Universal_String;
 
    -------------------

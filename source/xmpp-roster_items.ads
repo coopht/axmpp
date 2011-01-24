@@ -49,14 +49,13 @@ package XMPP.Roster_Items is
    overriding function Get_Kind (Self : XMPP_Roster_Item)
       return Objects.Object_Kind;
 
-   overriding function Serialize (Self : in XMPP_Roster_Item)
+   overriding function Serialize (Self : XMPP_Roster_Item)
       return League.Strings.Universal_String;
 
    overriding
    procedure Set_Content (Self      : in out XMPP_Roster_Item;
                           Parameter : League.Strings.Universal_String;
                           Value     : League.Strings.Universal_String);
-
 
    procedure Set_Subscription (Self  : in out XMPP_Roster_Item;
                                Value : Subscription_Type);

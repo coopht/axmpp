@@ -33,17 +33,24 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with League.Strings;
-
-with XMPP.Objects;
 
 package body XMPP.IQ_Sessions is
+
+   --------------
+   --  Create  --
+   --------------
+   function Create return not null XMPP_IQ_Session_Access is
+   begin
+      return new XMPP_IQ_Session;
+   end Create;
 
    ----------------
    --  Get_Kind  --
    ----------------
    overriding function Get_Kind (Self : XMPP_IQ_Session)
       return Objects.Object_Kind is
+      pragma Unreferenced (Self);
+
    begin
       return XMPP.Objects.IQ_Session;
    end Get_Kind;
@@ -51,8 +58,10 @@ package body XMPP.IQ_Sessions is
    -----------------
    --  Serialize  --
    -----------------
-   overriding function Serialize (Self : in XMPP_IQ_Session)
+   overriding function Serialize (Self : XMPP_IQ_Session)
       return League.Strings.Universal_String is
+      pragma Unreferenced (Self);
+
    begin
       return
         League.Strings.To_Universal_String
@@ -70,13 +79,4 @@ package body XMPP.IQ_Sessions is
       raise Program_Error with "Not yet implemented";
    end Set_Content;
 
-   --------------
-   --  Create  --
-   --------------
-   function Create return not null XMPP_IQ_Session_Access is
-   begin
-      return new XMPP_IQ_Session;
-   end Create;
-
 end XMPP.IQ_Sessions;
-

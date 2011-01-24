@@ -253,7 +253,6 @@ package XMPP.Services_Features is
       --  See XEP-0130
       --  XEP-0130: Waiting Lists
 
-
       Protocol_Address,
       --  See XEP-0033
       --  XEP-0033: Extended Stanza Addressing

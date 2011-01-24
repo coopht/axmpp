@@ -120,4 +120,3 @@ package body XMPP.Services_Identities is
    end Create;
 
 end XMPP.Services_Identities;
-

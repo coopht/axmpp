@@ -48,7 +48,7 @@ package XMPP.IQ_Sessions is
    overriding function Get_Kind (Self : XMPP_IQ_Session)
       return Objects.Object_Kind;
 
-   overriding function Serialize (Self : in XMPP_IQ_Session)
+   overriding function Serialize (Self : XMPP_IQ_Session)
       return League.Strings.Universal_String;
 
    overriding
@@ -63,4 +63,3 @@ private
    type XMPP_IQ_Session is new XMPP.Objects.XMPP_Object with null record;
 
 end XMPP.IQ_Sessions;
-

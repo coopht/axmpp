@@ -35,16 +35,10 @@
 ------------------------------------------------------------------------------
 with Ada.Text_IO;
 
-with GNUTLS;
-
-with League.Strings.Internals;
 with Matreshka.Internals.Strings.Operations;
 with Matreshka.Internals.Utf16;
 
-with XMPP.Sessions;
-
 package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
-
 
    --------------------------
    --  Is_TLS_Established  --
@@ -71,6 +65,7 @@ package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
         := Buffer.Unused;
       Old_Length : constant Natural := Buffer.Length;
       New_Data   : Matreshka.Internals.Strings.Shared_String_Access;
+      pragma Unreferenced (New_Data);
 
    begin
       Socket_Input_Source (Self).Next (Buffer, End_Of_Data);
@@ -120,7 +115,7 @@ package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
 
             when TLS =>
                declare
-                  E      : GNAT.Sockets.Vector_Element :=
+                  E      : constant GNAT.Sockets.Vector_Element :=
                     (Base => Buffer (Buffer'First)'Unchecked_Access,
                      Length => Buffer'Length);
                   Length : Ada.Streams.Stream_Element_Offset;
@@ -160,6 +155,15 @@ package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
    end Read;
 
    -----------------------
+   --  Set_TLS_Session  --
+   -----------------------
+   procedure Set_TLS_Session (Self  : in out TLS_Socket_Input_Source;
+                              S     : GNUTLS.Session) is
+   begin
+      Self.TLS_Session := S;
+   end Set_TLS_Session;
+
+   -----------------------
    --  Start_Handshake  --
    -----------------------
 
@@ -184,14 +188,5 @@ package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
 --     begin
 --        Self.TLS_Established := Value;
 --     end Set_TLS_Established;
-
-   -----------------------
-   --  Set_TLS_Session  --
-   -----------------------
-   procedure Set_TLS_Session (Self  : in out TLS_Socket_Input_Source;
-                              S     : GNUTLS.Session) is
-   begin
-      Self.TLS_Session := S;
-   end Set_TLS_Session;
 
 end XML.SAX.Input_Sources.Streams.Sockets.TLS;
