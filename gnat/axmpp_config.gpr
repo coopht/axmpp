@@ -42,6 +42,7 @@ project AXMPP_Config is
           "-fstack-check",
           "-gnat05",
           "-gnatW8",
+          "-gnatwae",
           "-gnatyaAbcdefhiIkmnoOprsStux");
 
    for Source_Files use ();
