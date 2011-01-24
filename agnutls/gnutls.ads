@@ -98,8 +98,6 @@ package GNUTLS is
    GNUTLS_TLS1   : constant Protocol := GNUTLS_TLS1_0;
    GNUTLS_VERSION_UNKNOWN : constant Protocol := 16#ff#;
 
-
-
    type Cipher_Algorithm is new Interfaces.C.int;
    type Cipher_Algorithm_Array
       is array (Positive range <>) of Cipher_Algorithm;
@@ -133,7 +131,6 @@ package GNUTLS is
    GNUTLS_CIPHER_AES192_PGP_CFB      : constant Cipher_Algorithm := 206;
    GNUTLS_CIPHER_AES256_PGP_CFB      : constant Cipher_Algorithm := 207;
    GNUTLS_CIPHER_TWOFISH_PGP_CFB     : constant Cipher_Algorithm := 208;
-
 
    type Compression_Method is new Interfaces.C.int;
    type Compression_Method_Array

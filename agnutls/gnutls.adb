@@ -33,8 +33,6 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with Interfaces.C;
-with Interfaces.C.Extensions;
 with System;
 
 package body GNUTLS is
@@ -196,21 +194,6 @@ package body GNUTLS is
       return Interfaces.C.int;
    pragma Import (C, gnutls_error_is_fatal, "gnutls_error_is_fatal");
 
-   -------------------
-   --  Global_Init  --
-   -------------------
-   procedure Global_Init
-   is
-      Ret : Interfaces.C.int := gnutls_global_init;
-
-   begin
-      if Ret /= 0 then
-         gnutls_perror (Ret);
-         raise GNUTLS_Error
-           with "Some error occuered during gnutls initialization";
-      end if;
-   end Global_Init;
-
    ----------------------------------------
    --  Anon_Allocate_Client_Credentials  --
    ----------------------------------------
@@ -218,7 +201,7 @@ package body GNUTLS is
      (SC : out Anon_Client_Credentials)
    is
       Tmp : aliased Anon_Client_Credentials;
-      Ret : Interfaces.C.int
+      Ret : constant Interfaces.C.int
         := gnutls_anon_allocate_client_credentials (Tmp'Access);
 
    begin
@@ -230,15 +213,37 @@ package body GNUTLS is
       SC := Tmp;
    end Anon_Allocate_Client_Credentials;
 
+   ------------------------------------
+   --  Anon_Free_Client_Credentials  --
+   ------------------------------------
+   procedure Anon_Free_Client_Credentials (Cert : Anon_Client_Credentials)
+   is
+   begin
+      gnutls_anon_free_client_credentials (Cert);
+   end Anon_Free_Client_Credentials;
+
+   -----------
+   --  Bye  --
+   -----------
+   procedure Bye (S : Session; How : Close_Request)
+   is
+      Ret : constant Interfaces.C.int := gnutls_bye (S, How);
+
+   begin
+      if Ret /= 0 then
+         gnutls_perror (Ret);
+         raise GNUTLS_Error with "Bye failed";
+      end if;
+   end Bye;
+
    ----------------------------------------
    --  Certificate_Allocate_Credentials  --
    ----------------------------------------
-
    procedure Certificate_Allocate_Credentials
      (SC : out Certificate_Client_Credentials)
    is
       Tmp : aliased Certificate_Client_Credentials;
-      Ret : Interfaces.C.int
+      Ret : constant Interfaces.C.int
         := gnutls_certificate_allocate_credentials (Tmp'Access);
 
    begin
@@ -250,13 +255,164 @@ package body GNUTLS is
       SC := Tmp;
    end Certificate_Allocate_Credentials;
 
+   ---------------------------
+   --  Cipher_Set_Priority  --
+   ---------------------------
+
+   procedure Cipher_Set_Priority (S : Session; Prio : Cipher_Algorithm_Array)
+   is
+      Ret : constant Interfaces.C.int
+        := gnutls_cipher_set_priority (S, Prio (Prio'First)'Address);
+
+   begin
+      if Ret /= 0 then
+         gnutls_perror (Ret);
+         raise GNUTLS_Error with "Cipher_Set_Priority failed";
+      end if;
+   end Cipher_Set_Priority;
+
+   --------------------------------
+   --  Compression_Set_Priority  --
+   --------------------------------
+
+   procedure Compression_Set_Priority (S  : Session;
+                                       CM : Compression_Method_Array) is
+      Ret : constant Interfaces.C.int
+        := gnutls_compression_set_priority (S, CM (CM'First)'Address);
+
+   begin
+      if Ret /= 0 then
+         gnutls_perror (Ret);
+         raise GNUTLS_Error with "Compression_Set_Priority failed";
+      end if;
+   end Compression_Set_Priority;
+
+   -----------------------
+   --  Credentials_Set  --
+   -----------------------
+   procedure Credentials_Set (S    : Session;
+                              T    : Credentials_Type;
+                              Cred : Anon_Client_Credentials)
+   is
+      Ret : constant Interfaces.C.int
+        := gnutls_credentials_set_anon (S, T, Cred);
+
+   begin
+      if  Ret /= 0 then
+         gnutls_perror (Ret);
+         raise GNUTLS_Error with "Credentials_Set error";
+      end if;
+   end Credentials_Set;
+
+   -----------------------
+   --  Credentials_Set  --
+   -----------------------
+   procedure Credentials_Set (S    : Session;
+                              T    : Credentials_Type;
+                              Cred : Certificate_Client_Credentials)
+   is
+      Ret : constant Interfaces.C.int := gnutls_credentials_set (S, T, Cred);
+
+   begin
+      if  Ret /= 0 then
+         gnutls_perror (Ret);
+         raise GNUTLS_Error with "Credentials_Set error";
+      end if;
+   end Credentials_Set;
+
+   --------------
+   --  Deinit  --
+   --------------
+   procedure Deinit (S : Session)
+   is
+   begin
+      gnutls_deinit (S);
+   end Deinit;
+
+   ----------------------
+   --  Error_Is_Fatal  --
+   ----------------------
+   function Error_Is_Fatal (E : Integer) return Error_Kind is
+   begin
+      case gnutls_error_is_fatal (Interfaces.C.int (E)) is
+         when 0 =>
+            return NON_FATAL_ERROR;
+
+         when 1 =>
+            return FATAL_ERROR;
+
+         when others =>
+            return UNKNOWN_ERROR;
+      end case;
+   end Error_Is_Fatal;
+
+   ---------------------
+   --  Get_Direction  --
+   ---------------------
+
+   function Get_Direction (S : Session) return IO_Direction is
+   begin
+      if gnutls_record_get_direction (S) = 0 then
+         return Read;
+
+      else
+         return Write;
+      end if;
+   end Get_Direction;
+
+   -------------------
+   --  Global_Init  --
+   -------------------
+   procedure Global_Deinit
+   is
+   begin
+      gnutls_global_deinit;
+   end Global_Deinit;
+
+   -------------------
+   --  Global_Init  --
+   -------------------
+   procedure Global_Init
+   is
+      Ret : constant Interfaces.C.int := gnutls_global_init;
+
+   begin
+      if Ret /= 0 then
+         gnutls_perror (Ret);
+         raise GNUTLS_Error
+           with "Some error occuered during gnutls initialization";
+      end if;
+   end Global_Init;
+
+   ---------------------
+   --  Set_Log_Level  --
+   ---------------------
+   procedure Global_Set_Log_Level (Level : Integer) is
+   begin
+      gnutls_global_set_log_level (Interfaces.C.int (Level));
+   end Global_Set_Log_Level;
+
+   -----------------
+   --  Handshake  --
+   -----------------
+   procedure Handshake (S : Session)
+   is
+      Ret : constant Interfaces.C.int := gnutls_handshake (S);
+
+   begin
+      if Ret /= 0 then
+         gnutls_perror (Ret);
+         raise GNUTLS_Error with "Handshake failed";
+      end if;
+   end Handshake;
+
    ------------
    --  Init  --
    ------------
    procedure Init (S : out Session; CE : Connection_End)
    is
       Tmp : aliased Session;
-      Ret : Interfaces.C.int := gnutls_init (Tmp'Access, CE);
+      Ret : constant Interfaces.C.int := gnutls_init (Tmp'Access, CE);
 
    begin
       if Ret /= 0 then
@@ -265,6 +421,37 @@ package body GNUTLS is
       end if;
       S := Tmp;
    end Init;
+
+   -----------------------
+   --  KX_Set_Priority  --
+   -----------------------
+
+   procedure KX_Set_Priority (S : Session; KX_Prio : KX_Algorithm_Array)
+   is
+      Ret : constant Interfaces.C.int
+        := gnutls_kx_set_priority (S, KX_Prio (KX_Prio'First)'Address);
+
+   begin
+      if Ret /= 0 then
+         gnutls_perror (Ret);
+         raise GNUTLS_Error with "KX_Set_Priority failed";
+      end if;
+   end KX_Set_Priority;
+
+   ------------------------
+   --  Mac_Set_Priority  --
+   ------------------------
+
+   procedure Mac_Set_Priority (S : Session; MA : Mac_Algorithm_Array) is
+      Ret : constant Interfaces.C.int
+        := gnutls_mac_set_priority (S, MA (MA'First)'Address);
+
+   begin
+      if Ret /= 0 then
+         gnutls_perror (Ret);
+         raise GNUTLS_Error with "Mac_Set_Priority failed";
+      end if;
+   end Mac_Set_Priority;
 
    ---------------------------
    --  Priority_Set_Direct  --
@@ -275,7 +462,7 @@ package body GNUTLS is
    is
       X : Interfaces.C.char_array (1 .. 256);
       pragma Warnings (Off, X);
-      Ret : Interfaces.C.int
+      Ret : constant Interfaces.C.int
         := gnutls_priority_set_direct (S, Interfaces.C.To_C (Priorities), X);
 
    begin
@@ -286,92 +473,20 @@ package body GNUTLS is
       end if;
    end Priority_Set_Direct;
 
-   -----------------------
-   --  Credentials_Set  --
-   -----------------------
-   procedure Credentials_Set (S    : Session;
-                              T    : Credentials_Type;
-                              Cred : Anon_Client_Credentials)
-   is
-      Ret : Interfaces.C.int := gnutls_credentials_set_anon (S, T, Cred);
+   -----------------------------
+   --  Protocol_Set_Priority  --
+   -----------------------------
 
-   begin
-      if  Ret /= 0 then
-         gnutls_perror (Ret);
-         raise GNUTLS_Error with "Credentials_Set error";
-      end if;
-   end Credentials_Set;
+   procedure Protocol_Set_Priority (S : Session; PA : Protocol_Array) is
+      Ret : constant Interfaces.C.int
+        := gnutls_protocol_set_priority (S, PA (PA'First)'Address);
 
-
-   procedure Credentials_Set (S    : Session;
-                              T    : Credentials_Type;
-                              Cred : Certificate_Client_Credentials)
-   is
-      Ret : Interfaces.C.int := gnutls_credentials_set (S, T, Cred);
-
-   begin
-      if  Ret /= 0 then
-         gnutls_perror (Ret);
-         raise GNUTLS_Error with "Credentials_Set error";
-      end if;
-   end Credentials_Set;
-
-   -------------------------
-   --  Transport_Set_Ptr  --
-   -------------------------
-   procedure Transport_Set_Ptr (S      : Session;
-                                Socket : GNAT.Sockets.Socket_Type)
-   is
-      Sock : Interfaces.C.int
-        := Interfaces.C.int (GNAT.Sockets.To_C (Socket));
-
-   begin
-      gnutls_transport_set_ptr (S, Sock);
-   end Transport_Set_Ptr;
-
-   -----------------
-   --  Handshake  --
-   -----------------
-   procedure Handshake (S : Session)
-   is
-      Ret : Interfaces.C.int := gnutls_handshake (S);
    begin
       if Ret /= 0 then
          gnutls_perror (Ret);
-         raise GNUTLS_Error with "Handshake failed";
+         raise GNUTLS_Error with "Protocol_Set_Priority failed";
       end if;
-   end Handshake;
-
-   -------------------
-   --  Record_Send  --
-   -------------------
-   procedure Record_Send (S      : Session;
-                          Data   : GNAT.Sockets.Vector_Type;
-                          Length : out Ada.Streams.Stream_Element_Count)
-   is
-      N_Write : Interfaces.C.size_t;
-
-   begin
-      Length := 0;
-
-      for I in Data'Range loop
-         N_Write := gnutls_record_send (S,
-                                        Data (I).Base,
-                                        Interfaces.C.size_t (Data (I).Length));
-
-         if N_Write <= 0 then
-            raise GNUTLS_Error with "Data written <= 0";
-         end if;
-
-         Length := Length + Ada.Streams.Stream_Element_Count (N_Write);
-
-         if N_Write < Interfaces.C.size_t (Data (I).Length) then
-            --  nothing to write
-            return;
-         end if;
-      end loop;
-
-   end Record_Send;
+   end Protocol_Set_Priority;
 
    -------------------
    --  Record_Recv  --
@@ -390,9 +505,9 @@ package body GNUTLS is
                                        Data (I).Base,
                                        Interfaces.C.size_t (Data (I).Length));
 
-         if N_Read <= 0 then
+         if N_Read = 0 then
             gnutls_perror (Interfaces.C.int (N_Read));
-            raise GNUTLS_Error with "Data read <= 0";
+            raise GNUTLS_Error with "Data read = 0";
          end if;
 
          Length := Length + Ada.Streams.Stream_Element_Count (N_Read);
@@ -405,61 +520,43 @@ package body GNUTLS is
 
    end Record_Recv;
 
-   -----------
-   --  Bye  --
-   -----------
-   procedure Bye (S : Session; How : Close_Request)
-   is
-      Ret : Interfaces.C.int := gnutls_bye (S, How);
-
-   begin
-      if Ret /= 0 then
-         gnutls_perror (Ret);
-         raise GNUTLS_Error with "Bye failed";
-      end if;
-   end Bye;
-
-   --------------
-   --  Deinit  --
-   --------------
-   procedure Deinit (S : Session)
-   is
-   begin
-      gnutls_deinit (S);
-   end Deinit;
-
-   ------------------------------------
-   --  Anon_Free_Client_Credentials  --
-   ------------------------------------
-   procedure Anon_Free_Client_Credentials (Cert : Anon_Client_Credentials)
-   is
-   begin
-      gnutls_anon_free_client_credentials (Cert);
-   end Anon_Free_Client_Credentials;
-
    -------------------
-   --  Global_Init  --
+   --  Record_Send  --
    -------------------
-   procedure Global_Deinit
+   procedure Record_Send (S      : Session;
+                          Data   : GNAT.Sockets.Vector_Type;
+                          Length : out Ada.Streams.Stream_Element_Count)
    is
-   begin
-      gnutls_global_deinit;
-   end Global_Deinit;
+      N_Write : Interfaces.C.size_t;
 
-   ---------------------
-   --  Set_Log_Level  --
-   ---------------------
-   procedure Global_Set_Log_Level (Level : Integer) is
    begin
-      gnutls_global_set_log_level (Interfaces.C.int (Level));
-   end Global_Set_Log_Level;
+      Length := 0;
+
+      for I in Data'Range loop
+         N_Write := gnutls_record_send (S,
+                                        Data (I).Base,
+                                        Interfaces.C.size_t (Data (I).Length));
+
+         if N_Write = 0 then
+            raise GNUTLS_Error with "Data written = 0";
+         end if;
+
+         Length := Length + Ada.Streams.Stream_Element_Count (N_Write);
+
+         if N_Write < Interfaces.C.size_t (Data (I).Length) then
+            --  nothing to write
+            return;
+         end if;
+      end loop;
+
+   end Record_Send;
 
    ----------------------------
    --  Set_Default_Priority  --
    ----------------------------
 
    procedure Set_Default_Priority (S : Session) is
-      Ret : Interfaces.C.int := gnutls_set_default_priority (S);
+      Ret : constant Interfaces.C.int := gnutls_set_default_priority (S);
 
    begin
       if Ret /= 0 then
@@ -468,113 +565,17 @@ package body GNUTLS is
       end if;
    end Set_Default_Priority;
 
-   -----------------------
-   --  KX_Set_Priority  --
-   -----------------------
-
-   procedure KX_Set_Priority (S : Session; KX_Prio : KX_Algorithm_Array)
+   -------------------------
+   --  Transport_Set_Ptr  --
+   -------------------------
+   procedure Transport_Set_Ptr (S      : Session;
+                                Socket : GNAT.Sockets.Socket_Type)
    is
-      Ret : Interfaces.C.int
-        := gnutls_kx_set_priority (S, KX_Prio (KX_Prio'First)'Address);
+      Sock : constant Interfaces.C.int
+        := Interfaces.C.int (GNAT.Sockets.To_C (Socket));
 
    begin
-      if Ret /= 0 then
-         gnutls_perror (Ret);
-         raise GNUTLS_Error with "KX_Set_Priority failed";
-      end if;
-   end KX_Set_Priority;
-
-   ---------------------------
-   --  Cipher_Set_Priority  --
-   ---------------------------
-
-   procedure Cipher_Set_Priority (S : Session; Prio : Cipher_Algorithm_Array)
-   is
-      Ret : Interfaces.C.int
-        := gnutls_cipher_set_priority (S, Prio (Prio'First)'Address);
-
-   begin
-      if Ret /= 0 then
-         gnutls_perror (Ret);
-         raise GNUTLS_Error with "Cipher_Set_Priority failed";
-      end if;
-   end Cipher_Set_Priority;
-
-   -----------------------------
-   --  Protocol_Set_Priority  --
-   -----------------------------
-
-   procedure Protocol_Set_Priority (S : Session; PA : Protocol_Array) is
-      Ret : Interfaces.C.int
-        := gnutls_protocol_set_priority (S, PA (PA'First)'Address);
-
-   begin
-      if Ret /= 0 then
-         gnutls_perror (Ret);
-         raise GNUTLS_Error with "Protocol_Set_Priority failed";
-      end if;
-   end Protocol_Set_Priority;
-
-   --------------------------------
-   --  Compression_Set_Priority  --
-   --------------------------------
-
-   procedure Compression_Set_Priority (S  : Session;
-                                       CM : Compression_Method_Array) is
-      Ret : Interfaces.C.int
-        := gnutls_compression_set_priority (S, CM (CM'First)'Address);
-
-   begin
-      if Ret /= 0 then
-         gnutls_perror (Ret);
-         raise GNUTLS_Error with "Compression_Set_Priority failed";
-      end if;
-   end Compression_Set_Priority;
-
-   ------------------------
-   --  Mac_Set_Priority  --
-   ------------------------
-
-   procedure Mac_Set_Priority (S : Session; MA : Mac_Algorithm_Array) is
-      Ret : Interfaces.C.int
-        := gnutls_mac_set_priority (S, MA (MA'First)'Address);
-
-   begin
-      if Ret /= 0 then
-         gnutls_perror (Ret);
-         raise GNUTLS_Error with "Mac_Set_Priority failed";
-      end if;
-   end Mac_Set_Priority;
-
-   ---------------------
-   --  Get_Direction  --
-   ---------------------
-
-   function Get_Direction (S : Session) return IO_Direction is
-   begin
-      if gnutls_record_get_direction (S) = 0 then
-         return Read;
-
-      else
-         return Write;
-      end if;
-   end Get_Direction;
-
-   ----------------------
-   --  Error_Is_Fatal  --
-   ----------------------
-   function Error_Is_Fatal (E : Integer) return Error_Kind is
-   begin
-      case gnutls_error_is_fatal (Interfaces.C.int (E)) is
-         when 0 =>
-            return NON_FATAL_ERROR;
-
-         when 1 =>
-            return FATAL_ERROR;
-
-         when others =>
-            return UNKNOWN_ERROR;
-      end case;
-   end Error_Is_Fatal;
+      gnutls_transport_set_ptr (S, Sock);
+   end Transport_Set_Ptr;
 
 end GNUTLS;
