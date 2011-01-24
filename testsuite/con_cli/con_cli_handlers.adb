@@ -35,16 +35,15 @@
 ------------------------------------------------------------------------------
 with Ada.Wide_Wide_Text_IO;
 
-with League.Strings;
-
 with Con_Cli;
 
-with XMPP.Binds;
 with XMPP.IQS;
-with XMPP.IQ_Sessions;
+pragma Warnings (Off, XMPP.IQS);
+--  XXX : Gnat gpl 2010 bug
+
 with XMPP.Objects;
-with XMPP.Presences;
-with XMPP.Stream_Handlers;
+pragma Warnings (Off, XMPP.Objects);
+--  XXX : Gnat gpl 2010 bug
 
 package body Con_Cli_Handlers is
 
@@ -54,13 +53,30 @@ package body Con_Cli_Handlers is
    use type XMPP.Binds.Bind_State;
    use type XMPP.IQ_Sessions.Session_State;
 
+   ---------------------------
+   --  Bind_Resource_State  --
+   ---------------------------
+   overriding procedure Bind_Resource_State
+     (Self   : in out Con_Cli_Handler;
+      JID    : League.Strings.Universal_String;
+      Status : XMPP.Binds.Bind_State) is
+   begin
+      if Status = XMPP.Binds.Success then
+         Ada.Wide_Wide_Text_IO.Put_Line
+           ("Resource Binded Success: " & JID.To_Wide_Wide_String);
+
+         --  After resource binded successfull establishing session
+         Self.Object.Establish_IQ_Session;
+      end if;
+   end Bind_Resource_State;
+
    -----------------
    --  Connected  --
    -----------------
    overriding procedure Connected
      (Self    : in out Con_Cli_Handler;
       Object  : XMPP.Stream_Features.XMPP_Stream_Feature_Access) is
-
+      pragma Unreferenced (Object);
    begin
       Ada.Wide_Wide_Text_IO.Put_Line ("Yeah, we are connected");
       Self.Object.Bind_Resource
@@ -73,6 +89,8 @@ package body Con_Cli_Handlers is
    overriding procedure Presence
      (Self : in out Con_Cli_Handler;
       Data : not null XMPP.Presences.XMPP_Presence_Access) is
+      pragma Unreferenced (Self);
+
    begin
       Ada.Wide_Wide_Text_IO.Put_Line ("Presence Arrived: ");
       Ada.Wide_Wide_Text_IO.Put_Line
@@ -82,6 +100,24 @@ package body Con_Cli_Handlers is
            & XMPP.Presences.Show_Kind'Wide_Wide_Image (Data.Get_Show)
            & "(" & Data.Get_Status.To_Wide_Wide_String & ")");
    end Presence;
+
+   ---------------------
+   --  Session_State  --
+   ---------------------
+   overriding procedure Session_State
+     (Self   : in out Con_Cli_Handler;
+      Status : XMPP.IQ_Sessions.Session_State) is
+   begin
+      if Status = XMPP.IQ_Sessions.Established then
+         Ada.Wide_Wide_Text_IO.Put_Line ("Session established !!!");
+
+         Self.Object.Request_Roster;
+
+         --  After session successfully established,
+         --  sending presence
+         Self.Set_Presence;
+      end if;
+   end Session_State;
 
    --------------------
    --  Set_Presence  --
@@ -108,8 +144,9 @@ package body Con_Cli_Handlers is
    --------------------
    overriding procedure Start_Stream
      (Self   : in out Con_Cli_Handler;
-      Object : not null XMPP.Streams.XMPP_Stream_Access)
-   is
+      Object : not null XMPP.Streams.XMPP_Stream_Access) is
+      pragma Unreferenced (Self);
+      pragma Unreferenced (Object);
    begin
       Ada.Wide_Wide_Text_IO.Put_Line ("Start_Stream called");
    end Start_Stream;
@@ -119,43 +156,11 @@ package body Con_Cli_Handlers is
    -----------------------
    overriding procedure Stream_Features
      (Self   : in out Con_Cli_Handler;
-      Object : not null XMPP.Stream_Features.XMPP_Stream_Feature_Access)
-   is
+      Object : not null XMPP.Stream_Features.XMPP_Stream_Feature_Access) is
+      pragma Unreferenced (Self);
+      pragma Unreferenced (Object);
    begin
       Ada.Wide_Wide_Text_IO.Put_Line ("Stream_Features called");
    end Stream_Features;
-
-   ---------------------------
-   --  Bind_Resource_State  --
-   ---------------------------
-   procedure Bind_Resource_State (Self   : in out Con_Cli_Handler;
-                                  JID    : League.Strings.Universal_String;
-                                  Status : XMPP.Binds.Bind_State) is
-   begin
-      if Status = XMPP.Binds.Success then
-         Ada.Wide_Wide_Text_IO.Put_Line
-           ("Resource Binded Success: " & JID.To_Wide_Wide_String);
-
-         --  After resource binded successfull establishing session
-         Self.Object.Establish_IQ_Session;
-      end if;
-   end Bind_Resource_State;
-
-   ---------------------
-   --  Session_State  --
-   ---------------------
-   procedure Session_State (Self   : in out Con_Cli_Handler;
-                            Status : XMPP.IQ_Sessions.Session_State) is
-   begin
-      if Status = XMPP.IQ_Sessions.Established then
-         Ada.Wide_Wide_Text_IO.Put_Line ("Session established !!!");
-
-         Self.Object.Request_Roster;
-
-         --  After session successfully established,
-         --  sending presence
-         Self.Set_Presence;
-      end if;
-   end Session_State;
 
 end Con_Cli_Handlers;

@@ -37,7 +37,6 @@ with League.Strings;
 
 with XMPP.Binds;
 with XMPP.IQ_Sessions;
-with XMPP.IQS;
 with XMPP.Presences;
 with XMPP.Stream_Handlers;
 with XMPP.Streams;
@@ -74,12 +73,14 @@ package Con_Cli_Handlers is
 
    procedure Set_Presence (Self : in out Con_Cli_Handler);
 
-   procedure Bind_Resource_State (Self   : in out Con_Cli_Handler;
-                                  JID    : League.Strings.Universal_String;
-                                  Status : XMPP.Binds.Bind_State);
+   overriding procedure Bind_Resource_State
+     (Self   : in out Con_Cli_Handler;
+      JID    : League.Strings.Universal_String;
+      Status : XMPP.Binds.Bind_State);
 
-   procedure Session_State (Self   : in out Con_Cli_Handler;
-                            Status : XMPP.IQ_Sessions.Session_State);
+   overriding procedure Session_State
+     (Self   : in out Con_Cli_Handler;
+      Status : XMPP.IQ_Sessions.Session_State);
 
 private
 

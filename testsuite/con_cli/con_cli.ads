@@ -41,13 +41,10 @@ package Con_Cli is
 
    type Session_Access is access all Session'Class;
 
-   procedure Test (X : in Session);
+   procedure Test (X : Session);
 
 private
 
    type Session is limited new XMPP.Sessions.XMPP_Session with null record;
 
 end Con_Cli;
-
-
-

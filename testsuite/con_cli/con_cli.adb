@@ -35,12 +35,9 @@
 ------------------------------------------------------------------------------
 package body Con_Cli is
 
-   procedure Test (X : in Session) is
+   procedure Test (X : Session) is
    begin
       null;
    end Test;
 
 end Con_Cli;
-
-
-

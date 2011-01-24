@@ -39,8 +39,8 @@ with Con_Cli_Handlers;
 with League.Strings;
 
 procedure Main is
-   S : not null Con_Cli.Session_Access := new Con_Cli.Session;
-   H : not null Con_Cli_Handlers.Con_Cli_Handler_Access
+   S : constant not null Con_Cli.Session_Access := new Con_Cli.Session;
+   H : constant not null Con_Cli_Handlers.Con_Cli_Handler_Access
      := new Con_Cli_Handlers.Con_Cli_Handler;
 
 begin
