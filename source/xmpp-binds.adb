@@ -90,33 +90,33 @@ package body XMPP.Binds is
         := To_Universal_String ("urn:ietf:params:xml:ns:xmpp-bind");
 
    begin
-      W.Start_Prefix_Mapping (To_Universal_String (""), URI, OK);
+      W.Start_Prefix_Mapping (Empty_Universal_String, URI, OK);
 
       W.Start_Element
         (URI,
          To_Universal_String ("bind"),
-         To_Universal_String (""),
+         Empty_Universal_String,
          Attrs,
          OK);
 
       if not Self.Get_Resource.Is_Empty then
-         W.Start_Element (To_Universal_String (""),
-                          To_Universal_String (""),
+         W.Start_Element (Empty_Universal_String,
+                          Empty_Universal_String,
                           To_Universal_String ("resource"),
                           Attrs,
                           OK);
 
          W.Characters (Self.Get_Resource, OK);
 
-         W.End_Element (To_Universal_String (""),
-                        To_Universal_String (""),
+         W.End_Element (Empty_Universal_String,
+                        Empty_Universal_String,
                         To_Universal_String ("resource"),
                         OK);
       end if;
 
       W.End_Element (URI,
                      To_Universal_String ("bind"),
-                     To_Universal_String (""),
+                     Empty_Universal_String,
                      OK);
 
       W.End_Prefix_Mapping (URI, OK);
