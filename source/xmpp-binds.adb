@@ -35,6 +35,9 @@
 ------------------------------------------------------------------------------
 with Ada.Wide_Wide_Text_IO;
 
+with XML.SAX.Attributes;
+with XML.SAX.Pretty_Writers;
+
 package body XMPP.Binds is
 
    use League.Strings;
@@ -80,17 +83,45 @@ package body XMPP.Binds is
    -----------------
    overriding function Serialize (Self : XMPP_Bind)
       return League.Strings.Universal_String is
+      W     : XML.SAX.Pretty_Writers.SAX_Pretty_Writer;
+      OK    : Boolean := False;
+      Attrs : XML.SAX.Attributes.SAX_Attributes;
+      URI   : constant League.Strings.Universal_String
+        := To_Universal_String ("urn:ietf:params:xml:ns:xmpp-bind");
+
    begin
-      return X : League.Strings.Universal_String do
-         X := League.Strings.To_Universal_String
-               ("<bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>");
+      W.Start_Prefix_Mapping (To_Universal_String (""), URI, OK);
 
-         if not Self.Get_Resource.Is_Empty then
-            X.Append ("<resource>" & Self.Get_Resource & "</resource>");
-         end if;
+      W.Start_Element
+        (URI,
+         To_Universal_String ("bind"),
+         To_Universal_String (""),
+         Attrs,
+         OK);
 
-         X.Append (League.Strings.To_Universal_String ("</bind>"));
-      end return;
+      if not Self.Get_Resource.Is_Empty then
+         W.Start_Element (To_Universal_String (""),
+                          To_Universal_String (""),
+                          To_Universal_String ("resource"),
+                          Attrs,
+                          OK);
+
+         W.Characters (Self.Get_Resource, OK);
+
+         W.End_Element (To_Universal_String (""),
+                        To_Universal_String (""),
+                        To_Universal_String ("resource"),
+                        OK);
+      end if;
+
+      W.End_Element (URI,
+                     To_Universal_String ("bind"),
+                     To_Universal_String (""),
+                     OK);
+
+      W.End_Prefix_Mapping (URI, OK);
+
+      return W.Text;
    end Serialize;
 
    -------------------
