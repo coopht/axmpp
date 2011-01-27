@@ -33,8 +33,12 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
+with XML.SAX.Pretty_Writers;
+with XML.SAX.Attributes;
 
 package body XMPP.IQ_Sessions is
+
+   use League.Strings;
 
    --------------
    --  Create  --
@@ -61,11 +65,30 @@ package body XMPP.IQ_Sessions is
    overriding function Serialize (Self : XMPP_IQ_Session)
       return League.Strings.Universal_String is
       pragma Unreferenced (Self);
+      W     : XML.SAX.Pretty_Writers.SAX_Pretty_Writer;
+      OK    : Boolean := False;
+      Attrs : XML.SAX.Attributes.SAX_Attributes;
+      URI   : constant League.Strings.Universal_String
+        := To_Universal_String ("urn:ietf:params:xml:ns:xmpp-session");
 
    begin
-      return
-        League.Strings.To_Universal_String
-         ("<session xmlns='urn:ietf:params:xml:ns:xmpp-session'/>");
+      W.Start_Prefix_Mapping (Empty_Universal_String, URI, OK);
+
+      W.Start_Element
+        (URI,
+         To_Universal_String ("session"),
+         Empty_Universal_String,
+         Attrs,
+         OK);
+
+      W.End_Element (Empty_Universal_String,
+                     Empty_Universal_String,
+                     To_Universal_String ("session"),
+                     OK);
+
+      W.End_Prefix_Mapping (Empty_Universal_String, OK);
+
+      return W.Text;
    end Serialize;
 
    -------------------
