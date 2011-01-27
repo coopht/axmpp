@@ -262,7 +262,7 @@ package body XMPP.Challenges is
       pragma Unreferenced (Self);
 
    begin
-      return X : League.Strings.Universal_String;
+      return League.Strings.Empty_Universal_String;
    end Serialize;
 
    ---------------------
