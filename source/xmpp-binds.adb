@@ -119,7 +119,7 @@ package body XMPP.Binds is
                      Empty_Universal_String,
                      OK);
 
-      W.End_Prefix_Mapping (URI, OK);
+      W.End_Prefix_Mapping (Empty_Universal_String, OK);
 
       return W.Text;
    end Serialize;
