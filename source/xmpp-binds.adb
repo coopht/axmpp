@@ -35,7 +35,6 @@
 ------------------------------------------------------------------------------
 with Ada.Wide_Wide_Text_IO;
 
-with XML.SAX.Attributes;
 with XML.SAX.Pretty_Writers;
 
 package body XMPP.Binds is
@@ -83,45 +82,37 @@ package body XMPP.Binds is
    -----------------
    overriding function Serialize (Self : XMPP_Bind)
       return League.Strings.Universal_String is
-      W     : XML.SAX.Pretty_Writers.SAX_Pretty_Writer;
-      OK    : Boolean := False;
-      Attrs : XML.SAX.Attributes.SAX_Attributes;
-      URI   : constant League.Strings.Universal_String
-        := To_Universal_String ("urn:ietf:params:xml:ns:xmpp-bind");
+      Writer  : XML.SAX.Pretty_Writers.SAX_Pretty_Writer;
+      Success : Boolean := False;
 
    begin
-      W.Start_Prefix_Mapping (Empty_Universal_String, URI, OK);
+      Writer.Start_Prefix_Mapping
+       (Namespace_URI => Bind_URI,
+        Success       => Success);
 
-      W.Start_Element
-        (URI,
-         To_Universal_String ("bind"),
-         Empty_Universal_String,
-         Attrs,
-         OK);
+      Writer.Start_Element
+       (Namespace_URI => Bind_URI,
+        Local_Name    => Bind_Element,
+        Success       => Success);
 
       if not Self.Get_Resource.Is_Empty then
-         W.Start_Element (Empty_Universal_String,
-                          Empty_Universal_String,
-                          To_Universal_String ("resource"),
-                          Attrs,
-                          OK);
+         Writer.Start_Element
+          (Qualified_Name => Resource_Element,
+           Success        => Success);
 
-         W.Characters (Self.Get_Resource, OK);
+         Writer.Characters (Self.Get_Resource, Success);
 
-         W.End_Element (Empty_Universal_String,
-                        Empty_Universal_String,
-                        To_Universal_String ("resource"),
-                        OK);
+         Writer.End_Element (Qualified_Name => Resource_Element,
+                             Success        => Success);
       end if;
 
-      W.End_Element (URI,
-                     To_Universal_String ("bind"),
-                     Empty_Universal_String,
-                     OK);
+      Writer.End_Element (Namespace_URI => Bind_URI,
+                          Local_Name    => Bind_Element,
+                          Success       => Success);
 
-      W.End_Prefix_Mapping (Empty_Universal_String, OK);
+      Writer.End_Prefix_Mapping (Success => Success);
 
-      return W.Text;
+      return Writer.Text;
    end Serialize;
 
    -------------------

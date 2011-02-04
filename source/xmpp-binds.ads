@@ -39,6 +39,16 @@ with XMPP.Objects;
 
 package XMPP.Binds is
 
+   Bind_Element : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("bind");
+
+   Bind_URI : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String
+         ("urn:ietf:params:xml:ns:xmpp-bind");
+
+   Resource_Element : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("resource");
+
    type Bind_State is (Success, Error);
 
    type XMPP_Bind is new XMPP.Objects.XMPP_Object with private;
