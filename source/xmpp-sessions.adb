@@ -836,16 +836,17 @@ package body XMPP.Sessions is
       Self.Tag := Local_Name;
 
       --  For XMPP_Stream_Feature
-      if Namespace_URI = +"urn:ietf:params:xml:ns:xmpp-tls"
-        and Local_Name = +"starttls" then
-         Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
+      if Namespace_URI = +"urn:ietf:params:xml:ns:xmpp-tls" then
+         if Local_Name = +"starttls" then
+            Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
 
-         --  proceed tls connection establishment
-         --  nothing todo here, just send required data to server in
-         --  End_Element callback
-      elsif Namespace_URI = +"urn:ietf:params:xml:ns:xmpp-tls"
-        and Local_Name = +"proceed" then
-         null;
+            --  proceed tls connection establishment
+            --  nothing todo here, just send required data to server in
+            --  End_Element callback
+         elsif Namespace_URI = +"urn:ietf:params:xml:ns:xmpp-tls"
+           and Local_Name = +"proceed" then
+            null;
+         end if;
 
          --  For XMPP_Stream_Feature
       elsif Namespace_URI = +"urn:ietf:params:xml:ns:xmpp-sasl" then
