@@ -65,7 +65,7 @@ package body XMPP.Sessions is
    use type Ada.Streams.Stream_Element_Offset;
    use type XMPP.IQS.IQ_Kind;
 
-   function TUS (Item : Wide_Wide_String) return Universal_String
+   function "+" (Item : Wide_Wide_String) return Universal_String
      renames League.Strings.To_Universal_String;
 
    ---------------------
@@ -82,7 +82,7 @@ package body XMPP.Sessions is
    begin
       Bind_Object.Set_Resource (Resource_Id);
 
-      Bind_IQ.Set_Id (League.Strings.To_Universal_String ("bind_1"));
+      Bind_IQ.Set_Id (+"bind_1");
       Bind_IQ.Append_Item (Bind_Object);
 
       Self.Send_Object (Bind_IQ);
@@ -125,7 +125,7 @@ package body XMPP.Sessions is
       D.Set_Type (XMPP.Services_Features.Protocol_Disco_Info);
       IQ.Set_From (Self.JID & "@" & Self.Host);
       IQ.Set_To (JID);
-      IQ.Set_Id (To_Universal_String ("info1"));
+      IQ.Set_Id (+"info1");
       --  XXX: removed hardcoded ID;
       IQ.Append_Item (D);
       Self.Send_Object (IQ);
@@ -143,7 +143,7 @@ package body XMPP.Sessions is
       D.Set_Type (XMPP.Services_Features.Protocol_Disco_Items);
       IQ.Set_From (Self.JID & "@" & Self.Host);
       IQ.Set_To (JID);
-      IQ.Set_Id (To_Universal_String ("info1"));
+      IQ.Set_Id (+"info1");
       --  XXX: removed hardcoded ID;
       IQ.Append_Item (D);
       Self.Send_Object (IQ);
@@ -172,20 +172,18 @@ package body XMPP.Sessions is
       --    ("Stack size at begin : "
       --       & Integer'Wide_Wide_Image (Integer (Self.Stack.Length)));
 
-      if Namespace_URI
-        = To_Universal_String ("http://etherx.jabber.org/streams") then
-         if Local_Name = To_Universal_String ("stream") then
+      if Namespace_URI = +"http://etherx.jabber.org/streams" then
+         if Local_Name = +"stream" then
 
-         --  TODO:
-         --  Free (Self.Current);
+            --  TODO:
+            --  Free (Self.Current);
             Self.Stack.Delete_Last;
 
-         elsif Local_Name = To_Universal_String ("features") then
-
+         elsif Local_Name = +"features" then
             if not Self.Authenticated then
                Self.Stream_Handler.Stream_Features
-                 (XMPP.Stream_Features.XMPP_Stream_Feature_Access
-                    (Self.Stack.Last_Element));
+                (XMPP.Stream_Features.XMPP_Stream_Feature_Access
+                  (Self.Stack.Last_Element));
 
             else
                Self.Stream_Handler.Connected
@@ -214,17 +212,15 @@ package body XMPP.Sessions is
             --  Free (Self.Current);
          end if;
 
-      elsif Namespace_URI
-        = To_Universal_String ("urn:ietf:params:xml:ns:xmpp-tls")
-        and Local_Name = To_Universal_String ("proceed") then
+      elsif Namespace_URI = +"urn:ietf:params:xml:ns:xmpp-tls"
+        and Local_Name = +"proceed" then
          if not Self.Source.Is_TLS_Established then
             Self.Proceed_TLS_Auth;
          end if;
 
       --  Proceed with SASL Authentication
-      elsif Namespace_URI
-        = To_Universal_String ("urn:ietf:params:xml:ns:xmpp-sasl") then
-         if Local_Name = To_Universal_String ("challenge") then
+      elsif Namespace_URI = +"urn:ietf:params:xml:ns:xmpp-sasl" then
+         if Local_Name = +"challenge" then
             --  Proceeding with SASL auth
             Self.Proceed_SASL_Auth
               (XMPP.Challenges.XMPP_Challenge_Access
@@ -236,13 +232,16 @@ package body XMPP.Sessions is
             return;
 
             --  For successfull authentication
-         elsif Local_Name = To_Universal_String ("success") then
+
+         elsif Local_Name = +"success" then
+
             --  TODO:
             --  Free (Self.Current);
 
             --  We do not create any object here, just notifies user about
             --  successful authentification, and opening another one stream
             --  to server
+
             Self.Stack.Delete_Last;
             Ada.Wide_Wide_Text_IO.Put_Line ("Authentification successfull !!");
             Self.Authenticated := True;
@@ -250,11 +249,11 @@ package body XMPP.Sessions is
          end if;
 
       --  For IQ
-      elsif Namespace_URI
-        = To_Universal_String ("urn:ietf:params:xml:ns:xmpp-bind") then
+      elsif Namespace_URI = +"urn:ietf:params:xml:ns:xmpp-bind" then
 
          --  XXX: ugly code
-         if Local_Name = To_Universal_String ("bind") then
+         if Local_Name = +"bind" then
+
             --  Adding bind body for IQ object
             if Previous (Current) /= No_Element then
                if Self.Stack.Element (To_Index (Previous (Current))).Get_Kind
@@ -269,11 +268,10 @@ package body XMPP.Sessions is
          end if;
 
       --  For IQ
-      elsif Namespace_URI
-        = To_Universal_String ("urn:ietf:params:xml:ns:xmpp-session") then
+      elsif Namespace_URI = +"urn:ietf:params:xml:ns:xmpp-session" then
 
          --  XXX: ugly code
-         if Local_Name = To_Universal_String ("session") then
+         if Local_Name = +"session" then
             --  Adding bind body for IQ object
             if Previous (Current) /= No_Element then
                if Self.Stack.Element (To_Index (Previous (Current))).Get_Kind
@@ -288,9 +286,9 @@ package body XMPP.Sessions is
          end if;
 
       --  working with roster
-      elsif Namespace_URI = To_Universal_String ("jabber:iq:roster") then
+      elsif Namespace_URI = +"jabber:iq:roster" then
          --  Adding Roster to IQ object
-         if Local_Name = To_Universal_String ("query") then
+         if Local_Name = +"query" then
             if Self.Stack.Last_Element.Get_Kind = Objects.Roster then
                if Previous (Current) /= No_Element then
                   if Self.Stack.Element
@@ -307,7 +305,7 @@ package body XMPP.Sessions is
             end if;
 
          --  Adding item to the roster
-         elsif Local_Name = To_Universal_String ("item") then
+         elsif Local_Name = +"item" then
             if Self.Stack.Last_Element.Get_Kind = Objects.Roster_Item then
                if Previous (Current) /= No_Element then
                   if Self.Stack.Element
@@ -326,12 +324,9 @@ package body XMPP.Sessions is
          end if;
 
       --  Service discovery
-      elsif Namespace_URI
-        = To_Universal_String ("http://jabber.org/protocol/disco#info") or
-        Namespace_URI
-        = To_Universal_String ("http://jabber.org/protocol/disco#items")
-      then
-         if Local_Name = To_Universal_String ("query") then
+      elsif Namespace_URI = +"http://jabber.org/protocol/disco#info" or
+        Namespace_URI = +"http://jabber.org/protocol/disco#items" then
+         if Local_Name = +"query" then
             if Self.Stack.Last_Element.Get_Kind = Disco then
                if Previous (Current) /= No_Element then
                   if Self.Stack.Element
@@ -347,9 +342,8 @@ package body XMPP.Sessions is
             end if;
          end if;
 
-      elsif Namespace_URI
-        = To_Universal_String ("http://jabber.org/protocol/muc#user") then
-         if Local_Name = To_Universal_String ("x") then
+      elsif Namespace_URI = +"http://jabber.org/protocol/muc#user" then
+         if Local_Name = +"x" then
             if Self.Stack.Last_Element.Get_Kind = XMPP.Objects.MUC then
                if Previous (Current) /= No_Element then
                   if Self.Stack.Element
@@ -375,9 +369,9 @@ package body XMPP.Sessions is
             end if;
          end if;
 
-      elsif Namespace_URI = To_Universal_String ("jabber:client") then
+      elsif Namespace_URI = +"jabber:client" then
          --  Calling IQ Handler
-         if Local_Name = To_Universal_String ("iq") then
+         if Local_Name = +"iq" then
             --  Ada.Wide_Wide_Text_IO.Put_Line
             --    ("Self.Stack.Last_Element.Get_Kind "
             --       & XMPP.Objects.Object_Kind'Wide_Wide_Image
@@ -389,13 +383,13 @@ package body XMPP.Sessions is
             Self.Stack.Delete_Last;
 
          --  Calling Presence Handler
-         elsif Local_Name = To_Universal_String ("presence") then
+         elsif Local_Name = +"presence" then
             Self.Stream_Handler.Presence
               (XMPP.Presences.XMPP_Presence_Access (Self.Stack.Last_Element));
             Self.Stack.Delete_Last;
 
          --  Calling Message Handler
-         elsif Local_Name = To_Universal_String ("message") then
+         elsif Local_Name = +"message" then
             Ada.Wide_Wide_Text_IO.Put_Line ("Calling Message_Handler");
             Self.Stream_Handler.Message
               (XMPP.Messages.XMPP_Message_Access (Self.Stack.Last_Element));
@@ -403,8 +397,7 @@ package body XMPP.Sessions is
          end if;
 
       --  All objects of chatsets namespaces processed in start_element
-      elsif Namespace_URI
-        = To_Universal_String ("http://jabber.org/protocol/chatstates") then
+      elsif Namespace_URI = +"http://jabber.org/protocol/chatstates" then
          null;
       end if;
 
@@ -439,7 +432,7 @@ package body XMPP.Sessions is
         := new XMPP.IQ_Sessions.XMPP_IQ_Session;
 
    begin
-      IQ.Set_Id (League.Strings.To_Universal_String ("sess_1"));
+      IQ.Set_Id (+"sess_1");
       IQ.Append_Item (S);
       Self.Send_Object (IQ);
    end Establish_IQ_Session;
@@ -843,49 +836,44 @@ package body XMPP.Sessions is
       Self.Tag := Local_Name;
 
       --  For XMPP_Stream_Feature
-      if Namespace_URI
-        = To_Universal_String ("urn:ietf:params:xml:ns:xmpp-tls")
-        and Local_Name.To_Wide_Wide_String = "starttls"
-      then
+      if Namespace_URI = +"urn:ietf:params:xml:ns:xmpp-tls"
+        and Local_Name = +"starttls" then
          Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
 
-      --  proceed tls connection establishment
-      --  nothing todo here, just send required data to server in
-      --  End_Element callback
-      elsif Namespace_URI
-        = To_Universal_String ("urn:ietf:params:xml:ns:xmpp-tls")
-        and Local_Name = To_Universal_String ("proceed") then
+         --  proceed tls connection establishment
+         --  nothing todo here, just send required data to server in
+         --  End_Element callback
+      elsif Namespace_URI = +"urn:ietf:params:xml:ns:xmpp-tls"
+        and Local_Name = +"proceed" then
          null;
 
          --  For XMPP_Stream_Feature
-      elsif Namespace_URI.To_Wide_Wide_String
-        = "urn:ietf:params:xml:ns:xmpp-sasl" then
-         if Local_Name.To_Wide_Wide_String = "mechanisms" then
+      elsif Namespace_URI = +"urn:ietf:params:xml:ns:xmpp-sasl" then
+         if Local_Name = +"mechanisms" then
             --  we can safety skip mechanisms tag here.
             null;
 
             --  For XMPP_Stream_Feature
-         elsif Local_Name.To_Wide_Wide_String = "mechanism" then
+         elsif Local_Name = +"mechanism" then
                --  We add mechanism parameter in Characters procedure
             Self.Tag := Local_Name;
 
          --  Creating Challenge object for sasl authentication
-         elsif Local_Name = To_Universal_String ("challenge") then
+         elsif Local_Name = +"challenge" then
             Self.Tag := Local_Name;
 
             Self.Stack.Append
               (XMPP.Objects.XMPP_Object_Access (XMPP.Challenges.Create));
 
          --  For successfull authentication
-         elsif Local_Name = To_Universal_String ("success") then
+         elsif Local_Name = +"success" then
          --  all work is don in delete_object
             null;
          end if;
 
       --  For XMPP_Stream_Feature
-      elsif Namespace_URI.To_Wide_Wide_String
-        = "urn:ietf:params:xml:ns:xmpp-bind" then
-         if Local_Name.To_Wide_Wide_String = "bind" then
+      elsif Namespace_URI = +"urn:ietf:params:xml:ns:xmpp-bind" then
+         if Local_Name = +"bind" then
 
             --  If bind for iq object, than create new bind object
             --  and push it into stack
@@ -899,61 +887,59 @@ package body XMPP.Sessions is
 
          --  setting jid value for bind object
          --  the data actual set in character procedure
-         elsif Local_Name.To_Wide_Wide_String = "jid" then
+         elsif Local_Name = +"jid" then
             Self.Tag := Local_Name;
          end if;
 
       --  For XMPP_Stream_Feature
-      elsif Namespace_URI.To_Wide_Wide_String
-        = "urn:ietf:params:xml:ns:xmpp-session"
-        and Local_Name.To_Wide_Wide_String = "session" then
+      elsif Namespace_URI = +"urn:ietf:params:xml:ns:xmpp-session"
+        and Local_Name = +"session" then
          --  Setting session feature to stream feature object
          if Self.Stack.Last_Element.Get_Kind = XMPP.Objects.IQ then
             Self.Stack.Append
-              (XMPP.Objects.XMPP_Object_Access (XMPP.IQ_Sessions.Create));
+             (XMPP.Objects.XMPP_Object_Access (XMPP.IQ_Sessions.Create));
+
          else
             Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
          end if;
 
-      elsif Namespace_URI
-        = To_Universal_String ("http://etherx.jabber.org/streams") then
-
-         if Local_Name = To_Universal_String ("stream") then
+      elsif Namespace_URI = +"http://etherx.jabber.org/streams" then
+         if Local_Name = +"stream" then
             Self.Stack.Append
               (XMPP.Objects.XMPP_Object_Access (XMPP.Streams.Create));
 
-         elsif Local_Name = To_Universal_String ("features") then
+         elsif Local_Name = +"features" then
             Self.Stack.Append
               (XMPP.Objects.XMPP_Object_Access
                  (XMPP.Stream_Features.Create));
          end if;
 
-      elsif Namespace_URI = To_Universal_String ("jabber:client") then
+      elsif Namespace_URI = +"jabber:client" then
 
          --  Creating IQ object
-         if Local_Name = To_Universal_String ("iq") then
+         if Local_Name = +"iq" then
             Self.Stack.Append
              (XMPP.Objects.XMPP_Object_Access
                (XMPP.IQS.Create (XMPP.IQS.Result)));
 
          --  Creating Presence object
-         elsif Local_Name = To_Universal_String ("presence") then
+         elsif Local_Name = +"presence" then
             Self.Stack.Append
              (XMPP.Objects.XMPP_Object_Access (XMPP.Presences.Create));
 
          --  Creating message
-         elsif Local_Name = To_Universal_String ("message") then
+         elsif Local_Name = +"message" then
             Self.Stack.Append
              (XMPP.Objects.XMPP_Object_Access (XMPP.Messages.Create));
          end if;
 
       elsif Namespace_URI
-        = To_Universal_String ("http://jabber.org/protocol/chatstates") then
-         if Local_Name = To_Universal_String ("active")
-           or Local_Name = To_Universal_String ("inactive")
-           or Local_Name = To_Universal_String ("gone")
-           or Local_Name = To_Universal_String ("composing")
-           or Local_Name = To_Universal_String ("paused")
+        = +"http://jabber.org/protocol/chatstates" then
+         if Local_Name = +"active"
+           or Local_Name = +"inactive"
+           or Local_Name = +"gone"
+           or Local_Name = +"composing"
+           or Local_Name = +"paused"
          then
             if Self.Stack.Last_Element.Get_Kind = Objects.Message then
                Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
@@ -961,10 +947,10 @@ package body XMPP.Sessions is
          end if;
 
       --  working with roster
-      elsif Namespace_URI = To_Universal_String ("jabber:iq:roster") then
+      elsif Namespace_URI = +"jabber:iq:roster" then
          --  if query found within jabber:iq:roster namespace, then
          --  creating a roster list.
-         if Local_Name = To_Universal_String ("query") then
+         if Local_Name = +"query" then
             if Self.Stack.Last_Element.Get_Kind = Objects.IQ then
                Self.Stack.Append
                  (XMPP.Objects.XMPP_Object_Access (XMPP.Rosters.Create));
@@ -972,26 +958,25 @@ package body XMPP.Sessions is
 
          --  if item found within jabber:iq:roster namespace, then
          --  creating a roster item.
-         elsif Local_Name = To_Universal_String ("item") then
+         elsif Local_Name = +"item" then
             if Self.Stack.Last_Element.Get_Kind = Objects.Roster then
                Self.Stack.Append
                  (XMPP.Objects.XMPP_Object_Access (XMPP.Roster_Items.Create));
             end if;
 
          --  nothing to do here for group tag
-         elsif Local_Name = To_Universal_String ("group") then
+         elsif Local_Name = +"group" then
             null;
          end if;
 
-      elsif Namespace_URI
-        = To_Universal_String ("http://jabber.org/protocol/disco#info") then
-         if Local_Name = To_Universal_String ("query") then
+      elsif Namespace_URI = +"http://jabber.org/protocol/disco#info" then
+         if Local_Name = +"query" then
             if Self.Stack.Last_Element.Get_Kind = Objects.IQ then
                Self.Stack.Append
                  (XMPP.Objects.XMPP_Object_Access (XMPP.Services.Create));
             end if;
 
-         elsif Local_Name = To_Universal_String ("identity") then
+         elsif Local_Name = +"identity" then
             if Self.Stack.Last_Element.Get_Kind = Objects.Disco then
                XMPP.Services.XMPP_Service_Access
                  (Self.Stack.Last_Element).Add_Identity
@@ -1000,7 +985,7 @@ package body XMPP.Sessions is
                return;
             end if;
 
-         elsif Local_Name = To_Universal_String ("feature") then
+         elsif Local_Name = +"feature" then
             if Self.Stack.Last_Element.Get_Kind = Objects.Disco then
                XMPP.Services.XMPP_Service_Access
                  (Self.Stack.Last_Element).Add_Feature (Attributes.Value (1));
@@ -1008,64 +993,62 @@ package body XMPP.Sessions is
             end if;
          end if;
 
-      elsif Namespace_URI
-        = To_Universal_String ("http://jabber.org/protocol/disco#items") then
-         if Local_Name = To_Universal_String ("query") then
+      elsif Namespace_URI = +"http://jabber.org/protocol/disco#items" then
+         if Local_Name = +"query" then
             if Self.Stack.Last_Element.Get_Kind = Objects.IQ then
                Self.Stack.Append
                 (XMPP.Objects.XMPP_Object_Access (XMPP.Services.Create));
             end if;
 
-         elsif Local_Name = To_Universal_String ("item") then
+         elsif Local_Name = +"item" then
             if Self.Stack.Last_Element.Get_Kind = Objects.Disco then
                XMPP.Services.XMPP_Service_Access
                  (Self.Stack.Last_Element).Add_Item
-                 ((JID => Attributes.Value (To_Universal_String ("jid")),
-                   Name => Attributes.Value (To_Universal_String ("name")),
-                   Node => Attributes.Value (To_Universal_String ("node"))));
+                 ((JID => Attributes.Value (+"jid"),
+                   Name => Attributes.Value (+"name"),
+                   Node => Attributes.Value (+"node")));
                return;
             end if;
          end if;
 
-      elsif Namespace_URI
-        = To_Universal_String ("http://jabber.org/protocol/muc#user") then
-         if Local_Name = To_Universal_String ("x") then
+      elsif Namespace_URI = +"http://jabber.org/protocol/muc#user" then
+         if Local_Name = +"x" then
             if Self.Stack.Last_Element.Get_Kind = Objects.Presence then
                Self.Stack.Append
                 (XMPP.Objects.XMPP_Object_Access (XMPP.MUC.Create));
             end if;
-         elsif Local_Name = To_Universal_String ("item") then
+         elsif Local_Name = +"item" then
             if Self.Stack.Last_Element.Get_Kind = Objects.MUC then
                declare
                   Item       : XMPP.MUC.MUC_Item;
                   Affilation : constant Universal_String
-                    := Attributes.Value (TUS ("affilation"));
+                    := Attributes.Value (+"affilation");
 
                   Role       : constant Universal_String
-                    := Attributes.Value (TUS ("role"));
+                    := Attributes.Value (+"role");
 
                begin
                   --  Setting affilation
-                  if Affilation = TUS ("admin") then
+                  if Affilation = +"admin" then
                      Item.Affilation := XMPP.MUC.Admin;
-                  elsif Affilation = TUS ("member") then
+                  elsif Affilation = +"member" then
                      Item.Affilation := XMPP.MUC.Member;
-                  elsif Affilation = TUS ("none") then
+                  elsif Affilation = +"none" then
                      Item.Affilation := XMPP.MUC.None;
-                  elsif Affilation = TUS ("outcast") then
+                  elsif Affilation = +"outcast" then
                      Item.Affilation := XMPP.MUC.Outcast;
-                  elsif Affilation = TUS ("owner") then
+                  elsif Affilation = +"owner" then
                      Item.Affilation := XMPP.MUC.Owner;
                   end if;
 
                   --  Setting role
-                  if Role = TUS ("moderator") then
+                  if Role = +"moderator" then
                      Item.Role := XMPP.MUC.Moderator;
-                  elsif Role = TUS ("none") then
+                  elsif Role = +"none" then
                      Item.Role := XMPP.MUC.None;
-                  elsif Role = TUS ("participant") then
+                  elsif Role = +"participant" then
                      Item.Role := XMPP.MUC.Participant;
-                  elsif Role = TUS ("Visitor") then
+                  elsif Role = +"Visitor" then
                      Item.Role := XMPP.MUC.Visitor;
                   end if;
 
