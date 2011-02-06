@@ -57,13 +57,19 @@ package body XMPP.MUC is
    -----------------
    --  Serialize  --
    -----------------
-   overriding function Serialize (Self : XMPP_MUC)
-      return League.Strings.Universal_String is
+   overriding procedure Serialize
+    (Self   : XMPP_MUC;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class) is
       pragma Unreferenced (Self);
 
    begin
-      return League.Strings.To_Universal_String
-              ("<x xmlns='http://jabber.org/protocol/muc'/>");
+      Writer.Start_Prefix_Mapping (Namespace_URI => MUC_URI);
+
+      Writer.Start_Element (Namespace_URI => MUC_URI,
+                            Local_Name    => MUC_Element);
+
+      Writer.End_Element (Namespace_URI => MUC_URI,
+                          Local_Name => MUC_Element);
    end Serialize;
 
    -------------------

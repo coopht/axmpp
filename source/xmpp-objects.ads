@@ -33,9 +33,10 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with League.Strings;
-
 with Ada.Containers.Vectors;
+
+with League.Strings;
+with XML.SAX.Pretty_Writers;
 
 package XMPP.Objects is
 
@@ -72,8 +73,10 @@ package XMPP.Objects is
    --  Serialize  --
    -----------------
    not overriding
-   function Serialize (Self : XMPP_Object)
-      return League.Strings.Universal_String is abstract;
+   procedure Serialize
+    (Self   : XMPP_Object;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class)
+       is abstract;
 
    -------------------
    --  Set_Content  --

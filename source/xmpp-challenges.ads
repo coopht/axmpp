@@ -33,8 +33,11 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with XMPP.Objects;
 with League.Strings;
+
+with XML.SAX.Pretty_Writers;
+
+with XMPP.Objects;
 
 package XMPP.Challenges is
 
@@ -47,9 +50,9 @@ package XMPP.Challenges is
    overriding
    function Get_Kind (Self : XMPP_Challenge) return XMPP.Objects.Object_Kind;
 
-   overriding
-   function Serialize (Self : XMPP_Challenge)
-      return League.Strings.Universal_String;
+   overriding procedure Serialize
+    (Self   : XMPP_Challenge;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class);
 
    overriding
    procedure Set_Content (Self      : in out XMPP_Challenge;

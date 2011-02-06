@@ -36,9 +36,18 @@
 ------------------------------------------------------------------------------
 with League.Strings;
 
+with XML.SAX.Pretty_Writers;
+
 with XMPP.Objects;
 
 package XMPP.MUC is
+
+   MUC_Element : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("muc");
+
+   MUC_URI : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String
+         ("xmlns='http://jabber.org/protocol/muc'");
 
    type MUC_Affilation is (Admin, Member, None, Outcast, Owner);
    type MUC_Role is (Moderator, None, Participant, Visitor);
@@ -54,8 +63,9 @@ package XMPP.MUC is
 
    overriding function Get_Kind (Self : XMPP_MUC) return Objects.Object_Kind;
 
-   overriding function Serialize (Self : XMPP_MUC)
-     return League.Strings.Universal_String;
+   overriding procedure Serialize
+    (Self   : XMPP_MUC;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class);
 
    overriding procedure Set_Content
      (Self      : in out XMPP_MUC;

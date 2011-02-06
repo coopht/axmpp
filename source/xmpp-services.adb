@@ -389,26 +389,24 @@ package body XMPP.Services is
    -----------------
    --  Serialize  --
    -----------------
-   overriding function Serialize (Self : XMPP_Service)
-      return League.Strings.Universal_String
-   is
+   overriding procedure Serialize
+    (Self   : XMPP_Service;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class) is
+
+      URI : constant League.Strings.Universal_String
+        := XMPP.Services_Features.Image (Self.Type_Of_Service);
+
    begin
-      case Self.Type_Of_Service is
-         when XMPP.Services_Features.Protocol_Disco_Info =>
-            return
-              To_Universal_String
-               ("<query xmlns='http://jabber.org/protocol/disco#info'/>");
+      Writer.Start_Prefix_Mapping (Namespace_URI => URI);
 
-         when XMPP.Services_Features.Protocol_Disco_Items =>
-            return
-              To_Universal_String
-               ("<query xmlns='http://jabber.org/protocol/disco#items'/>");
+      Writer.Start_Element
+        (Namespace_URI => URI,
+         Local_Name    => Query_Element);
 
-         when others =>
-            raise Program_Error
-              with "Unknow service discovery information type";
+      Writer.End_Element (Namespace_URI => URI,
+                          Local_Name    => Query_Element);
 
-      end case;
+      Writer.End_Prefix_Mapping;
    end Serialize;
 
    -------------------

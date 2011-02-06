@@ -256,13 +256,15 @@ package body XMPP.Challenges is
    -----------------
    --  Serialize  --
    -----------------
-   overriding
-   function Serialize (Self : XMPP_Challenge)
-      return League.Strings.Universal_String is
+   overriding procedure Serialize
+    (Self   : XMPP_Challenge;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class) is
+
       pragma Unreferenced (Self);
+      pragma Unreferenced (Writer);
 
    begin
-      return League.Strings.Empty_Universal_String;
+      raise Program_Error with "Not yet implemented";
    end Serialize;
 
    ---------------------

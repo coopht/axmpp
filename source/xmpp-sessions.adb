@@ -732,10 +732,13 @@ package body XMPP.Sessions is
    procedure Send_Object (Self   : not null access XMPP_Session;
                           Object : XMPP.Objects.XMPP_Object'Class) is
    begin
+      Object.Serialize (Self.Writer);
+
       Ada.Wide_Wide_Text_IO.Put_Line
-        ("Sending Data : "
-           & Object.Serialize.To_Wide_Wide_String);
-      Self.Send_Wide_Wide_String (Object.Serialize.To_Wide_Wide_String);
+        ("Sending Data : " & Self.Writer.Text.To_Wide_Wide_String);
+      Self.Send_Wide_Wide_String (Self.Writer.Text.To_Wide_Wide_String);
+
+      Self.Writer.Reset;
    end Send_Object;
 
    -----------------------------

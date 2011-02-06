@@ -51,6 +51,7 @@ with XML.SAX.Input_Sources.Streams.Sockets.TLS;
 with XML.SAX.Lexical_Handlers;
 with XML.SAX.Locators;
 with XML.SAX.Parse_Exceptions;
+with XML.SAX.Pretty_Writers;
 with XML.SAX.Simple_Readers;
 
 with XMPP.Challenges;
@@ -81,8 +82,7 @@ package XMPP.Sessions is
        aliased
          XML.SAX.Input_Sources.Streams.Sockets.TLS.TLS_Socket_Input_Source;
      Reader  : aliased XML.SAX.Simple_Readers.SAX_Simple_Reader;
-
-     --  Current : XMPP.Objects.XMPP_Object_Access := Null_X;
+     Writer  : XML.SAX.Pretty_Writers.SAX_Pretty_Writer;
 
      Stack   : XMPP.Objects.Object_Vectors.Vector;
 

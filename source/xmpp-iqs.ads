@@ -35,9 +35,23 @@
 ------------------------------------------------------------------------------
 with League.Strings;
 
+with XML.SAX.Pretty_Writers;
+
 with XMPP.Objects;
 
 package XMPP.IQS is
+
+   IQ_Element : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("iq");
+
+   IQ_Type_Attribute : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("type");
+
+   IQ_Id_Attribute : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("iq");
+
+   IQ_To_Attribute : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("iq");
 
    type IQ_Kind is (Error, Get, Result, Set);
 
@@ -49,8 +63,9 @@ package XMPP.IQS is
 
    overriding function Get_Kind (Self : XMPP_IQ) return Objects.Object_Kind;
 
-   overriding function Serialize (Self : XMPP_IQ)
-      return League.Strings.Universal_String;
+   overriding procedure Serialize
+    (Self   : XMPP_IQ;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class);
 
    overriding
    procedure Set_Content (Self      : in out XMPP_IQ;

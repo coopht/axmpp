@@ -35,6 +35,8 @@
 ------------------------------------------------------------------------------
 with League.Strings;
 
+with XML.SAX.Pretty_Writers;
+
 with XMPP.Objects;
 with XMPP.Roster_Items;
 
@@ -47,8 +49,9 @@ package XMPP.Rosters is
    overriding function Get_Kind (Self : XMPP_Roster)
       return Objects.Object_Kind;
 
-   overriding function Serialize (Self : XMPP_Roster)
-      return League.Strings.Universal_String;
+   overriding procedure Serialize
+    (Self   : XMPP_Roster;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class);
 
    overriding
    procedure Set_Content (Self      : in out XMPP_Roster;

@@ -35,9 +35,18 @@
 ------------------------------------------------------------------------------
 with League.Strings;
 
+with XML.SAX.Pretty_Writers;
+
 with XMPP.Objects;
 
 package XMPP.IQ_Sessions is
+
+   Session_Element : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("session");
+
+   Session_URI     : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String
+         ("urn:ietf:params:xml:ns:xmpp-session");
 
    type Session_State is (Established, Error);
 
@@ -48,8 +57,9 @@ package XMPP.IQ_Sessions is
    overriding function Get_Kind (Self : XMPP_IQ_Session)
       return Objects.Object_Kind;
 
-   overriding function Serialize (Self : XMPP_IQ_Session)
-      return League.Strings.Universal_String;
+   overriding procedure Serialize
+    (Self   : XMPP_IQ_Session;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class);
 
    overriding
    procedure Set_Content (Self      : in out XMPP_IQ_Session;

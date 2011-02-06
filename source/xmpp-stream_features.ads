@@ -37,6 +37,8 @@ with Ada.Containers.Vectors;
 
 with League.Strings;
 
+with XML.SAX.Pretty_Writers;
+
 with XMPP.Objects;
 
 package XMPP.Stream_Features is
@@ -58,8 +60,9 @@ package XMPP.Stream_Features is
    overriding function Get_Kind (Self : XMPP_Stream_Feature)
       return XMPP.Objects.Object_Kind;
 
-   overriding function Serialize (Self : XMPP_Stream_Feature)
-      return League.Strings.Universal_String;
+   overriding procedure Serialize
+    (Self   : XMPP_Stream_Feature;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class);
 
    procedure Set_Has_TLS (Self  : in out XMPP_Stream_Feature;
                           Value : Boolean := True);

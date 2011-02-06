@@ -35,6 +35,8 @@
 ------------------------------------------------------------------------------
 with Ada.Wide_Wide_Text_IO;
 
+with XML.SAX.Attributes;
+
 package body XMPP.Presences is
 
    use League.Strings;
@@ -128,63 +130,68 @@ package body XMPP.Presences is
    -----------------
    --  Serialize  --
    -----------------
-   overriding function Serialize (Self : XMPP_Presence)
-      return League.Strings.Universal_String is
+   overriding procedure Serialize
+    (Self   : XMPP_Presence;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class) is
 
-      Result : League.Strings.Universal_String
-        := League.Strings.To_Universal_String ("<presence");
+      Attrs   : XML.SAX.Attributes.SAX_Attributes;
 
    begin
       if not Self.To.Is_Empty then
-         Result.Append (" to='" & Self.To & "'");
+         Attrs.Set_Value (Qualified_Name => Presence_To_Attribute,
+                          Value          => Self.To);
       end if;
 
       if not Self.From.Is_Empty then
-         Result.Append (" from='" & Self.From & "'");
+         Attrs.Set_Value (Qualified_Name => Presence_From_Attribute,
+                          Value          => Self.From);
       end if;
 
-      Result := Result & ">";
+      Writer.Start_Element (Qualified_Name => Presence_Element,
+                            Attributes     => Attrs);
 
       if Self.Priority /= -129 then
-         Result := Result & "<priority>"
-           & Priority_Type'Wide_Wide_Image (Self.Priority)
-           & "</priority>";
+         Writer.Start_Element (Qualified_Name => Priority_Element);
+         Writer.Characters
+          (League.Strings.To_Universal_String
+            (Priority_Type'Wide_Wide_Image (Self.Priority)));
+         Writer.End_Element (Qualified_Name => Priority_Element);
       end if;
 
       if not Self.Status.Is_Empty then
-         Result.Append ("<status>" & Self.Status & "</status>");
+         Writer.Start_Element (Qualified_Name => Status_Element);
+         Writer.Characters (Self.Status);
+         Writer.End_Element (Qualified_Name => Status_Element);
       end if;
 
       if Self.Show /= Online then
-         Result.Append (To_Universal_String ("<show>"));
+         Writer.Start_Element (Qualified_Name => Show_Element);
 
          case Self.Show is
             when Away =>
-               Result.Append (To_Universal_String ("away"));
+               Writer.Characters (To_Universal_String ("away"));
 
             when Chat =>
-               Result.Append (To_Universal_String ("chat"));
+               Writer.Characters (To_Universal_String ("chat"));
 
             when DND =>
-               Result.Append (To_Universal_String ("dnd"));
+               Writer.Characters (To_Universal_String ("dnd"));
 
             when XA =>
-               Result.Append (To_Universal_String ("xa"));
+               Writer.Characters (To_Universal_String ("xa"));
 
             when Online =>
                raise Program_Error;
          end case;
 
-         Result.Append (To_Universal_String ("</show>"));
+         Writer.End_Element (Qualified_Name => Show_Element);
       end if;
 
       if Self.Multi_Chat then
-         Result.Append (Self.MUC.Serialize);
+         Self.MUC.Serialize (Writer);
       end if;
 
-      Result.Append (To_Universal_String ("</presence>"));
-
-      return Result;
+      Writer.End_Element (Qualified_Name => Presence_Element);
    end Serialize;
 
    -------------------

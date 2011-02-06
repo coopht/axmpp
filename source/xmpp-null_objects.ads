@@ -33,8 +33,11 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with XMPP.Objects;
 with League.Strings;
+
+with XML.SAX.Pretty_Writers;
+
+with XMPP.Objects;
 
 package XMPP.Null_Objects is
 
@@ -49,9 +52,9 @@ package XMPP.Null_Objects is
    -----------------
    --  Serialize  --
    -----------------
-   overriding
-   function Serialize (Self : XMPP_Null_Object)
-      return League.Strings.Universal_String;
+   overriding procedure Serialize
+    (Self   : XMPP_Null_Object;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class);
 
    -------------------
    --  Set_Content  --

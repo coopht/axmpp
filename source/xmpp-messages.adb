@@ -35,6 +35,8 @@
 ------------------------------------------------------------------------------
 with Ada.Wide_Wide_Text_IO;
 
+with XML.SAX.Attributes;
+
 package body XMPP.Messages is
 
    use League.Strings;
@@ -131,65 +133,87 @@ package body XMPP.Messages is
    -----------------
    --  Serialize  --
    -----------------
-   overriding function Serialize (Self : XMPP_Message)
-      return League.Strings.Universal_String is
+   overriding procedure Serialize
+    (Self   : XMPP_Message;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class) is
+
+      Attrs : XML.SAX.Attributes.SAX_Attributes;
+
    begin
-      return X : Universal_String := To_Universal_String ("<message") do
+      --  setting 'to' attr
+      if not Self.To.Is_Empty then
+         Attrs.Set_Value (Qualified_Name => Message_To_Attribute,
+                          Value          => Self.To);
+      end if;
 
-         --  setting 'to' attr
-         if not Self.To.Is_Empty then
-            X.Append (" to='" & Self.To & "'");
-         end if;
+      --  setting 'from' attr
+      if not Self.From.Is_Empty then
+         Attrs.Set_Value (Qualified_Name => Message_From_Attribute,
+                          Value          => Self.From);
+      end if;
 
-         --  setting 'from' attr
-         if not Self.From.Is_Empty then
-            X.Append (" from='" & Self.From & "'");
-         end if;
+      --  setting 'id' attr
+      if not Self.Id.Is_Empty then
+         Attrs.Set_Value (Qualified_Name => Message_Id_Attribute,
+                          Value          => Self.Id);
+      end if;
 
-         --  setting 'id' attr
-         if not Self.Id.Is_Empty then
-            X.Append (" id='" & Self.Id & "'");
-         end if;
+      --  setting 'type' attr
+      case Self.Type_Of_Message is
+         when Chat =>
+            Attrs.Set_Value
+             (Qualified_Name => Message_Type_Attribute,
+              Value          => To_Universal_String ("chat"));
+         when Error =>
+            Attrs.Set_Value
+             (Qualified_Name => Message_Type_Attribute,
+              Value          => To_Universal_String ("error"));
 
-         --  setting 'type' attr
-         case Self.Type_Of_Message is
-            when Chat =>
-               X.Append (To_Universal_String (" type='chat'"));
+         when Group_Chat =>
+            Attrs.Set_Value
+             (Qualified_Name => Message_Type_Attribute,
+              Value          => To_Universal_String ("groupchat"));
 
-            when Error =>
-               X.Append (To_Universal_String (" type='error'"));
+         when Headline =>
+            Attrs.Set_Value
+             (Qualified_Name => Message_Type_Attribute,
+              Value          => To_Universal_String ("headline"));
 
-            when Group_Chat =>
-               X.Append (To_Universal_String (" type='groupchat'"));
+         when Normal =>
+            Attrs.Set_Value
+             (Qualified_Name => Message_Type_Attribute,
+              Value          => To_Universal_String ("normal"));
+      end case;
 
-            when Headline =>
-               X.Append (To_Universal_String (" type='headline'"));
+      --  setting xml:lang attr
+      Attrs.Set_Value
+       (Namespace_URI => XML_URI,
+        Local_Name    => Lang_Attribute,
+        Value         => Self.Language);
 
-            when Normal =>
-               X.Append (To_Universal_String (" type='normal'"));
-         end case;
+      Writer.Start_Element (Qualified_Name => Message_Element,
+                            Attributes     => Attrs);
 
-         --  setting xml:lang attr
-         X.Append (" xml:lang='" & Self.Language & "'");
-         X.Append (To_Universal_String (">"));
+      if not Self.Subject.Is_Empty then
+         Writer.Start_Element (Qualified_Name => Subject_Element);
+         Writer.Characters (Self.Subject);
+         Writer.End_Element (Qualified_Name => Subject_Element);
+      end if;
 
-         --  setting 'subject' obj
-         if not Self.Subject.Is_Empty then
-            X.Append ("<subject>" & Self.Subject & "</subject>");
-         end if;
+      if not Self.Message_Body.Is_Empty then
+         Writer.Start_Element (Qualified_Name => Body_Element);
+         Writer.Characters (Self.Message_Body);
+         Writer.End_Element (Qualified_Name => Body_Element);
+      end if;
 
-         --  setting 'body' attr
-         if not Self.Message_Body.Is_Empty then
-            X.Append ("<body>" & Self.Message_Body & "</body>");
-         end if;
+      --  setting 'thread
+      if not Self.Thread.Is_Empty then
+         Writer.Start_Element (Qualified_Name => Thread_Element);
+         Writer.Characters (Self.Thread);
+         Writer.End_Element (Qualified_Name => Thread_Element);
+      end if;
 
-         --  setting 'thread' attr
-         if not Self.Thread.Is_Empty then
-            X.Append ("<thread>" & Self.Thread & "</thread>");
-         end if;
-
-         X.Append (To_Universal_String ("</message>"));
-      end return;
+      Writer.End_Element (Qualified_Name => Message_Element);
    end Serialize;
 
    ----------------

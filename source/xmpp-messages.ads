@@ -35,9 +35,42 @@
 ------------------------------------------------------------------------------
 with League.Strings;
 
+with XML.SAX.Pretty_Writers;
+
 with XMPP.Objects;
 
 package XMPP.Messages is
+
+   XML_URI                : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String
+         ("http://www.w3.org/XML/1998/namespace");
+
+   Body_Element           : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("subject");
+
+   Lang_Attribute         : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("lang");
+
+   Message_Element        : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("message");
+
+   Message_To_Attribute   : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("to");
+
+   Message_From_Attribute : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("from");
+
+   Message_Id_Attribute   : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("id");
+
+   Message_Type_Attribute : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("type");
+
+   Subject_Element        : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("subject");
+
+   Thread_Element         : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("thread");
 
    type Message_Type is (Chat, Error, Group_Chat, Headline, Normal);
 
@@ -52,8 +85,9 @@ package XMPP.Messages is
    overriding function Get_Kind (Self : XMPP_Message)
       return Objects.Object_Kind;
 
-   overriding function Serialize (Self : XMPP_Message)
-      return League.Strings.Universal_String;
+   overriding procedure Serialize
+    (Self   : XMPP_Message;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class);
 
    overriding
    procedure Set_Content (Self      : in out XMPP_Message;

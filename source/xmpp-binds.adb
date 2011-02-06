@@ -35,8 +35,6 @@
 ------------------------------------------------------------------------------
 with Ada.Wide_Wide_Text_IO;
 
-with XML.SAX.Pretty_Writers;
-
 package body XMPP.Binds is
 
    use League.Strings;
@@ -80,39 +78,29 @@ package body XMPP.Binds is
    -----------------
    --  Serialize  --
    -----------------
-   overriding function Serialize (Self : XMPP_Bind)
-      return League.Strings.Universal_String is
-      Writer  : XML.SAX.Pretty_Writers.SAX_Pretty_Writer;
-      Success : Boolean := False;
+   overriding procedure Serialize
+    (Self   : XMPP_Bind;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class) is
 
    begin
-      Writer.Start_Prefix_Mapping
-       (Namespace_URI => Bind_URI,
-        Success       => Success);
+      Writer.Start_Prefix_Mapping (Namespace_URI => Bind_URI);
 
       Writer.Start_Element
        (Namespace_URI => Bind_URI,
-        Local_Name    => Bind_Element,
-        Success       => Success);
+        Local_Name    => Bind_Element);
 
       if not Self.Get_Resource.Is_Empty then
-         Writer.Start_Element
-          (Qualified_Name => Resource_Element,
-           Success        => Success);
+         Writer.Start_Element (Qualified_Name => Resource_Element);
 
-         Writer.Characters (Self.Get_Resource, Success);
+         Writer.Characters (Self.Get_Resource);
 
-         Writer.End_Element (Qualified_Name => Resource_Element,
-                             Success        => Success);
+         Writer.End_Element (Qualified_Name => Resource_Element);
       end if;
 
       Writer.End_Element (Namespace_URI => Bind_URI,
-                          Local_Name    => Bind_Element,
-                          Success       => Success);
+                          Local_Name    => Bind_Element);
 
-      Writer.End_Prefix_Mapping (Success => Success);
-
-      return Writer.Text;
+      Writer.End_Prefix_Mapping;
    end Serialize;
 
    -------------------

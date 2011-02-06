@@ -33,9 +33,10 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with League.Strings;
-
 with XMPP.Objects;
+
+with League.Strings;
+with XML.SAX.Pretty_Writers;
 
 package XMPP.Binds is
 
@@ -59,8 +60,9 @@ package XMPP.Binds is
 
    overriding function Get_Kind (Self : XMPP_Bind) return Objects.Object_Kind;
 
-   overriding function Serialize (Self : XMPP_Bind)
-      return League.Strings.Universal_String;
+   overriding procedure Serialize
+    (Self   : XMPP_Bind;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class);
 
    overriding
    procedure Set_Content (Self      : in out XMPP_Bind;

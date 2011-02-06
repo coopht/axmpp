@@ -50,13 +50,14 @@ package body XMPP.Null_Objects is
    -----------------
    --  Serialize  --
    -----------------
-   overriding
-   function Serialize (Self : XMPP_Null_Object)
-      return League.Strings.Universal_String
+   overriding procedure Serialize
+    (Self   : XMPP_Null_Object;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class)
    is
       pragma Unreferenced (Self);
+      pragma Unreferenced (Writer);
    begin
-      return X : League.Strings.Universal_String;
+      raise Program_Error with "Cannot serialize Null Object";
    end Serialize;
 
    -------------------

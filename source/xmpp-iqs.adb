@@ -35,6 +35,8 @@
 ------------------------------------------------------------------------------
 with Ada.Wide_Wide_Text_IO;
 
+with XML.SAX.Attributes;
+
 package body XMPP.IQS is
 
    use League.Strings;
@@ -127,46 +129,57 @@ package body XMPP.IQS is
    -----------------
    --  Serialize  --
    -----------------
-   overriding function Serialize (Self : XMPP_IQ)
-      return League.Strings.Universal_String is
+   overriding procedure Serialize
+    (Self   : XMPP_IQ;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class) is
+
+      Attrs   : XML.SAX.Attributes.SAX_Attributes;
+
    begin
-      return X : League.Strings.Universal_String do
+      --  Generating IQ container xml
+      case Self.Kind_Of_IQ is
+         when Set =>
+            Attrs.Set_Value
+             (Qualified_Name => IQ_Type_Attribute,
+              Value          => To_Universal_String ("set"));
 
-         --  Generating IQ container xml
-         X := To_Universal_String ("<iq type='");
+         when Get =>
+            Attrs.Set_Value
+             (Qualified_Name => IQ_Type_Attribute,
+              Value          => To_Universal_String ("get"));
 
-         case Self.Kind_Of_IQ is
-            when Set =>
-               X.Append (To_Universal_String ("set"));
+         when Result =>
+            Attrs.Set_Value
+             (Qualified_Name => IQ_Type_Attribute,
+              Value          => To_Universal_String ("result"));
 
-            when Get =>
-               X.Append (To_Universal_String ("get"));
+         when Error =>
+            Attrs.Set_Value
+             (Qualified_Name => IQ_Type_Attribute,
+              Value          => To_Universal_String ("error"));
+      end case;
 
-            when Result =>
-               X.Append (To_Universal_String ("result"));
+      Attrs.Set_Value
+        (Qualified_Name => IQ_Id_Attribute,
+         Value          => Self.Get_Id);
 
-            when Error =>
-               X.Append (To_Universal_String ("error"));
+      if not Self.To.Is_Empty then
+         Attrs.Set_Value
+          (Qualified_Name => IQ_To_Attribute,
+           Value          => Self.To);
+      end if;
 
-         end case;
+      Writer.Start_Element (Qualified_Name => IQ_Element,
+                            Attributes     => Attrs);
 
-         X.Append ("' id='" & Self.Get_Id & "'");
+      --  Generating IQ body
+      if Self.Items_Count > 0 then
+         for J in 0 .. Self.Items_Count - 1 loop
+            Self.Item_At (J).Serialize (Writer);
+         end loop;
+      end if;
 
-         if not Self.To.Is_Empty then
-            X.Append (" to='" & Self.To  & "'");
-         end if;
-
-         X.Append (To_Universal_String (">"));
-
-         --  Generating IQ body
-         if Self.Items_Count > 0 then
-            for J in 0 .. Self.Items_Count - 1 loop
-               X.Append (Self.Item_At (J).Serialize);
-            end loop;
-         end if;
-
-         X.Append (To_Universal_String ("</iq>"));
-      end return;
+      Writer.End_Element (Qualified_Name => IQ_Element);
    end Serialize;
 
    ----------------

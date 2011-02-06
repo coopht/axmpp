@@ -35,10 +35,30 @@
 ------------------------------------------------------------------------------
 with League.Strings;
 
+with XML.SAX.Pretty_Writers;
+
 with XMPP.MUC;
 with XMPP.Objects;
 
 package XMPP.Presences is
+
+   Presence_Element        : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("presence");
+
+   Presence_To_Attribute   : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("to");
+
+   Presence_From_Attribute : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("to");
+
+   Priority_Element        : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("priority");
+
+   Status_Element        : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("status");
+
+   Show_Element        : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("show");
 
    type Show_Kind is (Away, Chat, DND, XA, Online);
 
@@ -59,8 +79,9 @@ package XMPP.Presences is
    overriding function Get_Kind (Self : XMPP_Presence)
       return Objects.Object_Kind;
 
-   overriding function Serialize (Self : XMPP_Presence)
-      return League.Strings.Universal_String;
+   overriding procedure Serialize
+    (Self   : XMPP_Presence;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class);
 
    overriding
    procedure Set_Content (Self      : in out XMPP_Presence;

@@ -37,11 +37,16 @@ with Ada.Containers.Vectors;
 
 with League.Strings;
 
+with XML.SAX.Pretty_Writers;
+
 with XMPP.Services_Features;
 with XMPP.Services_Identities;
 with XMPP.Objects;
 
 package XMPP.Services is
+
+   Query_Element : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("query");
 
    type Service_Item is record
       JID  : League.Strings.Universal_String;
@@ -59,8 +64,9 @@ package XMPP.Services is
    overriding function Get_Kind (Self : XMPP_Service)
       return Objects.Object_Kind;
 
-   overriding function Serialize (Self : XMPP_Service)
-      return League.Strings.Universal_String;
+   overriding procedure Serialize
+    (Self   : XMPP_Service;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class);
 
    overriding
    procedure Set_Content (Self      : in out XMPP_Service;

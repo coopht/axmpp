@@ -33,8 +33,11 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with XMPP.Objects;
 with League.Strings;
+
+with XML.SAX.Pretty_Writers;
+
+with XMPP.Objects;
 
 package XMPP.Streams is
 
@@ -44,53 +47,29 @@ package XMPP.Streams is
 
    function Create return XMPP_Stream_Access;
 
-   ----------------
-   --  Get_Kind  --
-   ----------------
    overriding
    function Get_Kind (Self : XMPP_Stream) return XMPP.Objects.Object_Kind;
 
-   -----------------
-   --  Serialize  --
-   -----------------
-   overriding
-   function Serialize (Self : XMPP_Stream)
-      return League.Strings.Universal_String;
+   overriding procedure Serialize
+    (Self   : XMPP_Stream;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class);
 
-   -------------------
-   --  Set_Content  --
-   -------------------
    overriding
    procedure Set_Content (Self      : in out XMPP_Stream;
                           Parameter : League.Strings.Universal_String;
                           Value     : League.Strings.Universal_String);
 
-   ----------------
-   --  Set_From  --
-   ----------------
    procedure Set_From (Self  : in out XMPP_Stream;
                        Value : League.Strings.Universal_String);
 
-   --------------
-   --  Set_Id  --
-   --------------
    procedure Set_Id (Self  : in out XMPP_Stream;
                      Value : League.Strings.Universal_String);
 
-   --------------
-   --  Set_Id  --
-   --------------
    procedure Set_Id (Self : in out XMPP_Stream; Value : Integer);
 
-   ----------------
-   --  Set_Lang  --
-   ----------------
    procedure Set_Lang (Self  : in out XMPP_Stream;
                        Value : League.Strings.Universal_String);
 
-   -------------------
-   --  Set_Version  --
-   -------------------
    procedure Set_Version (Self  : in out XMPP_Stream;
                           Value : League.Strings.Universal_String);
 

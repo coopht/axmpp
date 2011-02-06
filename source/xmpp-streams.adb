@@ -58,12 +58,14 @@ package body XMPP.Streams is
    -----------------
    --  Serialize  --
    -----------------
-   overriding function Serialize (Self : XMPP_Stream)
-      return League.Strings.Universal_String is
+   overriding procedure Serialize
+    (Self : XMPP_Stream;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class) is
       pragma Unreferenced (Self);
+      pragma Unreferenced (Writer);
 
    begin
-      return League.Strings.To_Universal_String ("");
+      raise Program_Error with "Not Yet Implemented";
    end Serialize;
 
    -------------------
