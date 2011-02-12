@@ -48,10 +48,10 @@ package XMPP.IQS is
      := League.Strings.To_Universal_String ("type");
 
    IQ_Id_Attribute : constant League.Strings.Universal_String
-     := League.Strings.To_Universal_String ("iq");
+     := League.Strings.To_Universal_String ("id");
 
    IQ_To_Attribute : constant League.Strings.Universal_String
-     := League.Strings.To_Universal_String ("iq");
+     := League.Strings.To_Universal_String ("to");
 
    type IQ_Kind is (Error, Get, Result, Set);
 
