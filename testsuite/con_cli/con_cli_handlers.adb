@@ -75,7 +75,7 @@ package body Con_Cli_Handlers is
    -----------------
    overriding procedure Connected
      (Self    : in out Con_Cli_Handler;
-      Object  : XMPP.Stream_Features.XMPP_Stream_Feature_Access) is
+      Object  : XMPP.Stream_Features.XMPP_Stream_Feature'Class) is
       pragma Unreferenced (Object);
    begin
       Ada.Wide_Wide_Text_IO.Put_Line ("Yeah, we are connected");
@@ -88,7 +88,7 @@ package body Con_Cli_Handlers is
    ----------------
    overriding procedure Presence
      (Self : in out Con_Cli_Handler;
-      Data : not null XMPP.Presences.XMPP_Presence_Access) is
+      Data : XMPP.Presences.XMPP_Presence'Class) is
       pragma Unreferenced (Self);
 
    begin
@@ -144,7 +144,7 @@ package body Con_Cli_Handlers is
    --------------------
    overriding procedure Start_Stream
      (Self   : in out Con_Cli_Handler;
-      Object : not null XMPP.Streams.XMPP_Stream_Access) is
+      Object : XMPP.Streams.XMPP_Stream'Class) is
       pragma Unreferenced (Self);
       pragma Unreferenced (Object);
    begin
@@ -156,7 +156,7 @@ package body Con_Cli_Handlers is
    -----------------------
    overriding procedure Stream_Features
      (Self   : in out Con_Cli_Handler;
-      Object : not null XMPP.Stream_Features.XMPP_Stream_Feature_Access) is
+      Object : XMPP.Stream_Features.XMPP_Stream_Feature'Class) is
       pragma Unreferenced (Self);
       pragma Unreferenced (Object);
    begin

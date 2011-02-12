@@ -53,19 +53,19 @@ package Con_Cli_Handlers is
 
    overriding procedure Connected
      (Self   : in out Con_Cli_Handler;
-      Object : XMPP.Stream_Features.XMPP_Stream_Feature_Access);
+      Object : XMPP.Stream_Features.XMPP_Stream_Feature'Class);
 
    overriding procedure Start_Stream
      (Self   : in out Con_Cli_Handler;
-      Object : not null XMPP.Streams.XMPP_Stream_Access);
+      Object : XMPP.Streams.XMPP_Stream'Class);
 
    overriding procedure Stream_Features
      (Self   : in out Con_Cli_Handler;
-      Object : not null XMPP.Stream_Features.XMPP_Stream_Feature_Access);
+      Object : XMPP.Stream_Features.XMPP_Stream_Feature'Class);
 
    overriding procedure Presence
      (Self : in out Con_Cli_Handler;
-      Data : not null XMPP.Presences.XMPP_Presence_Access);
+      Data : XMPP.Presences.XMPP_Presence'Class);
 
    procedure Set_Session_Object
      (Self   : in out Con_Cli_Handler;
@@ -89,4 +89,5 @@ private
    record
      Object : access Con_Cli.Session;
    end record;
+
 end Con_Cli_Handlers;
