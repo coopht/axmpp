@@ -52,9 +52,4 @@ project Con_Cli is
       for Default_Switches ("Ada") use AXMPP_Config.Default_Switches;
    end Compiler;
 
-   package Linker is
-      for Default_Switches ("Ada") use
-        ("-lgnutls");
-   end Linker;
-
 end Con_Cli;

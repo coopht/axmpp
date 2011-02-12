@@ -49,4 +49,6 @@ project Agnutls is
       for Default_Switches ("Ada") use AXMPP_Config.Default_Switches;
    end Compiler;
 
+   for Library_Options use ("-lgnutls");
+
 end Agnutls;
