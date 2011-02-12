@@ -183,12 +183,12 @@ package body XMPP.Sessions is
             if not Self.Authenticated then
                Self.Stream_Handler.Stream_Features
                 (XMPP.Stream_Features.XMPP_Stream_Feature_Access
-                  (Self.Stack.Last_Element));
+                  (Self.Stack.Last_Element).all);
 
             else
                Self.Stream_Handler.Connected
                  (XMPP.Stream_Features.XMPP_Stream_Feature_Access
-                    (Self.Stack.Last_Element));
+                    (Self.Stack.Last_Element).all);
             end if;
 
             --  if tls session was not established, than send command to server
@@ -377,7 +377,7 @@ package body XMPP.Sessions is
             --       & XMPP.Objects.Object_Kind'Wide_Wide_Image
             --       (Self.Stack.Last_Element.Get_Kind));
             Self.Stream_Handler.IQ
-              (XMPP.IQS.XMPP_IQ_Access (Self.Stack.Last_Element));
+              (XMPP.IQS.XMPP_IQ_Access (Self.Stack.Last_Element).all);
             Self.Process_IQ
               (XMPP.IQS.XMPP_IQ_Access (Self.Stack.Last_Element));
             Self.Stack.Delete_Last;
@@ -385,14 +385,16 @@ package body XMPP.Sessions is
          --  Calling Presence Handler
          elsif Local_Name = +"presence" then
             Self.Stream_Handler.Presence
-              (XMPP.Presences.XMPP_Presence_Access (Self.Stack.Last_Element));
+              (XMPP.Presences.XMPP_Presence_Access
+                (Self.Stack.Last_Element).all);
             Self.Stack.Delete_Last;
 
          --  Calling Message Handler
          elsif Local_Name = +"message" then
             Ada.Wide_Wide_Text_IO.Put_Line ("Calling Message_Handler");
             Self.Stream_Handler.Message
-              (XMPP.Messages.XMPP_Message_Access (Self.Stack.Last_Element));
+              (XMPP.Messages.XMPP_Message_Access
+                (Self.Stack.Last_Element).all);
             Self.Stack.Delete_Last;
          end if;
 
@@ -675,12 +677,12 @@ package body XMPP.Sessions is
             --  Roster arrived
             elsif IQ.Item_At (J).Get_Kind = XMPP.Objects.Roster then
                Self.Stream_Handler.Roster
-                (XMPP.Rosters.XMPP_Roster_Access (IQ.Item_At (J)));
+                (XMPP.Rosters.XMPP_Roster_Access (IQ.Item_At (J)).all);
 
             --  Roster arrived
             elsif IQ.Item_At (J).Get_Kind = XMPP.Objects.Disco then
                Self.Stream_Handler.Service_Information
-                (XMPP.Services.XMPP_Service_Access (IQ.Item_At (J)));
+                (XMPP.Services.XMPP_Service_Access (IQ.Item_At (J)).all);
             end if;
          end loop;
       end if;
@@ -1080,7 +1082,7 @@ package body XMPP.Sessions is
          --  Hack for stream:stream stanza, which does not have close tag
          if Self.Stack.Last_Element.Get_Kind = XMPP.Objects.Stream then
             Self.Stream_Handler.Start_Stream
-              (XMPP.Streams.XMPP_Stream_Access (Self.Stack.Last_Element));
+              (XMPP.Streams.XMPP_Stream_Access (Self.Stack.Last_Element).all);
             Self.Stack.Delete_Last;
          end if;
       end if;

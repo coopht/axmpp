@@ -53,17 +53,17 @@ package XMPP.Stream_Handlers is
 
    not overriding procedure Connected
      (Self   : in out XMPP_Stream_Handler;
-      Object : XMPP.Stream_Features.XMPP_Stream_Feature_Access)
+      Object : XMPP.Stream_Features.XMPP_Stream_Feature'Class)
       is null;
    --  Connected handler is called after succesfull authentification
 
    not overriding procedure Start_Stream
      (Self   : in out XMPP_Stream_Handler;
-      Object : not null XMPP.Streams.XMPP_Stream_Access) is null;
+      Object : XMPP.Streams.XMPP_Stream'Class) is null;
 
    not overriding procedure Stream_Features
      (Self   : in out XMPP_Stream_Handler;
-      Object : not null XMPP.Stream_Features.XMPP_Stream_Feature_Access)
+      Object : XMPP.Stream_Features.XMPP_Stream_Feature'Class)
       is null;
 
    not overriding procedure Bind_Resource_State
@@ -80,23 +80,23 @@ package XMPP.Stream_Handlers is
 
    not overriding procedure Message
      (Self : in out XMPP_Stream_Handler;
-      Msg  : not null XMPP.Messages.XMPP_Message_Access) is null;
+      Msg  : XMPP.Messages.XMPP_Message'Class) is null;
 
    not overriding procedure Presence
      (Self : in out XMPP_Stream_Handler;
-      Data : not null XMPP.Presences.XMPP_Presence_Access) is null;
+      Data : XMPP.Presences.XMPP_Presence'Class) is null;
 
    not overriding procedure Roster
      (Self : in out XMPP_Stream_Handler;
-      Data : not null XMPP.Rosters.XMPP_Roster_Access) is null;
+      Data : XMPP.Rosters.XMPP_Roster'Class) is null;
 
    not overriding procedure IQ
      (Self : in out XMPP_Stream_Handler;
-      IQ   : not null XMPP.IQS.XMPP_IQ_Access) is null;
+      IQ   : XMPP.IQS.XMPP_IQ'Class) is null;
 
    not overriding procedure Service_Information
      (Self : in out XMPP_Stream_Handler;
-      Info : not null XMPP.Services.XMPP_Service_Access) is null;
+      Info : XMPP.Services.XMPP_Service'Class) is null;
 
    not overriding procedure End_Stream
      (Self : in out XMPP_Stream_Handler) is null;
