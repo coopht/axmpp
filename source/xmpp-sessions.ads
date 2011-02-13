@@ -99,26 +99,71 @@ package XMPP.Sessions is
    type XMPP_Session_Access is access all XMPP_Session;
 
    --  XMPP Session API
+   --  XXX : API which should be rewritten in proper place
 
    procedure Open (Self : not null access XMPP_Session);
+   --  Initiates XMPP session. Application should use this function to start
+   --  data exchange wit xmpp server
 
    procedure Close (Self : in out XMPP_Session);
-
-   function Is_Opened (Self : XMPP_Session) return Boolean;
+   --  Closes XMPP session. Application should use this function to end
+   --  data exchange wit xmpp server
 
    procedure Set_Stream_Handler
     (Self    : not null access XMPP_Session;
      Handler : not null access XMPP.Stream_Handlers.XMPP_Stream_Handler'Class);
+   --  Application must set stream handler for the axmpp library.
 
    procedure Set_Raw_Handler
     (Self    : XMPP_Session;
      Handler : not null access XMPP.Raw_Handlers.XMPP_Raw_Handler)
    is null;
+   --  If application whants recieve RAW XML data, it should set Raw_Handler
 
-   --  End XMPP Session API
+   procedure Set_JID (Self : in out XMPP_Session;
+                      JID  : League.Strings.Universal_String);
+   --  Sets jabber ID. JID should be set without hostname
 
-   --  Private API
-   --  Private API should not be used by application
+   procedure Set_Host (Self : in out XMPP_Session;
+                       Host : League.Strings.Universal_String);
+   --  Sets jabber hostname
+
+   procedure Set_Password (Self     : in out XMPP_Session;
+                           Password : League.Strings.Universal_String);
+   --  Sets passowrd for jabber account
+
+   procedure Set_Host_Addr (Self : in out XMPP_Session;
+                            Addr : League.Strings.Universal_String);
+   --  Sets ip address of jabber host
+
+   procedure Send_Object (Self   : not null access XMPP_Session;
+                          Object : XMPP.Objects.XMPP_Object'Class);
+   --  Sends XMPP Object
+
+   procedure Request_Roster (Self : not null access XMPP_Session);
+   --  Requests roster from server
+
+   procedure Bind_Resource (Self        : not null access XMPP_Session;
+                            Resource_Id : League.Strings.Universal_String
+                              := League.Strings.Empty_Universal_String);
+   --  Binds resourse with specified Resource ID.
+
+   procedure Establish_IQ_Session (Self : not null access XMPP_Session);
+   --  Establish real XMPP Session .
+
+   procedure Discover_Information (Self : in out XMPP_Session;
+                                   JID  : League.Strings.Universal_String);
+   --  Sending request for getting disco#info
+
+   procedure Discover_Items (Self : in out XMPP_Session;
+                             JID  : League.Strings.Universal_String);
+   --  Sending request for getting disco#items
+
+   procedure Put_Line (Item : League.Strings.Universal_String);
+   --  Internal function. Should not be used by application
+private
+
+   --  overriding from SAX.Reader
    overriding procedure Characters
      (Self    : in out XMPP_Session;
       Text    : League.Strings.Universal_String;
@@ -134,6 +179,11 @@ package XMPP.Sessions is
    overriding function Error_String (Self : XMPP_Session)
       return League.Strings.Universal_String;
 
+   overriding procedure Fatal_Error
+    (Self       : in out XMPP_Session;
+     Occurrence : XML.SAX.Parse_Exceptions.SAX_Parse_Exception;
+     Success    : in out Boolean);
+
    overriding procedure Start_Element
      (Self           : in out XMPP_Session;
       Namespace_URI  : League.Strings.Universal_String;
@@ -142,65 +192,29 @@ package XMPP.Sessions is
       Attributes     : XML.SAX.Attributes.SAX_Attributes;
       Success        : in out Boolean);
 
-   overriding procedure Fatal_Error
-    (Self       : in out XMPP_Session;
-     Occurrence : XML.SAX.Parse_Exceptions.SAX_Parse_Exception;
-     Success    : in out Boolean);
-
-   procedure Put_Line (Item : League.Strings.Universal_String);
-
    --  Overriding functions from XMPP_Network
-   overriding
-   procedure On_Connect (Self : not null access XMPP_Session);
+   overriding procedure On_Connect (Self : not null access XMPP_Session);
 
-   overriding
-   procedure On_Disconnect (Self : not null access XMPP_Session);
+   overriding procedure On_Disconnect (Self : not null access XMPP_Session);
 
-   overriding
-   procedure Read_Data (Self   : not null access XMPP_Session);
+   overriding procedure Read_Data (Self : not null access XMPP_Session);
+
+   --  Session private functions
+
+   function Is_Opened (Self : XMPP_Session) return Boolean;
+
+   procedure Open_Stream (Self : not null access XMPP_Session);
 
    procedure Send_Wide_Wide_String (Self : in out XMPP_Session;
                                     Str  : Wide_Wide_String);
+
+   procedure Process_IQ (Self : in out XMPP_Session;
+                         IQ   : not null XMPP.IQS.XMPP_IQ_Access);
 
    procedure Proceed_TLS_Auth (Self : not null access XMPP_Session);
 
    procedure Proceed_SASL_Auth
      (Self   : not null access XMPP_Session;
       Object : not null XMPP.Challenges.XMPP_Challenge_Access);
-
-   procedure Open_Stream (Self : not null access XMPP_Session);
-
-   procedure Set_JID (Self : in out XMPP_Session;
-                      JID  : League.Strings.Universal_String);
-
-   procedure Set_Host (Self : in out XMPP_Session;
-                       Host : League.Strings.Universal_String);
-
-   procedure Set_Password (Self     : in out XMPP_Session;
-                           Password : League.Strings.Universal_String);
-
-   procedure Set_Host_Addr (Self : in out XMPP_Session;
-                            Addr : League.Strings.Universal_String);
-
-   procedure Send_Object (Self   : not null access XMPP_Session;
-                          Object : XMPP.Objects.XMPP_Object'Class);
-
-   procedure Request_Roster (Self : not null access XMPP_Session);
-
-   procedure Bind_Resource (Self        : not null access XMPP_Session;
-                            Resource_Id : League.Strings.Universal_String
-                              := League.Strings.Empty_Universal_String);
-
-   procedure Establish_IQ_Session (Self : not null access XMPP_Session);
-
-   procedure Process_IQ (Self : in out XMPP_Session;
-                         IQ   : not null XMPP.IQS.XMPP_IQ_Access);
-
-   --  XXX : API which should be rewritten in proper place
-   procedure Discover_Information (Self : in out XMPP_Session;
-                                   JID  : League.Strings.Universal_String);
-
-   procedure Discover_Items (Self : in out XMPP_Session;
-                             JID  : League.Strings.Universal_String);
 
 end XMPP.Sessions;
