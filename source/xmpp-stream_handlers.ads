@@ -53,52 +53,63 @@ package XMPP.Stream_Handlers is
 
    not overriding procedure Connected
      (Self   : in out XMPP_Stream_Handler;
-      Object : XMPP.Stream_Features.XMPP_Stream_Feature'Class)
-      is null;
-   --  Connected handler is called after succesfull authentification
+      Object : XMPP.Stream_Features.XMPP_Stream_Feature'Class) is null;
+   --  Handler is called after succesfull authentification
 
    not overriding procedure Start_Stream
      (Self   : in out XMPP_Stream_Handler;
       Object : XMPP.Streams.XMPP_Stream'Class) is null;
+   --  Handler is called after stream started
 
    not overriding procedure Stream_Features
      (Self   : in out XMPP_Stream_Handler;
-      Object : XMPP.Stream_Features.XMPP_Stream_Feature'Class)
-      is null;
+      Object : XMPP.Stream_Features.XMPP_Stream_Feature'Class) is null;
+   --  Handler is called when stream features arrived.
 
    not overriding procedure Bind_Resource_State
      (Self   : in out XMPP_Stream_Handler;
       JID    : League.Strings.Universal_String;
       Status : XMPP.Binds.Bind_State) is null;
+   --  Handler is called when resusts of resource binding arrived.
 
    not overriding procedure Session_State
      (Self   : in out XMPP_Stream_Handler;
       Status : XMPP.IQ_Sessions.Session_State) is null;
+   --  Handler is called when information about session state arrived.
 
    not overriding procedure Error
      (Self : in out XMPP_Stream_Handler) is null;
+  --  Handler is called when XMPP error occured.
 
    not overriding procedure Message
      (Self : in out XMPP_Stream_Handler;
       Msg  : XMPP.Messages.XMPP_Message'Class) is null;
+   --  Handler is called when XMPP message arrived.
 
    not overriding procedure Presence
      (Self : in out XMPP_Stream_Handler;
       Data : XMPP.Presences.XMPP_Presence'Class) is null;
+   --  Handler is called when XMPP presence arrived.
 
    not overriding procedure Roster
      (Self : in out XMPP_Stream_Handler;
       Data : XMPP.Rosters.XMPP_Roster'Class) is null;
+   --  Handler is called when XMPP roster arrived.
 
    not overriding procedure IQ
      (Self : in out XMPP_Stream_Handler;
       IQ   : XMPP.IQS.XMPP_IQ'Class) is null;
+   --  Handler is called when XMPP IQ arrived.
+   --  Note, that you can parse IQ manually in your application,
+   --  or you can reimplement appropriate handlers
 
    not overriding procedure Service_Information
      (Self : in out XMPP_Stream_Handler;
       Info : XMPP.Services.XMPP_Service'Class) is null;
+   --  Handler is called, discovered information arrived from XMPP server
 
    not overriding procedure End_Stream
      (Self : in out XMPP_Stream_Handler) is null;
+     --  Handler is called, when end_strem arrived.
 
 end XMPP.Stream_Handlers;
