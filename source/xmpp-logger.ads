@@ -37,6 +37,12 @@ with League.Strings;
 
 package XMPP.Logger is
 
+   procedure Disable_Debug;
+
+   procedure Enable_Debug;
+
+   function Is_Debug_Output_Enabled return Boolean;
+
    procedure Log (Msg : Wide_Wide_String);
 
    procedure Log (Msg : League.Strings.Universal_String);

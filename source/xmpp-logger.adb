@@ -37,13 +37,44 @@ with Ada.Wide_Wide_Text_IO;
 
 package body XMPP.Logger is
 
+   Do_Debug_Output : Boolean := False;
+
+   ---------------------
+   --  Disable_Debug  --
+   ---------------------
+
+   procedure Disable_Debug is
+   begin
+      Do_Debug_Output := False;
+   end Disable_Debug;
+
+   --------------------
+   --  Enable_Debug  --
+   --------------------
+
+   procedure Enable_Debug is
+   begin
+      Do_Debug_Output := True;
+   end Enable_Debug;
+
+   -------------------------------
+   --  Is_Debug_Output_Enabled  --
+   -------------------------------
+
+   function Is_Debug_Output_Enabled return Boolean is
+   begin
+      return Do_Debug_Output;
+   end Is_Debug_Output_Enabled;
+
    -----------
    --  Log  --
    -----------
 
    procedure Log (Msg : Wide_Wide_String) is
    begin
-      Ada.Wide_Wide_Text_IO.Put_Line (Msg);
+      if Do_Debug_Output then
+         Ada.Wide_Wide_Text_IO.Put_Line (Msg);
+      end if;
    end Log;
 
    -----------
@@ -52,7 +83,9 @@ package body XMPP.Logger is
 
    procedure Log (Msg : League.Strings.Universal_String) is
    begin
-      Ada.Wide_Wide_Text_IO.Put_Line (Msg.To_Wide_Wide_String);
+      if Do_Debug_Output then
+         Ada.Wide_Wide_Text_IO.Put_Line (Msg.To_Wide_Wide_String);
+      end if;
    end Log;
 
 end XMPP.Logger;

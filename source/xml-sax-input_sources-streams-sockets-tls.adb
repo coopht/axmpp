@@ -140,9 +140,11 @@ package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
 
                   XMPP.Logger.Log ("Recieved from GNUTLS.Record_Recv : ");
 
-                  for J in Buffer'First .. Last loop
-                     Ada.Text_IO.Put (Character'Val (Buffer (J)));
-                  end loop;
+                  if XMPP.Logger.Is_Debug_Output_Enabled then
+                     for J in Buffer'First .. Last loop
+                        Ada.Text_IO.Put (Character'Val (Buffer (J)));
+                     end loop;
+                  end if;
 
                   XMPP.Logger.Log ("");
                   XMPP.Logger.Log ("=================================");
