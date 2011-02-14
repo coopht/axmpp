@@ -48,8 +48,7 @@ package body XMPP.Networks is
    --  Reader_Task  --
    -------------------
    task type Reader_Task (Object : not null access Network) is
-      entry Start;
-      --  entry Stop;
+      entry Stop;
    end Reader_Task;
 
    -------------------
@@ -57,29 +56,25 @@ package body XMPP.Networks is
    -------------------
    --  FIXME: correct task termination using Stop entry
    task body Reader_Task is
+      Time_To_Stop : Boolean := False;
+
    begin
-      accept Start do
-         Object.Time_To_Stop := False;
-         Create_Selector (Object.Selector);
-         Empty (Object.RSet);
-         Empty (Object.WSet);
-      end Start;
-
       loop
-         exit when Object.Time_To_Stop;
+         exit when Time_To_Stop;
 
-         --  select
-         --     accept Stop do
-         --        Close_Selector (Object.Selector);
-         --        Object.Time_To_Stop := True;
-         --        return;
-         --     end Stop;
-         --  or
-         --  delay 0.0;
+         select
+            accept Stop do
+               Time_To_Stop := True;
+            end Stop;
+         or
+            delay 0.0;
 
-         Object.Recieve;
-         --  end select;
+            exit when not Object.Recieve;
+         end select;
+
       end loop;
+
+      Object.Task_Stopped;
 
    exception
       when E : others =>
@@ -94,10 +89,10 @@ package body XMPP.Networks is
    ---------------
    --  Connect  --
    ---------------
-   procedure Connect (Self : not null access Network'Class;
-                      Host : Wide_Wide_String;
-                      Port : Natural)
-   is
+   procedure Connect
+    (Self : not null access Network'Class;
+     Host : Wide_Wide_String;
+     Port : Natural) is
       No_Block : GNAT.Sockets.Request_Type (GNAT.Sockets.Non_Blocking_IO);
 
    begin
@@ -122,6 +117,10 @@ package body XMPP.Networks is
       --  Setting non-blocking IO
       GNAT.Sockets.Control_Socket (Self.Get_Socket, No_Block);
 
+      Create_Selector (Self.Selector);
+      Empty (Self.RSet);
+      Empty (Self.WSet);
+
       Self.On_Connect;
 
    exception
@@ -134,15 +133,11 @@ package body XMPP.Networks is
    --  Disconnect  --
    ------------------
    procedure Disconnect (Self : not null access Network'Class) is
+      pragma Unreferenced (Self);
    begin
       if RT /= null then
-         Self.Time_To_Stop := True;
-         Abort_Selector (Self.Selector);
-
-         Close_Socket (Self.Sock);
-         Self.On_Disconnect;
+         RT.Stop;
       end if;
-
    exception
       when E : others =>
          Ada.Text_IO.Put_Line
@@ -153,8 +148,7 @@ package body XMPP.Networks is
    --  Get_Channel  --
    -------------------
    function Get_Channel (Self : not null access Network'Class)
-     return Stream_Access
-   is
+      return Stream_Access is
    begin
       return Self.Channel;
    end Get_Channel;
@@ -163,8 +157,7 @@ package body XMPP.Networks is
    --  Get_Socket  --
    ------------------
    function Get_Socket (Self : not null access Network'Class)
-      return Socket_Type
-   is
+      return Socket_Type is
    begin
       return Self.Sock;
    end Get_Socket;
@@ -175,43 +168,55 @@ package body XMPP.Networks is
    procedure Idle (Self : in out Network) is
    begin
       RT := new Reader_Task (Self'Unchecked_Access);
-      RT.Start;
    end Idle;
 
    -----------------
    --  Read_Data  --
    -----------------
-   not overriding
-   procedure Read_Data (Self : not null access Network)
-   is
-      Buffer : Ada.Streams.Stream_Element_Array (1 .. 4096);
-      Last   : Ada.Streams.Stream_Element_Count := 0;
+   not overriding function Read_Data (Self : not null access Network)
+     return Boolean is
+     Buffer : Ada.Streams.Stream_Element_Array (1 .. 4096);
+     Last   : Ada.Streams.Stream_Element_Count := 0;
 
-      --  for debug
-      --  X      : GNAT.Sockets.Request_Type (GNAT.Sockets.N_Bytes_To_Read);
    begin
-      delay (0.1);
-      --  for debug
-      --  Getting how much data available in Socket
-      --  GNAT.Sockets.Control_Socket (Self.Get_Socket, X);
-      --  Ada.Text_IO.Put_Line ("Data_Size for reading :" & X.Size'Img);
-
       GNAT.Sockets.Receive_Socket (Self.Sock, Buffer, Last);
 
       Ada.Text_IO.Put_Line ("Offset : " & Last'Img);
 
       Self.On_Recieve (Buffer (1 .. Last));
+      return True;
    exception
       when E : others =>
          Ada.Text_IO.Put_Line
            ("Gotcha : " & Exception_Name (E) & " : " & Exception_Message (E));
          Self.On_Recieve (Buffer (1 .. 1));
+         return False;
    end Read_Data;
+
+   -------------------------
+   --  Read_Data_Wrapper  --
+   -------------------------
+   function Read_Data_Wrapper (Self : not null access Network'Class)
+      return Boolean is
+      --  for debug
+      X  : GNAT.Sockets.Request_Type (GNAT.Sockets.N_Bytes_To_Read);
+   begin
+      delay (0.1);
+
+      --  Getting how much data available in Socket
+      GNAT.Sockets.Control_Socket (Self.Get_Socket, X);
+
+      if X.Size = 0 then
+         return False;
+      else
+         return Self.Read_Data;
+      end if;
+   end Read_Data_Wrapper;
 
    ---------------
    --  Recieve  --
    ---------------
-   procedure Recieve (Self : not null access Network'Class) is
+   function Recieve (Self : not null access Network'Class) return Boolean is
    begin
       Set (Self.RSet, Self.Sock);
       Put_Line ("Waiting for data in select");
@@ -221,24 +226,17 @@ package body XMPP.Networks is
 
       case Self.Status is
          when Completed =>
-            if Is_Set (Self.WSet, Self.Sock) then
-               Ada.Text_IO.Put_Line ("Wset is ready");
-            end if;
-
             if Is_Set (Self.RSet, Self.Sock) then
-               --  XXX : think about more correct threading model
-               Self.Read_Data;
+               return Self.Read_Data_Wrapper;
+            else
+               return False;
             end if;
 
          when Expired =>
-            Put_Line ("Expired");
-            return;
+            return True;
 
          when Aborted =>
-            if Self.Time_To_Stop then
-               Put_Line ("Aborted: OK!");
-            end if;
-            return;
+            return False;
 
       end case;
 
@@ -249,15 +247,16 @@ package body XMPP.Networks is
       when E : others =>
          Ada.Text_IO.Put_Line
            (Exception_Name (E) & ": " & Exception_Message (E));
+         return False;
    end Recieve;
 
    ------------
    --  Send  --
    ------------
-   procedure Send (Self   : not null access Network'Class;
-                   Data   : Ada.Streams.Stream_Element_Array;
-                   Via_TLS : Boolean := False)
-   is
+   procedure Send
+    (Self   : not null access Network'Class;
+     Data   : Ada.Streams.Stream_Element_Array;
+     Via_TLS : Boolean := False) is
    begin
       if not Via_TLS then
          Self.Channel.Write (Data);
@@ -290,11 +289,21 @@ package body XMPP.Networks is
    -----------------------
    --  Set_TLS_Session  --
    -----------------------
-   procedure Set_TLS_Session (Self : not null access Network'Class;
-                              S    : GNUTLS.Session)
-   is
+   procedure Set_TLS_Session
+     (Self : not null access Network'Class;
+      S    : GNUTLS.Session) is
    begin
       Self.TLS := S;
    end Set_TLS_Session;
+
+   --------------------
+   --  Task_Stopped  --
+   --------------------
+   procedure Task_Stopped (Self : not null access Network'Class) is
+   begin
+      Close_Selector (Self.Selector);
+      Close_Socket (Self.Sock);
+      Self.On_Disconnect;
+   end Task_Stopped;
 
 end XMPP.Networks;

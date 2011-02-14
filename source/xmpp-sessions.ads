@@ -197,7 +197,8 @@ private
 
    overriding procedure On_Disconnect (Self : not null access XMPP_Session);
 
-   overriding procedure Read_Data (Self : not null access XMPP_Session);
+   overriding function Read_Data (Self : not null access XMPP_Session)
+      return Boolean;
 
    --  Session private functions
 

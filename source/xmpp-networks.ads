@@ -45,7 +45,7 @@ package XMPP.Networks is
 
    type Network is abstract tagged limited private;
 
-   type Network_Access is access all Network;
+   type Network_Access is access all Network'Class;
 
    --  functions, which should be overriden
    not overriding
@@ -59,8 +59,8 @@ package XMPP.Networks is
                          Data   : Ada.Streams.Stream_Element_Array)
       is null;
 
-   not overriding
-   procedure Read_Data (Self : not null access Network);
+   not overriding function Read_Data (Self : not null access Network)
+      return Boolean;
    --  If this function is not reimplemented, than default implementation is
    --  used. By default, Read_Data reads data from socket in non-blocking mode
    --  end notifies user with read data using On_Recieve function. So, if you
@@ -81,7 +81,7 @@ package XMPP.Networks is
 
    procedure Idle (Self : in out Network);
 
-   procedure Recieve (Self : not null access Network'Class);
+   function Recieve (Self : not null access Network'Class) return Boolean;
 
    --  XXX: this function must be removed.
    function Get_Socket (Self : not null access Network'Class)
@@ -101,11 +101,15 @@ private
       Sock         : Socket_Type;
       Channel      : Stream_Access;
       Selector     : Selector_Type;
-      Time_To_Stop : Boolean := False;
       WSet         : Socket_Set_Type;
       RSet         : Socket_Set_Type;
       Status       : Selector_Status;
       TLS          : GNUTLS.Session;
    end record;
+
+   function Read_Data_Wrapper (Self : not null access Network'Class)
+      return Boolean;
+
+   procedure Task_Stopped (Self : not null access Network'Class);
 
 end XMPP.Networks;

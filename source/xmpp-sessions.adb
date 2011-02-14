@@ -497,8 +497,9 @@ package body XMPP.Sessions is
    --  On_Disconnect  --
    ---------------------
    overriding procedure On_Disconnect (Self : not null access XMPP_Session) is
+      pragma Unreferenced (Self);
    begin
-      null;
+      Ada.Wide_Wide_Text_IO.Put_Line ("Disconnected");
    end On_Disconnect;
 
    ------------
@@ -699,11 +700,11 @@ package body XMPP.Sessions is
    -----------------
    --  Read_Data  --
    -----------------
-   overriding
-   procedure Read_Data (Self   : not null access XMPP_Session)
-   is
+   overriding function Read_Data (Self   : not null access XMPP_Session)
+     return Boolean is
    begin
       Self.Reader.Parse;
+      return True;
    end Read_Data;
 
    ----------------------
