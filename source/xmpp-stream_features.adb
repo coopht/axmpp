@@ -33,7 +33,7 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with Ada.Wide_Wide_Text_IO;
+with XMPP.Logger;
 
 package body XMPP.Stream_Features is
 
@@ -51,9 +51,9 @@ package body XMPP.Stream_Features is
 
       elsif Value = "DIGEST-MD5" then
          Self.Mechanisms.Append (DIGEST_MD5);
+
       else
-         Ada.Wide_Wide_Text_IO.Put_Line
-           ("Uknown mechanism detected : " & Value);
+         XMPP.Logger.Log  ("Uknown mechanism detected : " & Value);
       end if;
    end Add_Mechanism;
 
@@ -126,8 +126,7 @@ package body XMPP.Stream_Features is
          Self.Bind_Supported := Parameter = Value;
 
       else
-         Ada.Wide_Wide_Text_IO.Put_Line
-           ("!!! Unknown Parameter : " & Parameter.To_Wide_Wide_String);
+         XMPP.Logger.Log ("!!! Unknown Parameter : " & Parameter);
       end if;
    end Set_Content;
 

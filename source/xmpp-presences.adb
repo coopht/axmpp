@@ -33,9 +33,9 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with Ada.Wide_Wide_Text_IO;
-
 with XML.SAX.Attributes;
+
+with XMPP.Logger;
 
 package body XMPP.Presences is
 
@@ -259,8 +259,7 @@ package body XMPP.Presences is
          null;
 
       else
-         Ada.Wide_Wide_Text_IO.Put_Line
-          ("Unknown Parameter : " & Parameter.To_Wide_Wide_String);
+         XMPP.Logger.Log ("Unknown Parameter : " & Parameter);
       end if;
    end Set_Content;
 

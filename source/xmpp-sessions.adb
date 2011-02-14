@@ -97,7 +97,7 @@ package body XMPP.Sessions is
       Success : in out Boolean)
    is
    begin
-      --  Put_Line ("*** Text = [" & Text & "]");
+      --  Log ("*** Text = [" & Text & "]");
       if not Self.Tag.Is_Empty and not Text.Is_Empty then
          Self.Stack.Last_Element.Set_Content (Self.Tag, Text);
          Self.Tag.Clear;
@@ -165,12 +165,11 @@ package body XMPP.Sessions is
       pragma Unreferenced (Qualified_Name);
 
    begin
-      --  Put_Line ("<<< End_Element_QN = " & Qualified_Name);
-      --  Put_Line ("<<< End_Element_URI = " & Namespace_URI);
+      --  Log ("<<< End_Element_QN = " & Qualified_Name);
+      --  Log ("<<< End_Element_URI = " & Namespace_URI);
 
-      --  Ada.Wide_Wide_Text_IO.Put_Line
-      --    ("Stack size at begin : "
-      --       & Integer'Wide_Wide_Image (Integer (Self.Stack.Length)));
+      --  Log ("Stack size at begin : "
+      --        & Integer'Wide_Wide_Image (Integer (Self.Stack.Length)));
 
       if Namespace_URI = +"http://etherx.jabber.org/streams" then
          if Local_Name = +"stream" then
@@ -372,10 +371,9 @@ package body XMPP.Sessions is
       elsif Namespace_URI = +"jabber:client" then
          --  Calling IQ Handler
          if Local_Name = +"iq" then
-            --  Ada.Wide_Wide_Text_IO.Put_Line
-            --    ("Self.Stack.Last_Element.Get_Kind "
-            --       & XMPP.Objects.Object_Kind'Wide_Wide_Image
-            --       (Self.Stack.Last_Element.Get_Kind));
+            --  Log ("Self.Stack.Last_Element.Get_Kind "
+            --        & XMPP.Objects.Object_Kind'Wide_Wide_Image
+            --           (Self.Stack.Last_Element.Get_Kind));
             Self.Stream_Handler.IQ
               (XMPP.IQS.XMPP_IQ_Access (Self.Stack.Last_Element).all);
             Self.Process_IQ
@@ -404,12 +402,10 @@ package body XMPP.Sessions is
 
       Success := True;
 
-      --  Ada.Wide_Wide_Text_IO.Put_Line
-      --    ("Stack size at end : "
-      --       & Integer'Wide_Wide_Image (Integer (Self.Stack.Length)));
-      --  Ada.Wide_Wide_Text_IO.Put_Line
-      --    ("Stack size : "
-      --       & Integer'Wide_Wide_Image (Integer (Self.Stack.Length)));
+      --  Log ("Stack size at end : "
+      --        & Integer'Wide_Wide_Image (Integer (Self.Stack.Length)));
+      --  Log ("Stack size : "
+      --        & Integer'Wide_Wide_Image (Integer (Self.Stack.Length)));
    end End_Element;
 
    --------------------
@@ -526,7 +522,7 @@ package body XMPP.Sessions is
              & "' >";
 
    begin
-      --  Ada.Wide_Wide_Text_IO.Put_Line (" !!! Opening_Stream !!!");
+      --  Log (" !!! Opening_Stream !!!");
       --  We need to reset parser each time we start new xml stream
       Self.Reader.Set_Content_Handler
         (XML.SAX.Readers.SAX_Content_Handler_Access (Self));
@@ -615,11 +611,10 @@ package body XMPP.Sessions is
 --
 --        exception
 --           when others =>
---              Ada.Text_IO.Put_Line
---                (GNUTLS.IO_Direction'Image
---                   (GNUTLS.Get_Direction (Self.TLS_Session)));
+--              Log (GNUTLS.IO_Direction'Image
+--                    (GNUTLS.Get_Direction (Self.TLS_Session)));
 --        end;
---        Ada.Text_IO.Put_Line ("End of GNUTLS.Handshake");
+--        Log ("End of GNUTLS.Handshake");
 --
       Self.Set_TLS_Session (Self.TLS_Session);
       Self.Source.Set_TLS_Session (Self.TLS_Session);
@@ -630,8 +625,7 @@ package body XMPP.Sessions is
       --  On Success handshake,
       --  we should reopen stream via TLS session.
 
-      --        Ada.Wide_Wide_Text_IO.Put_Line
-      --          ("TLS Session established. Sending Stream");
+      --  Log ("TLS Session established. Sending Stream");
       --  Self.On_Connect;
    exception
       when E : others =>
@@ -714,7 +708,7 @@ package body XMPP.Sessions is
    begin
       Object.Serialize (Self.Writer);
 
-      Log ("Sending Data : " & Self.Writer.Text.To_Wide_Wide_String);
+      Log ("Sending Data : " & Self.Writer.Text);
       Self.Send_Wide_Wide_String (Self.Writer.Text.To_Wide_Wide_String);
 
       Self.Writer.Reset;
@@ -800,22 +794,19 @@ package body XMPP.Sessions is
       pragma Unreferenced (Success);
    begin
       --  DEBUG  --
-      --  Ada.Wide_Wide_Text_IO.Put
-      --    (">>> Start_Element_QN = "
-      --       & Qualified_Name.To_Wide_Wide_String & " (");
+      --  Log (">>> Start_Element_QN = "
+      --        & Qualified_Name.To_Wide_Wide_String & " (");
 
-      --  Ada.Wide_Wide_Text_IO.Put
-      --    ("Namespace_URI = " & Namespace_URI.To_Wide_Wide_String & " ");
+      --  Log ("Namespace_URI = " & Namespace_URI.To_Wide_Wide_String & " ");
 
       --  for J in 1 .. Attributes.Length loop
-      --     Ada.Wide_Wide_Text_IO.Put
-      --       (Attributes.Local_Name (J).To_Wide_Wide_String
-      --          & "="
-      --          & Attributes.Value (J).To_Wide_Wide_String
-      --          & " ");
+      --     Log (Attributes.Local_Name (J).To_Wide_Wide_String
+      --           & "="
+      --           & Attributes.Value (J).To_Wide_Wide_String
+      --           & " ");
       --  end loop;
 
-      --  Ada.Wide_Wide_Text_IO.Put_Line (")");
+      --  Log (")");
 
       --  DEBUG  --
 

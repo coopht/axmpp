@@ -33,7 +33,7 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with Ada.Wide_Wide_Text_IO;
+with XMPP.Logger;
 
 package body XMPP.Binds is
 
@@ -115,8 +115,8 @@ package body XMPP.Binds is
          Self.JID := Value;
 
       else
-         Ada.Wide_Wide_Text_IO.Put_Line
-           ("Unknown parameter : " & Parameter.To_Wide_Wide_String);
+         XMPP.Logger.Log
+          ("Unknown parameter : " & Parameter.To_Wide_Wide_String);
       end if;
    end Set_Content;
 

@@ -35,17 +35,18 @@
 ------------------------------------------------------------------------------
 with Ada.Characters.Conversions;
 with Ada.Streams;
---  with Ada.Text_IO;
-with Ada.Wide_Wide_Text_IO;
 
 with GNAT.MD5;
 
 with XMPP.Base64;
+with XMPP.Logger;
 with XMPP.Utils;
 
 package body XMPP.Challenges is
 
    use type Ada.Streams.Stream_Element_Offset;
+
+   use League.Strings;
 
    package ACC renames Ada.Characters.Conversions;
 
@@ -139,20 +140,18 @@ package body XMPP.Challenges is
             Len                 : Natural;
 
          begin
-            --  Ada.Text_IO.Put_Line ("SY:" & SY);
-            --  Ada.Text_IO.Put_Line ("HA1:" & HA1);
-            --  Ada.Text_IO.Put_Line ("HA2:" & HA2);
-            --  Ada.Text_IO.Put_Line ("Z:" & Z);
-            --  Ada.Text_IO.Put_Line ("Realm_Reply:"
-            --                          & ACC.To_String (Realm_Reply));
+            --  XMPP.Logger.Log ("SY:" & SY);
+            --  XMPP.Logger.Log ("HA1:" & HA1);
+            --  XMPP.Logger.Log ("HA2:" & HA2);
+            --  XMPP.Logger.Log ("Z:" & Z);
+            --  XMPP.Logger.Log ("Realm_Reply:" & ACC.To_String (Realm_Reply));
 
             XMPP.Base64.Encode
               (XMPP.Utils.To_Stream_Element_Array
                  (ACC.To_String (Realm_Reply)),
                Realm_Reply_Base_64,
                Len);
-            --  Ada.Text_IO.Put_Line ("Realm_Reply_Base_64:"
-            --                          & Realm_Reply_Base_64);
+            --  XMPP.Logger.Log ("Realm_Reply_Base_64:" & Realm_Reply_Base_64);
 
             return
               League.Strings.To_Universal_String
@@ -240,7 +239,7 @@ package body XMPP.Challenges is
                                 (ACC.To_Wide_Wide_String (Drop_Quotes (Val))));
 
                         else
-                           Ada.Wide_Wide_Text_IO.Put_Line
+                           XMPP.Logger.Log
                              ("unknown parameter : "
                                 & ACC.To_Wide_Wide_String (Param));
                         end if;
@@ -313,14 +312,13 @@ package body XMPP.Challenges is
                   Result (Integer (J)) := (Character'Val (Buffer (J - 1)));
                end loop;
 
-               --  Ada.Text_IO.Put_Line ("Decoded challenge: " & Result);
+               --  XMPP.Logger.Log ("Decoded challenge: " & Result);
 
                Self.Parse_Challenge (Result);
             end;
          end;
       else
-         Ada.Wide_Wide_Text_IO.Put_Line
-           ("Unknown parameter : " & Parameter.To_Wide_Wide_String);
+         XMPP.Logger.Log ("Unknown parameter : " & Parameter);
       end if;
    end Set_Content;
 

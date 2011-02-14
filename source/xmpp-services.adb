@@ -34,7 +34,8 @@
 --  $Date$
 ------------------------------------------------------------------------------
 with Ada.Characters.Conversions;
-with Ada.Wide_Wide_Text_IO;
+
+with XMPP.Logger;
 
 package body XMPP.Services is
 
@@ -430,8 +431,7 @@ package body XMPP.Services is
          null;
 
       else
-         Ada.Wide_Wide_Text_IO.Put_Line ("XMPP_Service: Unknown parameter : "
-                                           & Parameter.To_Wide_Wide_String);
+         XMPP.Logger.Log ("XMPP_Service: Unknown parameter : " & Parameter);
       end if;
    end Set_Content;
 

@@ -33,7 +33,7 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with Ada.Wide_Wide_Text_IO;
+with XMPP.Logger;
 
 package body XMPP.Streams is
 
@@ -90,8 +90,7 @@ package body XMPP.Streams is
          Self.Set_Version (Value);
 
       else
-         Ada.Wide_Wide_Text_IO.Put_Line
-           ("Unknonw Parameter : " & Parameter.To_Wide_Wide_String);
+         XMPP.Logger.Log ("Unknonw Parameter : " & Parameter);
       end if;
    end Set_Content;
 

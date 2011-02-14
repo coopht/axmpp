@@ -33,10 +33,12 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
+with Ada.Characters.Conversions;
 with Ada.Text_IO;
-
 with Matreshka.Internals.Strings.Operations;
 with Matreshka.Internals.Utf16;
+
+with XMPP.Logger;
 
 package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
 
@@ -103,14 +105,15 @@ package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
                begin
                   GNUTLS.Handshake (Self.TLS_Session);
                   Self.TLS_State := TLS;
-                  Ada.Text_IO.Put_Line ("Handshake complete");
+                  XMPP.Logger.Log ("Handshake complete");
                   Self.Object.On_Connect;
 
                exception
                   when others =>
-                     Ada.Text_IO.Put_Line
-                       (GNUTLS.IO_Direction'Image
-                          (GNUTLS.Get_Direction (Self.TLS_Session)));
+                     XMPP.Logger.Log
+                       (Ada.Characters.Conversions.To_Wide_Wide_String
+                          (GNUTLS.IO_Direction'Image
+                             (GNUTLS.Get_Direction (Self.TLS_Session))));
                end;
 
             when TLS =>
@@ -127,23 +130,22 @@ package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
                   GNUTLS.Record_Recv (Self.TLS_Session, Vector, Length);
                   Last := Buffer'First + Length - 1;
 
-                  Ada.Text_IO.Put_Line ("=================================");
-                  --  Ada.Text_IO.Put_Line
-                  --    ("Data of"
+                  XMPP.Logger.Log ("=================================");
+                  --  Log
+                  --   ("Data of"
                   --   & Ada.Streams.Stream_Element_Offset'Image (Buffer'First)
                   --     & " .."
                   --     & Ada.Streams.Stream_Element_Offset'Image (Last)
                   --     & " received from GNUTLS.Record_Recv");
 
-                  Ada.Text_IO.Put
-                    ("Recieved from GNUTLS.Record_Recv : ");
+                  XMPP.Logger.Log ("Recieved from GNUTLS.Record_Recv : ");
 
                   for J in Buffer'First .. Last loop
                      Ada.Text_IO.Put (Character'Val (Buffer (J)));
                   end loop;
 
-                  Ada.Text_IO.New_Line;
-                  Ada.Text_IO.Put_Line ("=================================");
+                  XMPP.Logger.Log ("");
+                  XMPP.Logger.Log ("=================================");
                end;
          end case;
 
@@ -175,9 +177,10 @@ package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
 
    exception
       when others =>
-         Ada.Text_IO.Put_Line
-           (GNUTLS.IO_Direction'Image
-              (GNUTLS.Get_Direction (Self.TLS_Session)));
+         XMPP.Logger.Log
+          (Ada.Characters.Conversions.To_Wide_Wide_String
+            (GNUTLS.IO_Direction'Image
+              (GNUTLS.Get_Direction (Self.TLS_Session))));
    end Start_Handshake;
 
    ---------------------------

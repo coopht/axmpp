@@ -33,7 +33,7 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with Ada.Wide_Wide_Text_IO;
+with XMPP.Logger;
 
 package body XMPP.Roster_Items is
 
@@ -138,8 +138,7 @@ package body XMPP.Roster_Items is
          Self.Append_Group (Value);
 
       else
-         Ada.Wide_Wide_Text_IO.Put_Line
-           ("Unknow parameter: " & Parameter.To_Wide_Wide_String);
+         XMPP.Logger.Log ("Unknow parameter: " & Parameter);
       end if;
    end Set_Content;
 

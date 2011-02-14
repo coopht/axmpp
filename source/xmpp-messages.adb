@@ -33,9 +33,9 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with Ada.Wide_Wide_Text_IO;
-
 with XML.SAX.Attributes;
+
+with XMPP.Logger;
 
 package body XMPP.Messages is
 
@@ -265,8 +265,7 @@ package body XMPP.Messages is
             Self.Type_Of_Message := Normal;
 
          else
-            Ada.Wide_Wide_Text_IO.Put_Line ("Unknown message type: "
-                                              & Value.To_Wide_Wide_String);
+            XMPP.Logger.Log ("Unknown message type: " & Value);
          end if;
 
       elsif Parameter = To_Universal_String ("subject") then
@@ -301,8 +300,7 @@ package body XMPP.Messages is
          null;
 
       else
-         Ada.Wide_Wide_Text_IO.Put_Line ("WARNING: Unknown parameter : "
-                                           & Parameter.To_Wide_Wide_String);
+         XMPP.Logger.Log ("WARNING: Unknown parameter : " & Parameter);
       end if;
    end Set_Content;
 
