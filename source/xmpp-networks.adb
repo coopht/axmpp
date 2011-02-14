@@ -35,14 +35,16 @@
 ------------------------------------------------------------------------------
 with Ada.Characters.Conversions;
 with Ada.Exceptions;
-with Ada.Text_IO;
+with XMPP.Logger;
 
 package body XMPP.Networks is
 
-   use Ada.Exceptions;
-   use Ada.Text_IO;
+   use XMPP.Logger;
 
    use type Ada.Streams.Stream_Element_Offset;
+
+   function "+" (Item : String) return Wide_Wide_String
+     renames Ada.Characters.Conversions.To_Wide_Wide_String;
 
    -------------------
    --  Reader_Task  --
@@ -78,8 +80,7 @@ package body XMPP.Networks is
 
    exception
       when E : others =>
-         Ada.Text_IO.Put_Line
-           (Exception_Name (E) & ": " & Exception_Message (E));
+         Log (+Ada.Exceptions.Exception_Information (E));
    end Reader_Task;
 
    type Reader_Task_Access is access Reader_Task;
@@ -125,8 +126,7 @@ package body XMPP.Networks is
 
    exception
       when E : others =>
-         Ada.Text_IO.Put_Line
-           (Exception_Name (E) & ": " & Exception_Message (E));
+         Log (+Ada.Exceptions.Exception_Information (E));
    end Connect;
 
    ------------------
@@ -140,8 +140,7 @@ package body XMPP.Networks is
       end if;
    exception
       when E : others =>
-         Ada.Text_IO.Put_Line
-           (Exception_Name (E) & ": " & Exception_Message (E));
+         Log  (+Ada.Exceptions.Exception_Information (E));
    end Disconnect;
 
    -------------------
@@ -181,14 +180,14 @@ package body XMPP.Networks is
    begin
       GNAT.Sockets.Receive_Socket (Self.Sock, Buffer, Last);
 
-      Ada.Text_IO.Put_Line ("Offset : " & Last'Img);
+      Log ("XMPP.Networks.Read_Data: Offset = "
+             & Ada.Streams.Stream_Element_Count'Wide_Wide_Image (Last));
 
       Self.On_Recieve (Buffer (1 .. Last));
       return True;
    exception
       when E : others =>
-         Ada.Text_IO.Put_Line
-           ("Gotcha : " & Exception_Name (E) & " : " & Exception_Message (E));
+         Log  (+Ada.Exceptions.Exception_Information (E));
          Self.On_Recieve (Buffer (1 .. 1));
          return False;
    end Read_Data;
@@ -219,7 +218,7 @@ package body XMPP.Networks is
    function Recieve (Self : not null access Network'Class) return Boolean is
    begin
       Set (Self.RSet, Self.Sock);
-      Put_Line ("Waiting for data in select");
+      Log ("Waiting for data in select");
 
       --  multiplexed i/o, like select in C
       Check_Selector (Self.Selector, Self.RSet, Self.WSet, Self.Status);
@@ -245,8 +244,7 @@ package body XMPP.Networks is
 
    exception
       when E : others =>
-         Ada.Text_IO.Put_Line
-           (Exception_Name (E) & ": " & Exception_Message (E));
+         Log  (+Ada.Exceptions.Exception_Information (E));
          return False;
    end Recieve;
 
@@ -262,7 +260,7 @@ package body XMPP.Networks is
          Self.Channel.Write (Data);
 
       else
-         Ada.Text_IO.Put_Line ("Sendinging data via TLS");
+         Log ("Sendinging data via TLS");
 
          declare
             Tmp : Ada.Streams.Stream_Element_Array := Data;
@@ -282,8 +280,7 @@ package body XMPP.Networks is
 
    exception
       when E : others =>
-         Ada.Text_IO.Put_Line
-           (Exception_Name (E) & ": " & Exception_Message (E));
+         Log  (+Ada.Exceptions.Exception_Information (E));
    end Send;
 
    -----------------------
