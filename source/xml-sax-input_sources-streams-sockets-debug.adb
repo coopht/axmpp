@@ -2,7 +2,7 @@ with League.Strings.Internals;
 with Matreshka.Internals.Strings.Operations;
 with Matreshka.Internals.Utf16;
 
-with XMPP.Sessions;
+with XMPP.Logger;
 
 package body XML.SAX.Input_Sources.Streams.Sockets.Debug is
 
@@ -31,7 +31,7 @@ package body XML.SAX.Input_Sources.Streams.Sockets.Debug is
           Old_Unused,
           Buffer.Unused - Old_Unused,
           Buffer.Length - Old_Length);
-      XMPP.Sessions.Put_Line (League.Strings.Internals.Wrap (New_Data));
+      XMPP.Logger.Log (League.Strings.Internals.Wrap (New_Data));
    end Next;
 
 end XML.SAX.Input_Sources.Streams.Sockets.Debug;

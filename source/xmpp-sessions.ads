@@ -159,8 +159,6 @@ package XMPP.Sessions is
                              JID  : League.Strings.Universal_String);
    --  Sending request for getting disco#items
 
-   procedure Put_Line (Item : League.Strings.Universal_String);
-   --  Internal function. Should not be used by application
 private
 
    --  overriding from SAX.Reader

@@ -36,8 +36,6 @@
 with Ada.Characters.Conversions;
 with Ada.Exceptions;
 with Ada.Streams;
-with Ada.Text_IO;
-with Ada.Wide_Wide_Text_IO;
 
 with XML.SAX.Readers;
 
@@ -46,6 +44,7 @@ with XMPP.Services;
 with XMPP.Services_Features;
 with XMPP.Services_Identities;
 with XMPP.IQ_Sessions;
+with XMPP.Logger;
 with XMPP.Messages;
 with XMPP.MUC;
 with XMPP.Presences;
@@ -59,6 +58,7 @@ package body XMPP.Sessions is
 
    use League.Strings;
 
+   use XMPP.Logger;
    use XMPP.Objects;
    use XMPP.Objects.Object_Vectors;
 
@@ -196,12 +196,12 @@ package body XMPP.Sessions is
             --  XXX: may be XMPP object for xmpp-tls name
             --  space should be created
             if not Self.Source.Is_TLS_Established then
-               Ada.Wide_Wide_Text_IO.Put_Line ("Sending starttls");
+               Log ("Sending starttls");
                Self.Send_Wide_Wide_String
                  ("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
 
             elsif not Self.Authenticated then
-               Ada.Wide_Wide_Text_IO.Put_Line ("Starting sasl auth");
+               Log ("Starting sasl auth");
                Self.Send_Wide_Wide_String
                  ("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' "
                     & "mechanism='DIGEST-MD5'/>");
@@ -243,7 +243,7 @@ package body XMPP.Sessions is
             --  to server
 
             Self.Stack.Delete_Last;
-            Ada.Wide_Wide_Text_IO.Put_Line ("Authentification successfull !!");
+            Log ("Authentification successfull !!");
             Self.Authenticated := True;
             Self.On_Connect;
          end if;
@@ -391,7 +391,6 @@ package body XMPP.Sessions is
 
          --  Calling Message Handler
          elsif Local_Name = +"message" then
-            Ada.Wide_Wide_Text_IO.Put_Line ("Calling Message_Handler");
             Self.Stream_Handler.Message
               (XMPP.Messages.XMPP_Message_Access
                 (Self.Stack.Last_Element).all);
@@ -449,21 +448,18 @@ package body XMPP.Sessions is
       pragma Unreferenced (Success);
 
    begin
-      Put_Line ("Fatal_Error: " & Occurrence.Message);
-      Ada.Wide_Wide_Text_IO.Put_Line
-        ("         Line   : "
-           & Natural'Wide_Wide_Image (Occurrence.Line));
+      Log ("Fatal_Error: " & Occurrence.Message);
+      Log ("         Line   : "
+             & Natural'Wide_Wide_Image (Occurrence.Line));
 
-      Ada.Wide_Wide_Text_IO.Put_Line
-        ("         Column : "
-           & Natural'Wide_Wide_Image (Occurrence.Column));
+      Log ("         Column : "
+             & Natural'Wide_Wide_Image (Occurrence.Column));
 
-      Ada.Wide_Wide_Text_IO.Put_Line
-        ("Locator ("
-           & Natural'Wide_Wide_Image (Self.Locator.Line)
-           & ":"
-           & Natural'Wide_Wide_Image (Self.Locator.Column)
-           & ")");
+      Log ("Locator ("
+             & Natural'Wide_Wide_Image (Self.Locator.Line)
+             & ":"
+             & Natural'Wide_Wide_Image (Self.Locator.Column)
+             & ")");
    end Fatal_Error;
 
    -----------------
@@ -481,11 +477,10 @@ package body XMPP.Sessions is
    begin
       --  After we connected, initialize parser.
 
-      Ada.Text_IO.Put_Line ("On_Connect!");
+      Log ("On_Connect!");
       if not Self.Source.Is_TLS_Established then
 
-         Ada.Text_IO.Put_Line ("Reset Parser");
-         XML.SAX.Simple_Readers.Put_Line := Put_Line'Access;
+         Log ("Reset Parser");
 
          Self.Source.Set_Socket (Self.Get_Socket);
       end if;
@@ -499,7 +494,7 @@ package body XMPP.Sessions is
    overriding procedure On_Disconnect (Self : not null access XMPP_Session) is
       pragma Unreferenced (Self);
    begin
-      Ada.Wide_Wide_Text_IO.Put_Line ("Disconnected");
+      Log ("Disconnected");
    end On_Disconnect;
 
    ------------
@@ -508,9 +503,9 @@ package body XMPP.Sessions is
    procedure Open (Self : not null access XMPP_Session) is
    begin
       if not Self.Is_Opened then
-         Ada.Wide_Wide_Text_IO.Put_Line ("Connecting");
+         Log ("Connecting");
          Self.Connect (Self.Addr.To_Wide_Wide_String, 5222);
-         Ada.Wide_Wide_Text_IO.Put_Line ("Starting idle");
+         Log ("Starting idle");
          Self.Idle;
       end if;
    end Open;
@@ -584,13 +579,13 @@ package body XMPP.Sessions is
 
       GNUTLS.Global_Init;
 
-      Ada.Text_IO.Put_Line ("GNUTLS.Anon_Allocate_Client_Credentials");
+      Log ("GNUTLS.Anon_Allocate_Client_Credentials");
 
       GNUTLS.Certificate_Allocate_Credentials (Self.Credential);
       --  GNUTLS.Anon_Allocate_Client_Credentials (Self.Cred);
 
       --  Initialize TLS session
-      Ada.Text_IO.Put_Line ("Init");
+      Log ("Init");
       GNUTLS.Init (Self.TLS_Session, GNUTLS.GNUTLS_CLIENT);
 
       GNUTLS.Protocol_Set_Priority (Self.TLS_Session, Proto_Priority);
@@ -611,10 +606,10 @@ package body XMPP.Sessions is
       --                          GNUTLS.GNUTLS_CRD_ANON,
       --                          Self.Cred);
 
-      Ada.Wide_Wide_Text_IO.Put_Line ("GNUTLS.Transport_Set_Ptr");
+      Log ("GNUTLS.Transport_Set_Ptr");
       GNUTLS.Transport_Set_Ptr (Self.TLS_Session, Self.Get_Socket);
 
-      Ada.Text_IO.Put_Line ("GNUTLS.Handshake");
+      Log ("GNUTLS.Handshake");
 --        begin
 --           GNUTLS.Handshake (Self.TLS_Session);
 --
@@ -640,9 +635,8 @@ package body XMPP.Sessions is
       --  Self.On_Connect;
    exception
       when E : others =>
-         Ada.Text_IO.Put_Line
-           (Ada.Exceptions.Exception_Name (E) &
-              ": " & Ada.Exceptions.Exception_Message (E));
+         Log (Ada.Characters.Conversions.To_Wide_Wide_String
+                (Ada.Exceptions.Exception_Information (E)));
 
          Self.Disconnect;
    end Proceed_TLS_Auth;
@@ -653,16 +647,14 @@ package body XMPP.Sessions is
    procedure Process_IQ (Self : in out XMPP_Session;
                          IQ   : not null XMPP.IQS.XMPP_IQ_Access) is
    begin
-      Ada.Wide_Wide_Text_IO.Put_Line
-        ("XMPP.Session.Process_IQ : IQ arrived : "
-           & XMPP.IQS.IQ_Kind'Wide_Wide_Image (IQ.Get_IQ_Kind));
+      Log ("XMPP.Session.Process_IQ : IQ arrived : "
+             & XMPP.IQS.IQ_Kind'Wide_Wide_Image (IQ.Get_IQ_Kind));
 
       if IQ.Get_IQ_Kind = XMPP.IQS.Result then
          for J in 0 .. IQ.Items_Count - 1 loop
-            Ada.Wide_Wide_Text_IO.Put_Line
-              ("XMPP.Session.Process_IQ : IQ arrived : "
-                 & XMPP.Objects.Object_Kind'Wide_Wide_Image
-                    (IQ.Item_At (J).Get_Kind));
+            Log ("XMPP.Session.Process_IQ : IQ arrived : "
+                   & XMPP.Objects.Object_Kind'Wide_Wide_Image
+                      (IQ.Item_At (J).Get_Kind));
 
             --  Resource Binded
             if IQ.Item_At (J).Get_Kind = XMPP.Objects.Bind then
@@ -688,14 +680,6 @@ package body XMPP.Sessions is
          end loop;
       end if;
    end Process_IQ;
-
-   ----------------
-   --  Put_Line  --
-   ----------------
-   procedure Put_Line (Item : League.Strings.Universal_String) is
-   begin
-      Ada.Wide_Wide_Text_IO.Put_Line (Item.To_Wide_Wide_String);
-   end Put_Line;
 
    -----------------
    --  Read_Data  --
@@ -730,8 +714,7 @@ package body XMPP.Sessions is
    begin
       Object.Serialize (Self.Writer);
 
-      Ada.Wide_Wide_Text_IO.Put_Line
-        ("Sending Data : " & Self.Writer.Text.To_Wide_Wide_String);
+      Log ("Sending Data : " & Self.Writer.Text.To_Wide_Wide_String);
       Self.Send_Wide_Wide_String (Self.Writer.Text.To_Wide_Wide_String);
 
       Self.Writer.Reset;
@@ -744,12 +727,12 @@ package body XMPP.Sessions is
                                     Str  : Wide_Wide_String) is
    begin
       --  DEBUG
-      Ada.Wide_Wide_Text_IO.Put_Line ("Sending XML : " & Str);
+      Log ("Sending XML : " & Str);
 
       Self.Send
         (XMPP.Utils.To_Stream_Element_Array
            (Ada.Characters.Conversions.To_String (Str)),
-        Self.Source.Is_TLS_Established);
+         Self.Source.Is_TLS_Established);
    end Send_Wide_Wide_String;
 
    ----------------
@@ -1065,10 +1048,9 @@ package body XMPP.Sessions is
 
       --  Here is the end of actual object parsing.
       else
-         Ada.Wide_Wide_Text_IO.Put_Line
-           ("WARNING skipped unknown data : ");
-         Put_Line ("Namespace_URI : " & Namespace_URI);
-         Put_Line ("Local_Name : " & Local_Name);
+         Log ("WARNING skipped unknown data : ");
+         Log ("Namespace_URI : " & Namespace_URI);
+         Log ("Local_Name : " & Local_Name);
          return;
       end if;
 
