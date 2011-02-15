@@ -101,55 +101,14 @@ package XMPP.Sessions is
    --  XMPP Session API
    --  XXX : API which should be rewritten in proper place
 
-   procedure Open (Self : not null access XMPP_Session);
-   --  Initiates XMPP session. Application should use this function to start
-   --  data exchange wit xmpp server
-
-   procedure Close (Self : in out XMPP_Session);
-   --  Closes XMPP session. Application should use this function to end
-   --  data exchange wit xmpp server
-
-   procedure Set_Stream_Handler
-    (Self    : not null access XMPP_Session;
-     Handler : not null access XMPP.Stream_Handlers.XMPP_Stream_Handler'Class);
-   --  Application must set stream handler for the axmpp library.
-
-   procedure Set_Raw_Handler
-    (Self    : XMPP_Session;
-     Handler : not null access XMPP.Raw_Handlers.XMPP_Raw_Handler)
-   is null;
-   --  If application whants recieve RAW XML data, it should set Raw_Handler
-
-   procedure Set_JID (Self : in out XMPP_Session;
-                      JID  : League.Strings.Universal_String);
-   --  Sets jabber ID. JID should be set without hostname
-
-   procedure Set_Host (Self : in out XMPP_Session;
-                       Host : League.Strings.Universal_String);
-   --  Sets jabber hostname
-
-   procedure Set_Password (Self     : in out XMPP_Session;
-                           Password : League.Strings.Universal_String);
-   --  Sets passowrd for jabber account
-
-   procedure Set_Host_Addr (Self : in out XMPP_Session;
-                            Addr : League.Strings.Universal_String);
-   --  Sets ip address of jabber host
-
-   procedure Send_Object (Self   : not null access XMPP_Session;
-                          Object : XMPP.Objects.XMPP_Object'Class);
-   --  Sends XMPP Object
-
-   procedure Request_Roster (Self : not null access XMPP_Session);
-   --  Requests roster from server
-
    procedure Bind_Resource (Self        : not null access XMPP_Session;
                             Resource_Id : League.Strings.Universal_String
                               := League.Strings.Empty_Universal_String);
    --  Binds resourse with specified Resource ID.
 
-   procedure Establish_IQ_Session (Self : not null access XMPP_Session);
-   --  Establish real XMPP Session .
+   procedure Close (Self : in out XMPP_Session);
+   --  Closes XMPP session. Application should use this function to end
+   --  data exchange wit xmpp server
 
    procedure Discover_Information (Self : in out XMPP_Session;
                                    JID  : League.Strings.Universal_String);
@@ -158,6 +117,47 @@ package XMPP.Sessions is
    procedure Discover_Items (Self : in out XMPP_Session;
                              JID  : League.Strings.Universal_String);
    --  Sending request for getting disco#items
+
+   procedure Establish_IQ_Session (Self : not null access XMPP_Session);
+   --  Establish real XMPP Session.
+
+   procedure Open (Self : not null access XMPP_Session);
+   --  Initiates XMPP session. Application should use this function to start
+   --  data exchange wit xmpp server
+
+   procedure Request_Roster (Self : not null access XMPP_Session);
+   --  Requests roster from server
+
+   procedure Set_Host (Self : in out XMPP_Session;
+                       Host : League.Strings.Universal_String);
+   --  Sets jabber hostname
+
+   procedure Set_Host_Addr (Self : in out XMPP_Session;
+                            Addr : League.Strings.Universal_String);
+   --  Sets ip address of jabber host
+
+   procedure Set_JID (Self : in out XMPP_Session;
+                      JID  : League.Strings.Universal_String);
+   --  Sets jabber ID. JID should be set without hostname
+
+   procedure Send_Object (Self   : not null access XMPP_Session;
+                          Object : XMPP.Objects.XMPP_Object'Class);
+   --  Sends XMPP Object
+
+   procedure Set_Password (Self     : in out XMPP_Session;
+                           Password : League.Strings.Universal_String);
+   --  Sets passowrd for jabber account
+
+   procedure Set_Raw_Handler
+    (Self    : XMPP_Session;
+     Handler : not null access XMPP.Raw_Handlers.XMPP_Raw_Handler)
+   is null;
+   --  If application whants recieve RAW XML data, it should set Raw_Handler
+
+   procedure Set_Stream_Handler
+    (Self    : not null access XMPP_Session;
+     Handler : not null access XMPP.Stream_Handlers.XMPP_Stream_Handler'Class);
+   --  Application must set stream handler for the axmpp library.
 
 private
 
