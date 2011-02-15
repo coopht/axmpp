@@ -56,6 +56,10 @@ package XMPP.Stream_Handlers is
       Object : XMPP.Stream_Features.XMPP_Stream_Feature'Class) is null;
    --  Handler is called after succesfull authentification
 
+   not overriding procedure Disconnected
+     (Self   : in out XMPP_Stream_Handler) is null;
+   --  Handler is called after axmpp disconnected from the network
+
    not overriding procedure Start_Stream
      (Self   : in out XMPP_Stream_Handler;
       Object : XMPP.Streams.XMPP_Stream'Class) is null;

@@ -488,9 +488,9 @@ package body XMPP.Sessions is
    --  On_Disconnect  --
    ---------------------
    overriding procedure On_Disconnect (Self : not null access XMPP_Session) is
-      pragma Unreferenced (Self);
    begin
       Log ("Disconnected");
+      Self.Stream_Handler.Disconnected;
    end On_Disconnect;
 
    ------------
