@@ -4,7 +4,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --                                                                          --
--- Copyright © 2010 Alexander Basov <coopht@gmail.com>                      --
+-- Copyright © 2011 Alexander Basov <coopht@gmail.com>                      --
 --                                                                          --
 -- This is free software;  you can  redistribute it and/or modify it under  --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -26,66 +26,74 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --
---  <Unit> XMPP.Objects
---  <ImplementationNotes>
+--  <Unit> XMPP.Versions
+--  <ImplementationNotes> Unit implements XEP-0092 extension:
+--  XMPP protocol extension for retrieving information about the software
+--  application associated with an XMPP entity. The protocol enables one
+--  entity to explicitly query another entity, where the response can include
+--  the name of the software application, the version of the software
+--  application, and the operating system on which the application is running.
+--
+--  http://xmpp.org/extensions/xep-0092.html
 --
 ------------------------------------------------------------------------------
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with Ada.Containers.Vectors;
-
 with League.Strings;
+
 with XML.SAX.Pretty_Writers;
 
-package XMPP.Objects is
+with XMPP.Objects;
 
-   type Object_Kind is
-     (Bind,
-      Challenge,
-      Disco,
-      IQ,
-      IQ_Session,
-      Error,
-      Message,
-      MUC,
-      Null_Object,
-      Presence,
-      Roster,
-      Roster_Item,
-      Stream,
-      Stream_Features,
-      Version);
+package XMPP.Versions is
 
-   type XMPP_Object is limited interface;
+   Name_Element    : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("name");
 
-   type XMPP_Object_Access is access all XMPP_Object'Class;
+   OS_Element      : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("os");
 
-   package Object_Vectors is new Ada.Containers.Vectors
-     (Natural, XMPP_Object_Access);
+   Version_Element : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("version");
 
-   ----------------
-   --  Get_Kind  --
-   ----------------
-   not overriding
-   function Get_Kind (Self : XMPP_Object) return XMPP.Objects.Object_Kind
-      is abstract;
-   -----------------
-   --  Serialize  --
-   -----------------
-   not overriding
-   procedure Serialize
-    (Self   : XMPP_Object;
-     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class)
-       is abstract;
+   Version_URI     : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("jabber:iq:version");
 
-   -------------------
-   --  Set_Content  --
-   -------------------
-   not overriding
-   procedure Set_Content (Self      : in out XMPP_Object;
+   type XMPP_Version is new XMPP.Objects.XMPP_Object with private;
+
+   type XMPP_Version_Access is access all XMPP_Version'Class;
+
+   function Create return XMPP_Version_Access;
+
+   overriding function Get_Kind (Self : XMPP_Version)
+      return Objects.Object_Kind;
+
+   overriding procedure Serialize
+    (Self   : XMPP_Version;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class);
+
+   overriding
+   procedure Set_Content (Self      : in out XMPP_Version;
                           Parameter : League.Strings.Universal_String;
-                          Value     : League.Strings.Universal_String)
-      is abstract;
+                          Value     : League.Strings.Universal_String);
 
-end XMPP.Objects;
+   function Get_Name (Self : XMPP_Version)
+      return League.Strings.Universal_String;
+
+   function Get_OS (Self : XMPP_Version)
+      return League.Strings.Universal_String;
+
+   function Get_Version (Self : XMPP_Version)
+      return League.Strings.Universal_String;
+
+private
+
+   type XMPP_Version is new XMPP.Objects.XMPP_Object with
+   record
+      Name    : League.Strings.Universal_String;
+      OS      : League.Strings.Universal_String;
+      Version : League.Strings.Universal_String;
+   end record;
+
+end XMPP.Versions;

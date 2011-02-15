@@ -128,6 +128,12 @@ package XMPP.Sessions is
    procedure Request_Roster (Self : not null access XMPP_Session);
    --  Requests roster from server
 
+   procedure Request_Version
+    (Self        : not null access XMPP_Session;
+     XMPP_Entity : League.Strings.Universal_String);
+   --  Requests information about the software application
+   --  associated with an XMPP entity
+
    procedure Set_Host (Self : in out XMPP_Session;
                        Host : League.Strings.Universal_String);
    --  Sets jabber hostname
