@@ -44,6 +44,7 @@ with XMPP.Rosters;
 with XMPP.Services;
 with XMPP.Streams;
 with XMPP.Stream_Features;
+with XMPP.Versions;
 
 package XMPP.Stream_Handlers is
 
@@ -59,6 +60,13 @@ package XMPP.Stream_Handlers is
    not overriding procedure Disconnected
      (Self   : in out XMPP_Stream_Handler) is null;
    --  Handler is called after axmpp disconnected from the network
+
+   not overriding procedure IQ
+     (Self : in out XMPP_Stream_Handler;
+      IQ   : XMPP.IQS.XMPP_IQ'Class) is null;
+   --  Handler is called when XMPP IQ arrived.
+   --  Note, that you can parse IQ manually in your application,
+   --  or you can reimplement appropriate handlers
 
    not overriding procedure Start_Stream
      (Self   : in out XMPP_Stream_Handler;
@@ -100,13 +108,6 @@ package XMPP.Stream_Handlers is
       Data : XMPP.Rosters.XMPP_Roster'Class) is null;
    --  Handler is called when XMPP roster arrived.
 
-   not overriding procedure IQ
-     (Self : in out XMPP_Stream_Handler;
-      IQ   : XMPP.IQS.XMPP_IQ'Class) is null;
-   --  Handler is called when XMPP IQ arrived.
-   --  Note, that you can parse IQ manually in your application,
-   --  or you can reimplement appropriate handlers
-
    not overriding procedure Service_Information
      (Self : in out XMPP_Stream_Handler;
       Info : XMPP.Services.XMPP_Service'Class) is null;
@@ -115,5 +116,10 @@ package XMPP.Stream_Handlers is
    not overriding procedure End_Stream
      (Self : in out XMPP_Stream_Handler) is null;
      --  Handler is called, when end_strem arrived.
+
+   not overriding procedure Version
+     (Self    : in out XMPP_Stream_Handler;
+      Version : XMPP.Versions.XMPP_Version'Class) is null;
+   --  Handler is called, discovered information arrived from XMPP server
 
 end XMPP.Stream_Handlers;
