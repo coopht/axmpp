@@ -37,6 +37,7 @@ with League.Strings;
 
 with XML.SAX.Pretty_Writers;
 
+with XMPP.IQS;
 with XMPP.Objects;
 
 package XMPP.IQ_Sessions is
@@ -50,7 +51,7 @@ package XMPP.IQ_Sessions is
 
    type Session_State is (Established, Error);
 
-   type XMPP_IQ_Session is new XMPP.Objects.XMPP_Object with private;
+   type XMPP_IQ_Session is new XMPP.IQS.XMPP_IQ with private;
 
    type XMPP_IQ_Session_Access is access all XMPP_IQ_Session'Class;
 
@@ -70,6 +71,6 @@ package XMPP.IQ_Sessions is
 
 private
 
-   type XMPP_IQ_Session is new XMPP.Objects.XMPP_Object with null record;
+   type XMPP_IQ_Session is new XMPP.IQS.XMPP_IQ with null record;
 
 end XMPP.IQ_Sessions;

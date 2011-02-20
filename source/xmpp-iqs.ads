@@ -53,17 +53,26 @@ package XMPP.IQS is
    IQ_To_Attribute : constant League.Strings.Universal_String
      := League.Strings.To_Universal_String ("to");
 
+   IQ_From_Attribute : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("from");
+
    type IQ_Kind is (Error, Get, Result, Set);
 
-   type XMPP_IQ (Kind : IQ_Kind) is new XMPP.Objects.XMPP_Object with private;
+   type XMPP_IQ is new XMPP.Objects.XMPP_Object with private;
 
    type XMPP_IQ_Access is access all XMPP_IQ'Class;
-
-   function Create (X : IQ_Kind) return XMPP_IQ_Access;
 
    overriding function Get_Kind (Self : XMPP_IQ) return Objects.Object_Kind;
 
    overriding procedure Serialize
+    (Self   : XMPP_IQ;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class) is null;
+
+   not overriding procedure Start_IQ
+    (Self   : XMPP_IQ;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class);
+
+   not overriding procedure End_IQ
     (Self   : XMPP_IQ;
      Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class);
 
@@ -81,20 +90,6 @@ package XMPP.IQS is
    procedure Set_Id (Self : in out XMPP_IQ;
                      Val  : League.Strings.Universal_String);
 
-   procedure Set_Body (Self : in out XMPP_IQ;
-                       Val  : League.Strings.Universal_String);
-
-   function Get_Body (Self : XMPP_IQ) return League.Strings.Universal_String;
-
-   procedure Append_Item
-     (Self : in out XMPP_IQ;
-      Item : not null access XMPP.Objects.XMPP_Object'Class);
-
-   function Items_Count (Self : XMPP_IQ) return Natural;
-
-   function Item_At (Self : XMPP_IQ; Pos : Natural)
-      return not null access XMPP.Objects.XMPP_Object'Class;
-
    procedure Set_From (Self : in out XMPP_IQ;
                        Val  : League.Strings.Universal_String);
 
@@ -107,12 +102,10 @@ package XMPP.IQS is
 
 private
 
-   type XMPP_IQ (Kind : IQ_Kind) is new XMPP.Objects.XMPP_Object with
+   type XMPP_IQ is new XMPP.Objects.XMPP_Object with
    record
       Id         : League.Strings.Universal_String;
-      Kind_Of_IQ : IQ_Kind := Kind;
-      IQ_Body    : League.Strings.Universal_String;
-      Item_List  : XMPP.Objects.Object_Vectors.Vector;
+      Kind_Of_IQ : IQ_Kind := Result;
       To         : League.Strings.Universal_String;
       From       : League.Strings.Universal_String;
    end record;

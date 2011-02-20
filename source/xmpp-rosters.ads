@@ -37,12 +37,13 @@ with League.Strings;
 
 with XML.SAX.Pretty_Writers;
 
+with XMPP.IQS;
 with XMPP.Objects;
 with XMPP.Roster_Items;
 
 package XMPP.Rosters is
 
-   type XMPP_Roster is new XMPP.Objects.XMPP_Object with private;
+   type XMPP_Roster is new XMPP.IQS.XMPP_IQ with private;
 
    type XMPP_Roster_Access is access all XMPP_Roster'Class;
 
@@ -71,7 +72,7 @@ package XMPP.Rosters is
 
 private
 
-   type XMPP_Roster is new XMPP.Objects.XMPP_Object with
+   type XMPP_Roster is new XMPP.IQS.XMPP_IQ with
    record
       Items : XMPP.Objects.Object_Vectors.Vector;
    end record;

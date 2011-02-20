@@ -41,31 +41,17 @@ package body XMPP.IQS is
 
    use League.Strings;
 
-   -------------------
-   --  Append_Item  --
-   -------------------
-   procedure Append_Item
-     (Self : in out XMPP_IQ;
-      Item : not null access XMPP.Objects.XMPP_Object'Class) is
-   begin
-      Self.Item_List.Append (XMPP.Objects.XMPP_Object_Access (Item));
-   end Append_Item;
-
    --------------
-   --  Create  --
+   --  End_IQ  --
    --------------
-   function Create (X : IQ_Kind) return XMPP_IQ_Access is
-   begin
-      return new XMPP_IQ (X);
-   end Create;
+   not overriding procedure End_IQ
+    (Self   : XMPP_IQ;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class) is
+     pragma Unreferenced (Self);
 
-   ----------------
-   --  Get_Body  --
-   ----------------
-   function Get_Body (Self : XMPP_IQ) return League.Strings.Universal_String is
    begin
-      return Self.IQ_Body;
-   end Get_Body;
+      Writer.End_Element (Qualified_Name => IQ_Element);
+   end End_IQ;
 
    ----------------
    --  Get_From  --
@@ -108,88 +94,6 @@ package body XMPP.IQS is
    begin
       return Self.To;
    end Get_To;
-
-   ---------------
-   --  Item_At  --
-   ---------------
-   function Item_At (Self : XMPP_IQ; Pos : Natural)
-     return not null access XMPP.Objects.XMPP_Object'Class is
-   begin
-      return Self.Item_List.Element (Pos);
-   end Item_At;
-
-   -------------------
-   --  Items_Count  --
-   -------------------
-   function Items_Count (Self : XMPP_IQ) return Natural is
-   begin
-      return Natural (Self.Item_List.Length);
-   end Items_Count;
-
-   -----------------
-   --  Serialize  --
-   -----------------
-   overriding procedure Serialize
-    (Self   : XMPP_IQ;
-     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class) is
-
-      Attrs   : XML.SAX.Attributes.SAX_Attributes;
-
-   begin
-      --  Generating IQ container xml
-      case Self.Kind_Of_IQ is
-         when Set =>
-            Attrs.Set_Value
-             (Qualified_Name => IQ_Type_Attribute,
-              Value          => To_Universal_String ("set"));
-
-         when Get =>
-            Attrs.Set_Value
-             (Qualified_Name => IQ_Type_Attribute,
-              Value          => To_Universal_String ("get"));
-
-         when Result =>
-            Attrs.Set_Value
-             (Qualified_Name => IQ_Type_Attribute,
-              Value          => To_Universal_String ("result"));
-
-         when Error =>
-            Attrs.Set_Value
-             (Qualified_Name => IQ_Type_Attribute,
-              Value          => To_Universal_String ("error"));
-      end case;
-
-      Attrs.Set_Value
-        (Qualified_Name => IQ_Id_Attribute,
-         Value          => Self.Get_Id);
-
-      if not Self.To.Is_Empty then
-         Attrs.Set_Value
-          (Qualified_Name => IQ_To_Attribute,
-           Value          => Self.To);
-      end if;
-
-      Writer.Start_Element (Qualified_Name => IQ_Element,
-                            Attributes     => Attrs);
-
-      --  Generating IQ body
-      if Self.Items_Count > 0 then
-         for J in 0 .. Self.Items_Count - 1 loop
-            Self.Item_At (J).Serialize (Writer);
-         end loop;
-      end if;
-
-      Writer.End_Element (Qualified_Name => IQ_Element);
-   end Serialize;
-
-   ----------------
-   --  Set_Body  --
-   ----------------
-   procedure Set_Body (Self : in out XMPP_IQ;
-                       Val  : League.Strings.Universal_String) is
-   begin
-      Self.IQ_Body := Val;
-   end Set_Body;
 
    -------------------
    --  Set_Content  --
@@ -264,5 +168,58 @@ package body XMPP.IQS is
    begin
       Self.To := Val;
    end Set_To;
+
+   ----------------
+   --  Start_IQ  --
+   ----------------
+   not overriding procedure Start_IQ
+    (Self   : XMPP_IQ;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class) is
+
+      Attrs   : XML.SAX.Attributes.SAX_Attributes;
+
+   begin
+      --  Generating IQ container xml
+      case Self.Kind_Of_IQ is
+         when Set =>
+            Attrs.Set_Value
+             (Qualified_Name => IQ_Type_Attribute,
+              Value          => To_Universal_String ("set"));
+
+         when Get =>
+            Attrs.Set_Value
+             (Qualified_Name => IQ_Type_Attribute,
+              Value          => To_Universal_String ("get"));
+
+         when Result =>
+            Attrs.Set_Value
+             (Qualified_Name => IQ_Type_Attribute,
+              Value          => To_Universal_String ("result"));
+
+         when Error =>
+            Attrs.Set_Value
+             (Qualified_Name => IQ_Type_Attribute,
+              Value          => To_Universal_String ("error"));
+      end case;
+
+      Attrs.Set_Value
+        (Qualified_Name => IQ_Id_Attribute,
+         Value          => Self.Get_Id);
+
+      if not Self.To.Is_Empty then
+         Attrs.Set_Value
+          (Qualified_Name => IQ_To_Attribute,
+           Value          => Self.To);
+      end if;
+
+      if not Self.From.Is_Empty then
+         Attrs.Set_Value
+          (Qualified_Name => IQ_From_Attribute,
+           Value          => Self.From);
+      end if;
+
+      Writer.Start_Element (Qualified_Name => IQ_Element,
+                            Attributes     => Attrs);
+   end Start_IQ;
 
 end XMPP.IQS;

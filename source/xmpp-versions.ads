@@ -44,6 +44,7 @@ with League.Strings;
 
 with XML.SAX.Pretty_Writers;
 
+with XMPP.IQS;
 with XMPP.Objects;
 
 package XMPP.Versions is
@@ -60,7 +61,7 @@ package XMPP.Versions is
    Version_URI     : constant League.Strings.Universal_String
      := League.Strings.To_Universal_String ("jabber:iq:version");
 
-   type XMPP_Version is new XMPP.Objects.XMPP_Object with private;
+   type XMPP_Version is new XMPP.IQS.XMPP_IQ with private;
 
    type XMPP_Version_Access is access all XMPP_Version'Class;
 
@@ -89,7 +90,7 @@ package XMPP.Versions is
 
 private
 
-   type XMPP_Version is new XMPP.Objects.XMPP_Object with
+   type XMPP_Version is new XMPP.IQS.XMPP_IQ with
    record
       Name    : League.Strings.Universal_String;
       OS      : League.Strings.Universal_String;

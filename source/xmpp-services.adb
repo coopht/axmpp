@@ -398,6 +398,7 @@ package body XMPP.Services is
         := XMPP.Services_Features.Image (Self.Type_Of_Service);
 
    begin
+      Self.Start_IQ (Writer);
       Writer.Start_Prefix_Mapping (Namespace_URI => URI);
 
       Writer.Start_Element
@@ -408,6 +409,7 @@ package body XMPP.Services is
                           Local_Name    => Query_Element);
 
       Writer.End_Prefix_Mapping;
+      Self.End_IQ (Writer);
    end Serialize;
 
    -------------------

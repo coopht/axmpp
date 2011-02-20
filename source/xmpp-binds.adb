@@ -83,6 +83,8 @@ package body XMPP.Binds is
      Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class) is
 
    begin
+      Self.Start_IQ (Writer);
+
       Writer.Start_Prefix_Mapping (Namespace_URI => Bind_URI);
 
       Writer.Start_Element
@@ -101,6 +103,7 @@ package body XMPP.Binds is
                           Local_Name    => Bind_Element);
 
       Writer.End_Prefix_Mapping;
+      Self.End_IQ (Writer);
    end Serialize;
 
    -------------------

@@ -33,6 +33,7 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
+with XMPP.IQS;
 with XMPP.Objects;
 
 with League.Strings;
@@ -52,7 +53,7 @@ package XMPP.Binds is
 
    type Bind_State is (Success, Error);
 
-   type XMPP_Bind is new XMPP.Objects.XMPP_Object with private;
+   type XMPP_Bind is new XMPP.IQS.XMPP_IQ with private;
 
    type XMPP_Bind_Access is access all XMPP_Bind'Class;
 
@@ -82,7 +83,7 @@ package XMPP.Binds is
 
 private
 
-   type XMPP_Bind is new XMPP.Objects.XMPP_Object with
+   type XMPP_Bind is new XMPP.IQS.XMPP_IQ with
    record
       JID      : League.Strings.Universal_String;
       Resource : League.Strings.Universal_String;

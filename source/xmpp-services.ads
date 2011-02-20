@@ -39,9 +39,10 @@ with League.Strings;
 
 with XML.SAX.Pretty_Writers;
 
+with XMPP.IQS;
+with XMPP.Objects;
 with XMPP.Services_Features;
 with XMPP.Services_Identities;
-with XMPP.Objects;
 
 package XMPP.Services is
 
@@ -57,7 +58,7 @@ package XMPP.Services is
    package Service_Items_Package is
       new Ada.Containers.Vectors (Natural, Service_Item);
 
-   type XMPP_Service is new XMPP.Objects.XMPP_Object with private;
+   type XMPP_Service is new XMPP.IQS.XMPP_IQ with private;
 
    type XMPP_Service_Access is access all XMPP_Service'Class;
 
@@ -103,7 +104,7 @@ package XMPP.Services is
 
 private
 
-   type XMPP_Service is new XMPP.Objects.XMPP_Object with
+   type XMPP_Service is new XMPP.IQS.XMPP_IQ with
    record
       Type_Of_Service : XMPP.Services_Features.Feature;
       Identities      : XMPP.Services_Identities.Identities_Vector;

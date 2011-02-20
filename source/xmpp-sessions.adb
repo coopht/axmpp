@@ -76,17 +76,18 @@ package body XMPP.Sessions is
                             Resource_Id : League.Strings.Universal_String
                               := League.Strings.Empty_Universal_String) is
 
-      Bind_IQ     : XMPP.IQS.XMPP_IQ (XMPP.IQS.Set);
-      Bind_Object : constant XMPP.Binds.XMPP_Bind_Access
-        := new XMPP.Binds.XMPP_Bind;
+      Bind_Object : XMPP.Binds.XMPP_Bind;
 
    begin
+      Bind_Object.Set_To (Self.Host);
+      Bind_Object.Set_From (Self.JID & "@" & Self.Host);
+      Bind_Object.Set_IQ_Kind (XMPP.IQS.Set);
       Bind_Object.Set_Resource (Resource_Id);
 
-      Bind_IQ.Set_Id (+"bind_1");
-      Bind_IQ.Append_Item (Bind_Object);
+      Bind_Object.Set_Id (+"bind_1");
+      --  Bind_IQ.Append_Item (Bind_Object);
 
-      Self.Send_Object (Bind_IQ);
+      Self.Send_Object (Bind_Object);
    end Bind_Resource;
 
    ------------------
@@ -119,17 +120,18 @@ package body XMPP.Sessions is
    ----------------------------
    procedure Discover_Information (Self : in out XMPP_Session;
                                    JID  : League.Strings.Universal_String) is
-      IQ : XMPP.IQS.XMPP_IQ (XMPP.IQS.Get);
-      D  : constant XMPP.Services.XMPP_Service_Access := XMPP.Services.Create;
+      D : XMPP.Services.XMPP_Service;
 
    begin
+      D.Set_IQ_Kind (XMPP.IQS.Get);
       D.Set_Type (XMPP.Services_Features.Protocol_Disco_Info);
-      IQ.Set_From (Self.JID & "@" & Self.Host);
-      IQ.Set_To (JID);
-      IQ.Set_Id (+"info1");
+      D.Set_From (Self.JID & "@" & Self.Host);
+      D.Set_To (JID);
+      D.Set_Id (+"info1");
+
       --  XXX: removed hardcoded ID;
-      IQ.Append_Item (D);
-      Self.Send_Object (IQ);
+      --  D.Append_Item (D);
+      Self.Send_Object (D);
    end Discover_Information;
 
    ----------------------
@@ -137,17 +139,18 @@ package body XMPP.Sessions is
    ----------------------
    procedure Discover_Items (Self : in out XMPP_Session;
                              JID  : League.Strings.Universal_String) is
-      IQ : XMPP.IQS.XMPP_IQ (XMPP.IQS.Get);
-      D  : constant XMPP.Services.XMPP_Service_Access := XMPP.Services.Create;
+      D : XMPP.Services.XMPP_Service;
 
    begin
+      D.Set_IQ_Kind (XMPP.IQS.Get);
       D.Set_Type (XMPP.Services_Features.Protocol_Disco_Items);
-      IQ.Set_From (Self.JID & "@" & Self.Host);
-      IQ.Set_To (JID);
-      IQ.Set_Id (+"info1");
+      D.Set_From (Self.JID & "@" & Self.Host);
+      D.Set_To (JID);
+      D.Set_Id (+"info1");
+
       --  XXX: removed hardcoded ID;
-      IQ.Append_Item (D);
-      Self.Send_Object (IQ);
+      --  IQ.Append_Item (D);
+      Self.Send_Object (D);
    end Discover_Items;
 
    -------------------
@@ -253,18 +256,22 @@ package body XMPP.Sessions is
 
          --  XXX: ugly code
          if Local_Name = +"bind" then
-
+            null;
             --  Adding bind body for IQ object
-            if Previous (Current) /= No_Element then
-               if Self.Stack.Element (To_Index (Previous (Current))).Get_Kind
-                 = XMPP.Objects.IQ then
-                  XMPP.IQS.XMPP_IQ_Access
-                    (Self.Stack.Element (To_Index (Previous (Current))))
-                     .Append_Item (Self.Stack.Last_Element);
+            --  if Previous (Current) /= No_Element then
+            --   if Self.Stack.Element (To_Index (Previous (Current))).Get_Kind
+            --       = XMPP.Objects.Bind then
+            --        Self.Stream_Handler.Bind_Resource_State
+            --          (XMPP.Binds.XMPP_Bind_Access
+            --            (Self.Stack.Last_Element).Get_JID,
+            --           XMPP.Binds.Success);
+                  --  XMPP.IQS.XMPP_IQ_Access
+                  --    (Self.Stack.Element (To_Index (Previous (Current))))
+                  --     .Append_Item (Self.Stack.Last_Element);
 
-                  Self.Stack.Delete_Last;
-               end if;
-            end if;
+            --  Self.Stack.Delete_Last;
+            --     end if;
+            --  end if;
          end if;
 
       --  For IQ
@@ -272,35 +279,43 @@ package body XMPP.Sessions is
 
          --  XXX: ugly code
          if Local_Name = +"session" then
-            --  Adding bind body for IQ object
-            if Previous (Current) /= No_Element then
-               if Self.Stack.Element (To_Index (Previous (Current))).Get_Kind
-                 = XMPP.Objects.IQ then
-                  XMPP.IQS.XMPP_IQ_Access
-                    (Self.Stack.Element (To_Index (Previous (Current))))
-                     .Append_Item (Self.Stack.Last_Element);
+            --  Adding session body for IQ object
+            --  if Previous (Current) /= No_Element then
+            --  if Self.Stack.Element (To_Index (Previous (Current))).Get_Kind
+            --  = XMPP.Objects.IQ_Session then
 
-                  Self.Stack.Delete_Last;
-               end if;
-            end if;
+            --  if Self.Stack.Last_Element.Get_Kind = Objects.IQ_Session then
+            --     Self.Stream_Handler.Session_State
+            --      (XMPP.IQ_Sessions.Established);
+               --  XMPP.IQS.XMPP_IQ_Access
+               --    (Self.Stack.Element (To_Index (Previous (Current))))
+               --     .Append_Item (Self.Stack.Last_Element);
+
+            --     Self.Stack.Delete_Last;
+            --  end if;
+            null;
          end if;
 
       elsif Namespace_URI = +"jabber:iq:version" then
          --  Adding Version to IQ object
          if Local_Name = +"query" then
             if Self.Stack.Last_Element.Get_Kind = Objects.Version then
-               if Previous (Current) /= No_Element then
-                  if Self.Stack.Element
-                    (To_Index
-                      (Previous (Current))).Get_Kind = XMPP.Objects.IQ
-                  then
-                     XMPP.IQS.XMPP_IQ_Access
-                       (Self.Stack.Element (To_Index (Previous (Current))))
-                         .Append_Item (Self.Stack.Last_Element);
+               --  if Previous (Current) /= No_Element then
+               --     if Self.Stack.Element
+               --       (To_Index
+               --         (Previous (Current))).Get_Kind = XMPP.Objects.Version
+               --     then
+               --  XMPP.IQS.XMPP_IQ_Access
+               --    (Self.Stack.Element (To_Index (Previous (Current))))
+               --      .Append_Item (Self.Stack.Last_Element);
 
-                     Self.Stack.Delete_Last;
-                  end if;
-               end if;
+               --  Self.Stream_Handler.Version
+               --    (XMPP.Versions.XMPP_Version_Access
+               --      (Self.Stack.Last_Element).all);
+               --  Self.Stack.Delete_Last;
+               --  end if;
+               --  end if;
+               null;
             end if;
          end if;
 
@@ -309,18 +324,22 @@ package body XMPP.Sessions is
          --  Adding Roster to IQ object
          if Local_Name = +"query" then
             if Self.Stack.Last_Element.Get_Kind = Objects.Roster then
-               if Previous (Current) /= No_Element then
-                  if Self.Stack.Element
-                    (To_Index
-                      (Previous (Current))).Get_Kind = XMPP.Objects.IQ
-                  then
-                     XMPP.IQS.XMPP_IQ_Access
-                       (Self.Stack.Element (To_Index (Previous (Current))))
-                         .Append_Item (Self.Stack.Last_Element);
+               --  if Previous (Current) /= No_Element then
+               --     if Self.Stack.Element
+               --       (To_Index
+               --         (Previous (Current))).Get_Kind = XMPP.Objects.IQ
+               --     then
+               --  XMPP.IQS.XMPP_IQ_Access
+               --    (Self.Stack.Element (To_Index (Previous (Current))))
+               --    .Append_Item (Self.Stack.Last_Element);
 
-                     Self.Stack.Delete_Last;
-                  end if;
-               end if;
+               --  Self.Stream_Handler.Roster
+               --   (XMPP.Rosters.XMPP_Roster_Access
+               --     (Self.Stack.Last_Element).all);
+               --  Self.Stack.Delete_Last;
+               --  end if;
+               --  end if;
+               null;
             end if;
 
          --  Adding item to the roster
@@ -347,17 +366,22 @@ package body XMPP.Sessions is
         Namespace_URI = +"http://jabber.org/protocol/disco#items" then
          if Local_Name = +"query" then
             if Self.Stack.Last_Element.Get_Kind = Disco then
-               if Previous (Current) /= No_Element then
-                  if Self.Stack.Element
-                    (To_Index (Previous (Current))).Get_Kind = XMPP.Objects.IQ
-                  then
-                     XMPP.IQS.XMPP_IQ_Access
-                      (Self.Stack.Element (To_Index (Previous (Current))))
-                       .Append_Item (Self.Stack.Last_Element);
+               --  if Previous (Current) /= No_Element then
+               --     if Self.Stack.Element
+               --    (To_Index (Previous (Current))).Get_Kind = XMPP.Objects.IQ
+               --     then
+               --       XMPP.IQS.XMPP_IQ_Access
+               --        (Self.Stack.Element (To_Index (Previous (Current))))
+               --         .Append_Item (Self.Stack.Last_Element);
 
-                     Self.Stack.Delete_Last;
-                  end if;
-               end if;
+               --  Self.Stream_Handler.Service_Information
+               --   (XMPP.Services.XMPP_Service_Access
+               --     (Self.Stack.Last_Element).all);
+
+               --  Self.Stack.Delete_Last;
+               null;
+               --     end if;
+               --  end if;
             end if;
          end if;
 
@@ -394,10 +418,9 @@ package body XMPP.Sessions is
             --  Log ("Self.Stack.Last_Element.Get_Kind "
             --        & XMPP.Objects.Object_Kind'Wide_Wide_Image
             --           (Self.Stack.Last_Element.Get_Kind));
-            Self.Stream_Handler.IQ
-              (XMPP.IQS.XMPP_IQ_Access (Self.Stack.Last_Element).all);
-            Self.Process_IQ
-              (XMPP.IQS.XMPP_IQ_Access (Self.Stack.Last_Element));
+            --  Self.Stream_Handler.IQ
+            --    (XMPP.IQS.XMPP_IQ_Access (Self.Stack.Last_Element).all);
+            Self.Process_IQ (Self.Stack.Last_Element);
             Self.Stack.Delete_Last;
 
          --  Calling Presence Handler
@@ -444,14 +467,14 @@ package body XMPP.Sessions is
    --  Establish_IQ_Session  --
    ----------------------------
    procedure Establish_IQ_Session (Self : not null access XMPP_Session) is
-      IQ : XMPP.IQS.XMPP_IQ (XMPP.IQS.Set);
-      S  : constant XMPP.IQ_Sessions.XMPP_IQ_Session_Access
-        := new XMPP.IQ_Sessions.XMPP_IQ_Session;
+      S  : XMPP.IQ_Sessions.XMPP_IQ_Session;
 
    begin
-      IQ.Set_Id (+"sess_1");
-      IQ.Append_Item (S);
-      Self.Send_Object (IQ);
+      S.Set_To (Self.Host);
+      S.Set_From (Self.JID & "@" & Self.Host);
+      S.Set_IQ_Kind (XMPP.IQS.Set);
+      S.Set_Id (+"sess_1");
+      Self.Send_Object (S);
    end Establish_IQ_Session;
 
    -------------------
@@ -659,50 +682,60 @@ package body XMPP.Sessions is
    --  Process_IQ  --
    ------------------
    procedure Process_IQ (Self : in out XMPP_Session;
-                         IQ   : not null XMPP.IQS.XMPP_IQ_Access) is
+                         IQ   : not null XMPP.Objects.XMPP_Object_Access) is
    begin
-      Log ("XMPP.Session.Process_IQ : IQ arrived : "
-             & XMPP.IQS.IQ_Kind'Wide_Wide_Image (IQ.Get_IQ_Kind));
+      --  Log ("XMPP.Session.Process_IQ : IQ arrived : "
+      --         & XMPP.IQS.IQ_Kind'Wide_Wide_Image (IQ.Get_IQ_Kind));
 
-      if IQ.Get_IQ_Kind = XMPP.IQS.Result then
-         for J in 0 .. IQ.Items_Count - 1 loop
-            Log ("XMPP.Session.Process_IQ : IQ arrived : "
-                   & XMPP.Objects.Object_Kind'Wide_Wide_Image
-                      (IQ.Item_At (J).Get_Kind));
+      --  Setting_IQ_Header (to, from, type, id attrs)
 
-            --  Resource Binded
-            case IQ.Item_At (J).Get_Kind is
-               when XMPP.Objects.Bind =>
-                  Self.Stream_Handler.Bind_Resource_State
-                   (XMPP.Binds.XMPP_Bind_Access (IQ.Item_At (J)).Get_JID,
-                    XMPP.Binds.Success);
+      Log ("Process_IQ:");
+      Log (Self.IQ_Header.Get_To);
+      Log (Self.IQ_Header.Get_From);
+      Log (Self.IQ_Header.Get_Id);
+      Log (XMPP.IQS.IQ_Kind'Wide_Wide_Image (Self.IQ_Header.Get_IQ_Kind));
 
-               --  Session established
-               when XMPP.Objects.IQ_Session =>
-                 Self.Stream_Handler.Session_State
-                  (XMPP.IQ_Sessions.Established);
+      XMPP.IQS.XMPP_IQ_Access (IQ).Set_To (Self.IQ_Header.Get_To);
+      XMPP.IQS.XMPP_IQ_Access (IQ).Set_From (Self.IQ_Header.Get_From);
+      XMPP.IQS.XMPP_IQ_Access (IQ).Set_Id (Self.IQ_Header.Get_Id);
+      XMPP.IQS.XMPP_IQ_Access (IQ).Set_IQ_Kind (Self.IQ_Header.Get_IQ_Kind);
 
-               --  Roster arrived
-               when XMPP.Objects.Roster =>
-                  Self.Stream_Handler.Roster
-                   (XMPP.Rosters.XMPP_Roster_Access (IQ.Item_At (J)).all);
+      case IQ.Get_Kind is
 
-               --  Roster arrived
-               when XMPP.Objects.Disco =>
-                  Self.Stream_Handler.Service_Information
-                   (XMPP.Services.XMPP_Service_Access (IQ.Item_At (J)).all);
+         --  Resource Binded
+         when XMPP.Objects.Bind =>
+            Self.Stream_Handler.Bind_Resource_State
+              (XMPP.Binds.XMPP_Bind_Access (IQ).Get_JID,
+               XMPP.Binds.Success);
 
-               --  Software version information arrived
-               when XMPP.Objects.Version =>
-                  Self.Stream_Handler.Version
-                    (XMPP.Versions.XMPP_Version_Access (IQ.Item_At (J)).all);
+         --  Session established
+         when XMPP.Objects.IQ_Session =>
+               Self.Stream_Handler.Session_State
+                 (XMPP.IQ_Sessions.Established);
 
-               when others =>
-                  null;
-            end case;
+         --  Roster arrived
+         when XMPP.Objects.Roster =>
+            Self.Stream_Handler.Roster
+              (XMPP.Rosters.XMPP_Roster_Access (IQ).all);
 
-         end loop;
-      end if;
+         --  Discover information arrived
+         when XMPP.Objects.Disco =>
+            Self.Stream_Handler.Service_Information
+              (XMPP.Services.XMPP_Service_Access (IQ).all);
+
+         --  Software version information arrived
+         when XMPP.Objects.Version =>
+            Self.Stream_Handler.Version
+              (XMPP.Versions.XMPP_Version_Access (IQ).all);
+
+         when others =>
+            null;
+      end case;
+
+      Self.IQ_Header.Set_To (+"");
+      Self.IQ_Header.Set_From (+"");
+      Self.IQ_Header.Set_Id (+"");
+      Self.IQ_Header.Set_IQ_Kind (XMPP.IQS.Get);
    end Process_IQ;
 
    -----------------
@@ -742,7 +775,7 @@ package body XMPP.Sessions is
            & Self.JID.To_Wide_Wide_String
            & "@"
            & Self.Host.To_Wide_Wide_String
-           & "' type='get' id='roster_1' to='"
+           & "' type='get' id='ver_1' to='"
            & XMPP_Entity.To_Wide_Wide_String
            & "'><query xmlns='jabber:iq:version'/>"
            & "</iq>");
@@ -903,12 +936,21 @@ package body XMPP.Sessions is
 
             --  If bind for iq object, than create new bind object
             --  and push it into stack
-            if Self.Stack.Last_Element.Get_Kind = XMPP.Objects.IQ then
+
+            if Self.Stack.Is_Empty then
                Self.Stack.Append
                  (XMPP.Objects.XMPP_Object_Access (XMPP.Binds.Create));
+
             else
-               --  Setting bind feature to stream feature object
-               Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
+               if Self.Stack.Last_Element.Get_Kind
+                 = Objects.Stream_Features then
+                  --  Setting bind feature to stream feature object
+                  Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
+
+               else
+                  Self.Stack.Append
+                    (XMPP.Objects.XMPP_Object_Access (XMPP.Binds.Create));
+               end if;
             end if;
 
          --  setting jid value for bind object
@@ -921,12 +963,18 @@ package body XMPP.Sessions is
       elsif Namespace_URI = +"urn:ietf:params:xml:ns:xmpp-session"
         and Local_Name = +"session" then
          --  Setting session feature to stream feature object
-         if Self.Stack.Last_Element.Get_Kind = XMPP.Objects.IQ then
+         if Self.Stack.Is_Empty then
             Self.Stack.Append
-             (XMPP.Objects.XMPP_Object_Access (XMPP.IQ_Sessions.Create));
+              (XMPP.Objects.XMPP_Object_Access (XMPP.IQ_Sessions.Create));
+
+         elsif Self.Stack.Last_Element.Get_Kind
+           = XMPP.Objects.Stream_Features then
+
+           Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
 
          else
-            Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
+            Self.Stack.Append
+              (XMPP.Objects.XMPP_Object_Access (XMPP.IQ_Sessions.Create));
          end if;
 
       elsif Namespace_URI = +"http://etherx.jabber.org/streams" then
@@ -944,9 +992,11 @@ package body XMPP.Sessions is
 
          --  Creating IQ object
          if Local_Name = +"iq" then
-            Self.Stack.Append
-             (XMPP.Objects.XMPP_Object_Access
-               (XMPP.IQS.Create (XMPP.IQS.Result)));
+         --  setting up object's attributes
+            for J in 1 .. Attributes.Length loop
+               Self.IQ_Header.Set_Content
+                (Attributes.Local_Name (J), Attributes.Value (J));
+            end loop;
 
          --  Creating Presence object
          elsif Local_Name = +"presence" then
@@ -977,10 +1027,9 @@ package body XMPP.Sessions is
          --  if query found within jabber:iq:roster namespace, then
          --  creating a roster list.
          if Local_Name = +"query" then
-            if Self.Stack.Last_Element.Get_Kind = Objects.IQ then
-               Self.Stack.Append
-                 (XMPP.Objects.XMPP_Object_Access (XMPP.Rosters.Create));
-            end if;
+
+            Self.Stack.Append
+              (XMPP.Objects.XMPP_Object_Access (XMPP.Rosters.Create));
 
          --  if item found within jabber:iq:roster namespace, then
          --  creating a roster item.
@@ -1021,10 +1070,8 @@ package body XMPP.Sessions is
 
       elsif Namespace_URI = +"http://jabber.org/protocol/disco#items" then
          if Local_Name = +"query" then
-            if Self.Stack.Last_Element.Get_Kind = Objects.IQ then
-               Self.Stack.Append
-                (XMPP.Objects.XMPP_Object_Access (XMPP.Services.Create));
-            end if;
+            Self.Stack.Append
+              (XMPP.Objects.XMPP_Object_Access (XMPP.Services.Create));
 
          elsif Local_Name = +"item" then
             if Self.Stack.Last_Element.Get_Kind = Objects.Disco then
@@ -1090,10 +1137,8 @@ package body XMPP.Sessions is
          --  if query found within jabber:iq:version namespace, then
          --  creating a version object.
          if Local_Name = +"query" then
-            if Self.Stack.Last_Element.Get_Kind = Objects.IQ then
-               Self.Stack.Append
-                 (XMPP.Objects.XMPP_Object_Access (XMPP.Versions.Create));
-            end if;
+            Self.Stack.Append
+              (XMPP.Objects.XMPP_Object_Access (XMPP.Versions.Create));
          end if;
 
       --  Here is the end of actual object parsing.
