@@ -102,11 +102,40 @@ package body XMPP.Versions is
    overriding procedure Serialize
     (Self   : XMPP_Version;
      Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class) is
-      pragma Unreferenced (Self);
+
    begin
+      Self.Start_IQ (Writer);
+
       Writer.Start_Prefix_Mapping (Namespace_URI => Version_URI);
 
+      Writer.Start_Element (Namespace_URI => Version_URI,
+                            Local_Name => Query_Element);
+
+      --  Name
+
+      Writer.Start_Element (Qualified_Name => Name_Element);
+      Writer.Characters (Self.Name);
+      Writer.End_Element (Qualified_Name => Name_Element);
+
+      --  Version
+
+      Writer.Start_Element (Qualified_Name => Version_Element);
+      Writer.Characters (Self.Version);
+      Writer.End_Element (Qualified_Name => Version_Element);
+
+      --  OS
+
+      if not Self.OS.Is_Empty then
+         Writer.Start_Element (Qualified_Name => OS_Element);
+         Writer.Characters (Self.OS);
+         Writer.End_Element (Qualified_Name => OS_Element);
+      end if;
+
+      Writer.End_Element (Namespace_URI => Version_URI,
+                          Local_Name => Query_Element);
+
       Writer.End_Prefix_Mapping;
+      Self.End_IQ (Writer);
    end Serialize;
 
    -------------------

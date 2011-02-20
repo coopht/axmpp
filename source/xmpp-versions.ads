@@ -55,6 +55,9 @@ package XMPP.Versions is
    OS_Element      : constant League.Strings.Universal_String
      := League.Strings.To_Universal_String ("os");
 
+   Query_Element    : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("query");
+
    Version_Element : constant League.Strings.Universal_String
      := League.Strings.To_Universal_String ("version");
 
@@ -92,9 +95,11 @@ private
 
    type XMPP_Version is new XMPP.IQS.XMPP_IQ with
    record
-      Name    : League.Strings.Universal_String;
+      Name    : League.Strings.Universal_String
+        := League.Strings.To_Universal_String ("ada xmpp library");
       OS      : League.Strings.Universal_String;
-      Version : League.Strings.Universal_String;
+      Version : League.Strings.Universal_String
+        := League.Strings.To_Universal_String ("0.0.1");
    end record;
 
 end XMPP.Versions;

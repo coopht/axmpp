@@ -701,16 +701,16 @@ package body XMPP.Sessions is
    procedure Request_Version
     (Self        : not null access XMPP_Session;
      XMPP_Entity : League.Strings.Universal_String) is
+
+      Ver : XMPP.Versions.XMPP_Version;
+
    begin
-      Self.Send_Wide_Wide_String
-        ("<iq from='"
-           & Self.JID.To_Wide_Wide_String
-           & "@"
-           & Self.Host.To_Wide_Wide_String
-           & "' type='get' id='ver_1' to='"
-           & XMPP_Entity.To_Wide_Wide_String
-           & "'><query xmlns='jabber:iq:version'/>"
-           & "</iq>");
+      Ver.Set_To (XMPP_Entity);
+      Ver.Set_From (Self.JID & "@" & Self.Host);
+      Ver.Set_IQ_Kind (XMPP.IQS.Get);
+      Ver.Set_Id (+"ver_1");
+
+      Self.Send_Object (Ver);
    end Request_Version;
 
    -------------------
