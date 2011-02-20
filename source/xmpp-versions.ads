@@ -77,19 +77,34 @@ package XMPP.Versions is
     (Self   : XMPP_Version;
      Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class);
 
+   not overriding function Get_Name (Self : XMPP_Version)
+      return League.Strings.Universal_String;
+
+   not overriding function Get_OS (Self : XMPP_Version)
+      return League.Strings.Universal_String;
+
+   not overriding function Get_Version (Self : XMPP_Version)
+      return League.Strings.Universal_String;
+
+   not overriding procedure Set_Name
+     (Self : in out XMPP_Version;
+      Name : League.Strings.Universal_String);
+
+   not overriding procedure Set_OS
+     (Self : in out XMPP_Version;
+      OS   : League.Strings.Universal_String);
+
+   not overriding procedure Set_Version
+     (Self    : in out XMPP_Version;
+      Version : League.Strings.Universal_String);
+
+   --  Private API
+   --  Should not be used in application
+
    overriding
    procedure Set_Content (Self      : in out XMPP_Version;
                           Parameter : League.Strings.Universal_String;
                           Value     : League.Strings.Universal_String);
-
-   function Get_Name (Self : XMPP_Version)
-      return League.Strings.Universal_String;
-
-   function Get_OS (Self : XMPP_Version)
-      return League.Strings.Universal_String;
-
-   function Get_Version (Self : XMPP_Version)
-      return League.Strings.Universal_String;
 
 private
 
