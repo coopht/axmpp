@@ -657,8 +657,19 @@ package body XMPP.Sessions is
 
          --  Software version information arrived
          when XMPP.Objects.Version =>
-            Self.Stream_Handler.Version
-              (XMPP.Versions.XMPP_Version_Access (IQ).all);
+
+            case XMPP.IQS.XMPP_IQ_Access (IQ).Get_IQ_Kind is
+               when XMPP.IQS.Result =>
+                  Self.Stream_Handler.Version
+                    (XMPP.Versions.XMPP_Version_Access (IQ).all);
+
+               when XMPP.IQS.Get =>
+                  Self.Stream_Handler.Version_Request
+                    (XMPP.Versions.XMPP_Version_Access (IQ).all);
+
+               when others =>
+                  null;
+            end case;
 
          when others =>
             null;

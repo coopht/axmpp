@@ -122,4 +122,11 @@ package XMPP.Stream_Handlers is
       Version : XMPP.Versions.XMPP_Version'Class) is null;
    --  Handler is called, discovered information arrived from XMPP server
 
+   not overriding procedure Version_Request
+     (Self    : in out XMPP_Stream_Handler;
+      Version : XMPP.Versions.XMPP_Version'Class) is null;
+   --  Handler is called when sombodies asks our clients version.
+   --  Client should fill appropriate fields (Name, Version, OS)
+   --  of Version object, or default values will be used.
+
 end XMPP.Stream_Handlers;
