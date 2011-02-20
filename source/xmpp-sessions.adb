@@ -100,8 +100,11 @@ package body XMPP.Sessions is
    is
    begin
       --  Log ("*** Text = [" & Text & "]");
+      --  Log (Self.Tag);
       if not Self.Tag.Is_Empty and not Text.Is_Empty then
-         Self.Stack.Last_Element.Set_Content (Self.Tag, Text);
+         if not Self.Stack.Is_Empty then
+            Self.Stack.Last_Element.Set_Content (Self.Tag, Text);
+         end if;
          Self.Tag.Clear;
          Success := True;
       end if;
@@ -440,6 +443,25 @@ package body XMPP.Sessions is
    begin
       return Self.Session_Opened;
    end Is_Opened;
+
+   ----------------------------
+   --  Join_Multi_User_Chat  --
+   ----------------------------
+
+   procedure Join_Multi_User_Chat
+    (Self      : in out XMPP_Session;
+     Room      : League.Strings.Universal_String;
+     Server    : League.Strings.Universal_String;
+     Nick_Name : League.Strings.Universal_String) is
+      P : XMPP.Presences.XMPP_Presence;
+      M : XMPP.MUC.XMPP_MUC;
+
+   begin
+      P.Set_From (Self.JID & "@" & Self.Host);
+      P.Set_To (Room & "@" & Server & "/" & Nick_Name);
+      P.Set_Multi_Chat (M);
+      Self.Send_Object (P);
+   end Join_Multi_User_Chat;
 
    ------------------
    --  On_Connect  --
@@ -989,10 +1011,8 @@ package body XMPP.Sessions is
 
       elsif Namespace_URI = +"http://jabber.org/protocol/disco#info" then
          if Local_Name = +"query" then
-            if Self.Stack.Last_Element.Get_Kind = Objects.IQ then
-               Self.Stack.Append
-                 (XMPP.Objects.XMPP_Object_Access (XMPP.Services.Create));
-            end if;
+            Self.Stack.Append
+              (XMPP.Objects.XMPP_Object_Access (XMPP.Services.Create));
 
          elsif Local_Name = +"identity" then
             if Self.Stack.Last_Element.Get_Kind = Objects.Disco then

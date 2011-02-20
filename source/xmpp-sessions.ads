@@ -123,6 +123,13 @@ package XMPP.Sessions is
    procedure Establish_IQ_Session (Self : not null access XMPP_Session);
    --  Establish real XMPP Session.
 
+   procedure Join_Multi_User_Chat
+    (Self      : in out XMPP_Session;
+     Room      : League.Strings.Universal_String;
+     Server    : League.Strings.Universal_String;
+     Nick_Name : League.Strings.Universal_String);
+   --  Enters to the multichat Room, on the Server with the specified Nick_Name
+
    procedure Open (Self : not null access XMPP_Session);
    --  Initiates XMPP session. Application should use this function to start
    --  data exchange wit xmpp server
