@@ -277,73 +277,20 @@ package body XMPP.Sessions is
       --  For IQ
       elsif Namespace_URI = +"urn:ietf:params:xml:ns:xmpp-session" then
 
-         --  XXX: ugly code
-         if Local_Name = +"session" then
-            --  Adding session body for IQ object
-            --  if Previous (Current) /= No_Element then
-            --  if Self.Stack.Element (To_Index (Previous (Current))).Get_Kind
-            --  = XMPP.Objects.IQ_Session then
+         --  Nothing to process here
 
-            --  if Self.Stack.Last_Element.Get_Kind = Objects.IQ_Session then
-            --     Self.Stream_Handler.Session_State
-            --      (XMPP.IQ_Sessions.Established);
-               --  XMPP.IQS.XMPP_IQ_Access
-               --    (Self.Stack.Element (To_Index (Previous (Current))))
-               --     .Append_Item (Self.Stack.Last_Element);
-
-            --     Self.Stack.Delete_Last;
-            --  end if;
-            null;
-         end if;
+         null;
 
       elsif Namespace_URI = +"jabber:iq:version" then
-         --  Adding Version to IQ object
-         if Local_Name = +"query" then
-            if Self.Stack.Last_Element.Get_Kind = Objects.Version then
-               --  if Previous (Current) /= No_Element then
-               --     if Self.Stack.Element
-               --       (To_Index
-               --         (Previous (Current))).Get_Kind = XMPP.Objects.Version
-               --     then
-               --  XMPP.IQS.XMPP_IQ_Access
-               --    (Self.Stack.Element (To_Index (Previous (Current))))
-               --      .Append_Item (Self.Stack.Last_Element);
 
-               --  Self.Stream_Handler.Version
-               --    (XMPP.Versions.XMPP_Version_Access
-               --      (Self.Stack.Last_Element).all);
-               --  Self.Stack.Delete_Last;
-               --  end if;
-               --  end if;
-               null;
-            end if;
-         end if;
+         --  Nothing to process here
 
-      --  working with roster
+         null;
+
       elsif Namespace_URI = +"jabber:iq:roster" then
-         --  Adding Roster to IQ object
-         if Local_Name = +"query" then
-            if Self.Stack.Last_Element.Get_Kind = Objects.Roster then
-               --  if Previous (Current) /= No_Element then
-               --     if Self.Stack.Element
-               --       (To_Index
-               --         (Previous (Current))).Get_Kind = XMPP.Objects.IQ
-               --     then
-               --  XMPP.IQS.XMPP_IQ_Access
-               --    (Self.Stack.Element (To_Index (Previous (Current))))
-               --    .Append_Item (Self.Stack.Last_Element);
-
-               --  Self.Stream_Handler.Roster
-               --   (XMPP.Rosters.XMPP_Roster_Access
-               --     (Self.Stack.Last_Element).all);
-               --  Self.Stack.Delete_Last;
-               --  end if;
-               --  end if;
-               null;
-            end if;
 
          --  Adding item to the roster
-         elsif Local_Name = +"item" then
+         if Local_Name = +"item" then
             if Self.Stack.Last_Element.Get_Kind = Objects.Roster_Item then
                if Previous (Current) /= No_Element then
                   if Self.Stack.Element
@@ -364,26 +311,10 @@ package body XMPP.Sessions is
       --  Service discovery
       elsif Namespace_URI = +"http://jabber.org/protocol/disco#info" or
         Namespace_URI = +"http://jabber.org/protocol/disco#items" then
-         if Local_Name = +"query" then
-            if Self.Stack.Last_Element.Get_Kind = Disco then
-               --  if Previous (Current) /= No_Element then
-               --     if Self.Stack.Element
-               --    (To_Index (Previous (Current))).Get_Kind = XMPP.Objects.IQ
-               --     then
-               --       XMPP.IQS.XMPP_IQ_Access
-               --        (Self.Stack.Element (To_Index (Previous (Current))))
-               --         .Append_Item (Self.Stack.Last_Element);
 
-               --  Self.Stream_Handler.Service_Information
-               --   (XMPP.Services.XMPP_Service_Access
-               --     (Self.Stack.Last_Element).all);
+         --  Nothing to process here
 
-               --  Self.Stack.Delete_Last;
-               null;
-               --     end if;
-               --  end if;
-            end if;
-         end if;
+         null;
 
       elsif Namespace_URI = +"http://jabber.org/protocol/muc#user" then
          if Local_Name = +"x" then
@@ -414,12 +345,13 @@ package body XMPP.Sessions is
 
       elsif Namespace_URI = +"jabber:client" then
          --  Calling IQ Handler
+
          if Local_Name = +"iq" then
+
             --  Log ("Self.Stack.Last_Element.Get_Kind "
             --        & XMPP.Objects.Object_Kind'Wide_Wide_Image
             --           (Self.Stack.Last_Element.Get_Kind));
-            --  Self.Stream_Handler.IQ
-            --    (XMPP.IQS.XMPP_IQ_Access (Self.Stack.Last_Element).all);
+
             Self.Process_IQ (Self.Stack.Last_Element);
             Self.Stack.Delete_Last;
 
