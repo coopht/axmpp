@@ -49,7 +49,7 @@ package XMPP.Presences is
      := League.Strings.To_Universal_String ("to");
 
    Presence_From_Attribute : constant League.Strings.Universal_String
-     := League.Strings.To_Universal_String ("to");
+     := League.Strings.To_Universal_String ("from");
 
    Priority_Element        : constant League.Strings.Universal_String
      := League.Strings.To_Universal_String ("priority");
