@@ -143,14 +143,6 @@ package XMPP.Sessions is
    --  Requests information about the software application
    --  associated with an XMPP entity
 
-   procedure Set_Host (Self : in out XMPP_Session;
-                       Host : League.Strings.Universal_String);
-   --  Sets jabber hostname
-
-   procedure Set_Host_Addr (Self : in out XMPP_Session;
-                            Addr : League.Strings.Universal_String);
-   --  Sets ip address of jabber host
-
    procedure Set_JID (Self : in out XMPP_Session;
                       JID  : League.Strings.Universal_String);
    --  Sets jabber ID. JID should be set without hostname

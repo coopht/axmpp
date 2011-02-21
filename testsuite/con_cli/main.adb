@@ -47,9 +47,7 @@ begin
    S.Set_JID (League.Strings.To_Universal_String ("uim-test"));
 
    --  For local testing
-   S.Set_Host (League.Strings.To_Universal_String ("zion"));
    S.Set_Password (League.Strings.To_Universal_String ("123"));
-   S.Set_Host_Addr (League.Strings.To_Universal_String ("127.0.0.1"));
 
    --  for jabber.ru testing
    --  S.Set_Host (League.Strings.To_Universal_String ("jabber.ru"));

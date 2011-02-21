@@ -82,7 +82,7 @@ package body XMPP.Sessions is
 
    begin
       Bind_Object.Set_To (Self.Host);
-      Bind_Object.Set_From (Self.JID & "@" & Self.Host);
+      Bind_Object.Set_From (Self.JID);
       Bind_Object.Set_IQ_Kind (XMPP.IQS.Set);
       Bind_Object.Set_Resource (Resource_Id);
 
@@ -130,7 +130,7 @@ package body XMPP.Sessions is
    begin
       D.Set_IQ_Kind (XMPP.IQS.Get);
       D.Set_Type (XMPP.Services_Features.Protocol_Disco_Info);
-      D.Set_From (Self.JID & "@" & Self.Host);
+      D.Set_From (Self.JID);
       D.Set_To (JID);
       D.Set_Id (+"info1");
 
@@ -149,7 +149,7 @@ package body XMPP.Sessions is
    begin
       D.Set_IQ_Kind (XMPP.IQS.Get);
       D.Set_Type (XMPP.Services_Features.Protocol_Disco_Items);
-      D.Set_From (Self.JID & "@" & Self.Host);
+      D.Set_From (Self.JID);
       D.Set_To (JID);
       D.Set_Id (+"info1");
 
@@ -408,7 +408,7 @@ package body XMPP.Sessions is
 
    begin
       S.Set_To (Self.Host);
-      S.Set_From (Self.JID & "@" & Self.Host);
+      S.Set_From (Self.JID);
       S.Set_IQ_Kind (XMPP.IQS.Set);
       S.Set_Id (+"sess_1");
       Self.Send_Object (S);
@@ -459,7 +459,7 @@ package body XMPP.Sessions is
       M : XMPP.MUC.XMPP_MUC;
 
    begin
-      P.Set_From (Self.JID & "@" & Self.Host);
+      P.Set_From (Self.JID);
       P.Set_To (Room & "@" & Server & "/" & Nick_Name);
       P.Set_Multi_Chat (M);
       Self.Send_Object (P);
@@ -499,7 +499,9 @@ package body XMPP.Sessions is
    begin
       if not Self.Is_Opened then
          Log ("Connecting");
-         Self.Connect (Self.Addr.To_Wide_Wide_String, 5222);
+         Self.Connect (Ada.Characters.Conversions.To_String
+                        (Self.Host.To_Wide_Wide_String),
+                       5222);
          Log ("Starting idle");
          Self.Idle;
       end if;
@@ -543,7 +545,6 @@ package body XMPP.Sessions is
       Object : not null XMPP.Challenges.XMPP_Challenge_Access) is
    begin
       Object.Set_JID (Self.JID);
-      Object.Set_Host (Self.Host);
       Object.Set_Password (Self.Password);
       Self.Send_Wide_Wide_String
         (Object.Generate_Response.To_Wide_Wide_String);
@@ -723,8 +724,6 @@ package body XMPP.Sessions is
       Self.Send_Wide_Wide_String
         ("<iq from='"
            & Self.JID.To_Wide_Wide_String
-           & "@"
-           & Self.Host.To_Wide_Wide_String
            & "' type='get' id='roster_1'>"
            & " <query xmlns='jabber:iq:roster'/>"
            & "</iq>");
@@ -741,7 +740,7 @@ package body XMPP.Sessions is
 
    begin
       Ver.Set_To (XMPP_Entity);
-      Ver.Set_From (Self.JID & "@" & Self.Host);
+      Ver.Set_From (Self.JID);
       Ver.Set_IQ_Kind (XMPP.IQS.Get);
       Ver.Set_Id (+"ver_1");
 
@@ -788,31 +787,22 @@ package body XMPP.Sessions is
          Self.Source.Is_TLS_Established);
    end Send_Wide_Wide_String;
 
-   ----------------
-   --  Set_Host  --
-   ----------------
-   procedure Set_Host (Self : in out XMPP_Session;
-                       Host : League.Strings.Universal_String) is
-   begin
-      Self.Host := Host;
-   end Set_Host;
-
-   ---------------------
-   --  Set_Host_Addr  --
-   ---------------------
-   procedure Set_Host_Addr (Self : in out XMPP_Session;
-                            Addr : League.Strings.Universal_String) is
-   begin
-      Self.Addr := Addr;
-   end Set_Host_Addr;
-
    ---------------
    --  Set_JID  --
    ---------------
    procedure Set_JID (Self : in out XMPP_Session;
                       JID  : League.Strings.Universal_String) is
+      Vec : constant League.Strings.Universal_String_Vector
+        := JID.Split ('@');
+
    begin
       Self.JID := JID;
+      if Vec.Length /= 2 then
+         raise Program_Error with "Wrong jid specfified";
+
+      else
+         Self.Host := Vec.Element (2);
+      end if;
    end Set_JID;
 
    --------------------
