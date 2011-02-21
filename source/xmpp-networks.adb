@@ -92,15 +92,15 @@ package body XMPP.Networks is
    ---------------
    procedure Connect
     (Self : not null access Network'Class;
-     Host : Wide_Wide_String;
+     Host : String;
      Port : Natural) is
       No_Block : GNAT.Sockets.Request_Type (GNAT.Sockets.Non_Blocking_IO);
 
    begin
       Create_Socket (Self.Sock);
       Self.Addr :=
-        Sock_Addr_Type'(Addr   => Inet_Addr
-                          (Ada.Characters.Conversions.To_String (Host)),
+        Sock_Addr_Type'(Addr   =>
+                          Addresses (GNAT.Sockets.Get_Host_By_Name (Host), 1),
                         Port   => Port_Type (Port),
                         Family => Family_Inet);
 

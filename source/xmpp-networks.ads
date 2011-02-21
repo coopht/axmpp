@@ -70,7 +70,7 @@ package XMPP.Networks is
    --  end of functions, which should be overriden
 
    procedure Connect (Self : not null access Network'Class;
-                      Host : Wide_Wide_String;
+                      Host : String;
                       Port : Natural);
 
    procedure Disconnect (Self : not null access Network'Class);
