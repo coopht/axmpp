@@ -78,9 +78,6 @@ package XMPP.Challenges is
    procedure Set_JID (Self : in out XMPP_Challenge;
                       JID  : League.Strings.Universal_String);
 
-   procedure Set_Host (Self : in out XMPP_Challenge;
-                       Host : League.Strings.Universal_String);
-
    procedure Set_Password (Self     : in out XMPP_Challenge;
                            Password : League.Strings.Universal_String);
 

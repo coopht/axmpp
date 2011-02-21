@@ -322,22 +322,22 @@ package body XMPP.Challenges is
       end if;
    end Set_Content;
 
-   ----------------
-   --  Set_Host  --
-   ----------------
-   procedure Set_Host (Self : in out XMPP_Challenge;
-                       Host : League.Strings.Universal_String) is
-   begin
-      Self.Host := Host;
-   end Set_Host;
-
    ---------------
    --  Set_JID  --
    ---------------
    procedure Set_JID (Self : in out XMPP_Challenge;
                       JID  : League.Strings.Universal_String) is
+      Vec : constant League.Strings.Universal_String_Vector
+        := JID.Split ('@');
+
    begin
-      Self.JID := JID;
+      if Vec.Length /= 2 then
+         raise Program_Error with "Wrong jid specfified";
+
+      else
+         Self.JID := Vec.Element (1);
+         Self.Host := Vec.Element (2);
+      end if;
    end Set_JID;
 
    -----------------
