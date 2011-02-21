@@ -46,7 +46,7 @@ package XMPP.Messages is
          ("http://www.w3.org/XML/1998/namespace");
 
    Body_Element           : constant League.Strings.Universal_String
-     := League.Strings.To_Universal_String ("subject");
+     := League.Strings.To_Universal_String ("body");
 
    Lang_Attribute         : constant League.Strings.Universal_String
      := League.Strings.To_Universal_String ("lang");
