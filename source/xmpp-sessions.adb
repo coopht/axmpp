@@ -37,6 +37,8 @@ with Ada.Characters.Conversions;
 with Ada.Exceptions;
 with Ada.Streams;
 
+with League.Text_Codecs;
+
 with XML.SAX.Readers;
 
 with XMPP.Binds;
@@ -751,13 +753,24 @@ package body XMPP.Sessions is
    -------------------
    procedure Send_Object (Self   : not null access XMPP_Session;
                           Object : XMPP.Objects.XMPP_Object'Class) is
+
+      UTF_8_Codec : constant League.Text_Codecs.Text_Codec
+        := League.Text_Codecs.Codec (+"UTF-8");
+
    begin
       Object.Serialize (Self.Writer);
 
       Log ("Sending Data : " & Self.Writer.Text);
-      Self.Send_Wide_Wide_String (Self.Writer.Text.To_Wide_Wide_String);
+
+      Self.Send
+        (UTF_8_Codec.Encode (Self.Writer.Text).To_Stream_Element_Array,
+         Self.Source.Is_TLS_Established);
+
+       --  Self.Send_Wide_Wide_String (Self.Writer.Text.To_Wide_Wide_String);
 
       Self.Writer.Reset;
+
+      Log ("Data Sent");
    end Send_Object;
 
    -----------------------------
