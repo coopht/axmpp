@@ -76,6 +76,64 @@ package XMPP.Presences is
 
    type XMPP_Presence_Access is access all XMPP_Presence'Class;
 
+   --  Public API  --
+
+   procedure Set_Show (Self : in out XMPP_Presence; Show : Show_Kind);
+   --  Sets presence
+
+   function Get_Show (Self : XMPP_Presence) return Show_Kind;
+   --  Returns presence
+
+   procedure Set_Status (Self   : in out XMPP_Presence;
+                         Status : League.Strings.Universal_String);
+   --  Sets extended text status for presence
+
+   function Get_Status (Self : XMPP_Presence)
+      return League.Strings.Universal_String;
+   --  returns extended text status for presence
+
+   procedure Set_Priority (Self : in out XMPP_Presence; P : Priority_Type);
+   --  Sets presence priority
+
+   function Get_Priority (Self : XMPP_Presence) return Priority_Type;
+   --  Reuturns presence priority
+
+   function Get_To (Self : XMPP_Presence)
+      return League.Strings.Universal_String;
+   --  Returns presence repcipient
+
+   function Get_From (Self : XMPP_Presence)
+      return League.Strings.Universal_String;
+   --  Returns presence sender
+
+   procedure Set_To (Self  : in out XMPP_Presence;
+                     Value : League.Strings.Universal_String);
+   --  Sets presence repcipient
+
+   procedure Set_From (Self  : in out XMPP_Presence;
+                       Value : League.Strings.Universal_String);
+   --  Sets presence sender
+
+   procedure Set_Type (Self : in out XMPP_Presence; Value : Presence_Type);
+   --  Sets presence type
+
+   function Get_Type (Self : XMPP_Presence) return Presence_Type;
+   --  Returns presence type
+
+   function Create return XMPP_Presence_Access;
+   --  Returns heap allocated presence object
+
+   function Is_Multi_Chat (Self : XMPP_Presence) return Boolean;
+   --  Returns if it is a multichat presence
+
+   procedure Set_Multi_Chat (Self : in out XMPP_Presence;
+                             MUC  : XMPP.MUC.XMPP_MUC);
+   --  Sets multichat presence
+
+   function Get_MUC (Self : XMPP_Presence) return XMPP.MUC.XMPP_MUC;
+   --  Returns multichat object, associated with presence
+
+   --  private API, should not be used by application
    overriding function Get_Kind (Self : XMPP_Presence)
       return Objects.Object_Kind;
 
@@ -87,45 +145,6 @@ package XMPP.Presences is
    procedure Set_Content (Self      : in out XMPP_Presence;
                           Parameter : League.Strings.Universal_String;
                           Value     : League.Strings.Universal_String);
-
-   procedure Set_Show (Self : in out XMPP_Presence; Show : Show_Kind);
-
-   function Get_Show (Self : XMPP_Presence) return Show_Kind;
-
-   procedure Set_Status (Self   : in out XMPP_Presence;
-                         Status : League.Strings.Universal_String);
-
-   function Get_Status (Self : XMPP_Presence)
-      return League.Strings.Universal_String;
-
-   procedure Set_Priority (Self : in out XMPP_Presence; P : Priority_Type);
-
-   function Get_Priority (Self : XMPP_Presence) return Priority_Type;
-
-   function Get_To (Self : XMPP_Presence)
-      return League.Strings.Universal_String;
-
-   function Get_From (Self : XMPP_Presence)
-      return League.Strings.Universal_String;
-
-   procedure Set_To (Self  : in out XMPP_Presence;
-                     Value : League.Strings.Universal_String);
-
-   procedure Set_From (Self  : in out XMPP_Presence;
-                       Value : League.Strings.Universal_String);
-
-   procedure Set_Type (Self : in out XMPP_Presence; Value : Presence_Type);
-
-   function Get_Type (Self : XMPP_Presence) return Presence_Type;
-
-   function Create return XMPP_Presence_Access;
-
-   function Is_Multi_Chat (Self : XMPP_Presence) return Boolean;
-
-   procedure Set_Multi_Chat (Self : in out XMPP_Presence;
-                             MUC  : XMPP.MUC.XMPP_MUC);
-
-   function Get_MUC (Self : XMPP_Presence) return XMPP.MUC.XMPP_MUC;
 
 private
 

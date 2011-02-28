@@ -58,7 +58,24 @@ package XMPP.Binds is
    type XMPP_Bind_Access is access all XMPP_Bind'Class;
 
    function Create return not null XMPP_Bind_Access;
+   --  returns heap allocated object
 
+   procedure Set_Resource (Self : in out XMPP_Bind;
+                           Res  : League.Strings.Universal_String);
+   --  Sets resource
+
+   procedure Set_JID (Self : in out XMPP_Bind;
+                      JID  : League.Strings.Universal_String);
+   --  Sets JID
+
+   function Get_Resource (Self : XMPP_Bind)
+      return League.Strings.Universal_String;
+   --  Returns resource
+
+   function Get_JID (Self : XMPP_Bind) return League.Strings.Universal_String;
+   --  Returns JID
+
+   --  Private API, should not be used by application
    overriding function Get_Kind (Self : XMPP_Bind) return Objects.Object_Kind;
 
    overriding procedure Serialize
@@ -69,17 +86,6 @@ package XMPP.Binds is
    procedure Set_Content (Self      : in out XMPP_Bind;
                           Parameter : League.Strings.Universal_String;
                           Value     : League.Strings.Universal_String);
-
-   procedure Set_Resource (Self : in out XMPP_Bind;
-                           Res  : League.Strings.Universal_String);
-
-   procedure Set_JID (Self : in out XMPP_Bind;
-                      JID  : League.Strings.Universal_String);
-
-   function Get_Resource (Self : XMPP_Bind)
-      return League.Strings.Universal_String;
-
-   function Get_JID (Self : XMPP_Bind) return League.Strings.Universal_String;
 
 private
 

@@ -82,6 +82,80 @@ package XMPP.Messages is
 
    type XMPP_Message_Access is access all XMPP_Message'Class;
 
+   --  Public API  --
+
+   procedure Set_Type (Self : in out XMPP_Message; T : Message_Type);
+   --  Sets type of message. Message type can be one of the following:
+   --  1. Chat
+   --  2. Error
+   --  3. Group_Chat
+   --  4. Headline
+   --  5. Normal
+
+   function Get_Type (Self : XMPP_Message) return Message_Type;
+   --  Returns type of the message.
+
+   procedure Set_Subject (Self : in out XMPP_Message;
+                          Subj : League.Strings.Universal_String);
+   --  Sets subject of the message.
+
+   function Get_Subject (Self : XMPP_Message)
+      return League.Strings.Universal_String;
+   --  Returns subject of the message.
+
+   procedure Set_Body (Self : in out XMPP_Message;
+                       Val : League.Strings.Universal_String);
+   --  Sets message body
+
+   function Get_Body (Self : XMPP_Message)
+      return League.Strings.Universal_String;
+   --  Reuturns message body
+
+   procedure Set_Thread (Self : in out XMPP_Message;
+                         Val : League.Strings.Universal_String);
+   --  Sets conversation thread.
+
+   function Get_Thread (Self : XMPP_Message)
+      return League.Strings.Universal_String;
+   --  Returns conversation thread.
+
+   function Get_To (Self : XMPP_Message)
+      return League.Strings.Universal_String;
+   --  Returns message recepient
+
+   procedure Set_To (Self : in out XMPP_Message;
+                     To   : League.Strings.Universal_String);
+   --  Sets message recepient
+
+   function Get_Id (Self : XMPP_Message)
+      return League.Strings.Universal_String;
+   --  Returns message ID
+
+   procedure Set_Id (Self : in out XMPP_Message;
+                     Id   : League.Strings.Universal_String);
+   --  Sets message ID
+
+   function Get_From (Self : XMPP_Message)
+      return League.Strings.Universal_String;
+   --  Returns message sender.
+
+   procedure Set_From (Self : in out XMPP_Message;
+                       From : League.Strings.Universal_String);
+   --  Sets message sender.
+
+   function Get_Chat_State (Self : XMPP_Message) return Chat_State_Type;
+   --  Returns chat state.
+
+   procedure Set_Chat_State (Self  : in out XMPP_Message;
+                             Value : Chat_State_Type);
+   --  Sets chat states.
+
+   function Create return not null XMPP_Message_Access;
+   --  Returns heap allocated message object
+
+   --  End of public API  --
+
+   --  Private API, should not be used by application
    overriding function Get_Kind (Self : XMPP_Message)
       return Objects.Object_Kind;
 
@@ -93,53 +167,6 @@ package XMPP.Messages is
    procedure Set_Content (Self      : in out XMPP_Message;
                           Parameter : League.Strings.Universal_String;
                           Value     : League.Strings.Universal_String);
-
-   procedure Set_Type (Self : in out XMPP_Message; T : Message_Type);
-
-   function Get_Type (Self : XMPP_Message) return Message_Type;
-
-   procedure Set_Subject (Self : in out XMPP_Message;
-                          Subj : League.Strings.Universal_String);
-
-   function Get_Subject (Self : XMPP_Message)
-      return League.Strings.Universal_String;
-
-   procedure Set_Body (Self : in out XMPP_Message;
-                       Val : League.Strings.Universal_String);
-
-   function Get_Body (Self : XMPP_Message)
-      return League.Strings.Universal_String;
-
-   procedure Set_Thread (Self : in out XMPP_Message;
-                         Val : League.Strings.Universal_String);
-
-   function Get_Thread (Self : XMPP_Message)
-      return League.Strings.Universal_String;
-
-   function Get_To (Self : XMPP_Message)
-      return League.Strings.Universal_String;
-
-   procedure Set_To (Self : in out XMPP_Message;
-                     To   : League.Strings.Universal_String);
-
-   function Get_Id (Self : XMPP_Message)
-      return League.Strings.Universal_String;
-
-   procedure Set_Id (Self : in out XMPP_Message;
-                     Id   : League.Strings.Universal_String);
-
-   function Get_From (Self : XMPP_Message)
-      return League.Strings.Universal_String;
-
-   procedure Set_From (Self : in out XMPP_Message;
-                       From : League.Strings.Universal_String);
-
-   function Get_Chat_State (Self : XMPP_Message) return Chat_State_Type;
-
-   procedure Set_Chat_State (Self  : in out XMPP_Message;
-                             Value : Chat_State_Type);
-
-   function Create return not null XMPP_Message_Access;
 
 private
 

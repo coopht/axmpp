@@ -47,6 +47,26 @@ package XMPP.Rosters is
 
    type XMPP_Roster_Access is access all XMPP_Roster'Class;
 
+   --  Public API  --
+
+   function Items_Count (Self : XMPP_Roster) return Natural;
+   --  Returns number of roster_Items in roster.
+
+   function Item_At (Self : XMPP_Roster; Pos : Natural)
+      return not null XMPP.Roster_Items.XMPP_Roster_Item_Access;
+   --  Returns roster item at given position.
+
+   procedure Append_Item
+     (Self : in out XMPP_Roster;
+      Item : not null XMPP.Roster_Items.XMPP_Roster_Item_Access);
+   --  Appends item to roster.
+
+   function Create return not null XMPP_Roster_Access;
+   --  Returns heap-allocated roster object.
+
+   --  End of public API  --
+
+   --  Private API, should not be used by application
    overriding function Get_Kind (Self : XMPP_Roster)
       return Objects.Object_Kind;
 
@@ -58,18 +78,6 @@ package XMPP.Rosters is
    procedure Set_Content (Self      : in out XMPP_Roster;
                           Parameter : League.Strings.Universal_String;
                           Value     : League.Strings.Universal_String);
-
-   function Items_Count (Self : XMPP_Roster) return Natural;
-
-   function Item_At (Self : XMPP_Roster; Pos : Natural)
-      return not null XMPP.Roster_Items.XMPP_Roster_Item_Access;
-
-   procedure Append_Item
-     (Self : in out XMPP_Roster;
-      Item : not null XMPP.Roster_Items.XMPP_Roster_Item_Access);
-
-   function Create return not null XMPP_Roster_Access;
-
 private
 
    type XMPP_Roster is new XMPP.IQS.XMPP_IQ with

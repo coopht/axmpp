@@ -68,35 +68,38 @@ package XMPP.Versions is
 
    type XMPP_Version_Access is access all XMPP_Version'Class;
 
-   function Create return XMPP_Version_Access;
-
-   overriding function Get_Kind (Self : XMPP_Version)
-      return Objects.Object_Kind;
-
-   overriding procedure Serialize
-    (Self   : XMPP_Version;
-     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class);
+   --  Public API  --
 
    not overriding function Get_Name (Self : XMPP_Version)
       return League.Strings.Universal_String;
 
+   --  Returns client's name
+
    not overriding function Get_OS (Self : XMPP_Version)
       return League.Strings.Universal_String;
+   --  Returns os information
 
    not overriding function Get_Version (Self : XMPP_Version)
       return League.Strings.Universal_String;
+   --  Returns version information
 
    not overriding procedure Set_Name
      (Self : in out XMPP_Version;
       Name : League.Strings.Universal_String);
+   --  Sets name information
 
    not overriding procedure Set_OS
      (Self : in out XMPP_Version;
       OS   : League.Strings.Universal_String);
+   --  Sets os information
 
    not overriding procedure Set_Version
      (Self    : in out XMPP_Version;
       Version : League.Strings.Universal_String);
+   --  Sets version information
+
+   function Create return XMPP_Version_Access;
+   --  Returns heap allocated object.
 
    --  Private API
    --  Should not be used in application
@@ -105,6 +108,13 @@ package XMPP.Versions is
    procedure Set_Content (Self      : in out XMPP_Version;
                           Parameter : League.Strings.Universal_String;
                           Value     : League.Strings.Universal_String);
+
+   overriding function Get_Kind (Self : XMPP_Version)
+      return Objects.Object_Kind;
+
+   overriding procedure Serialize
+    (Self   : XMPP_Version;
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class);
 
 private
 
