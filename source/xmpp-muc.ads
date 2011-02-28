@@ -47,7 +47,7 @@ package XMPP.MUC is
 
    MUC_URI : constant League.Strings.Universal_String
      := League.Strings.To_Universal_String
-         ("xmlns='http://jabber.org/protocol/muc'");
+         ("http://jabber.org/protocol/muc");
 
    type MUC_Affilation is (Admin, Member, None, Outcast, Owner);
    type MUC_Role is (Moderator, None, Participant, Visitor);
