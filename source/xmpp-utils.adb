@@ -33,9 +33,60 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
+with Ada.Numerics.Discrete_Random;
 with Ada.Unchecked_Conversion;
 
 package body XMPP.Utils is
+
+   use League.Strings;
+
+   type Gen_Integer is new Integer range 97 .. 122;
+
+   package RND is new Ada.Numerics.Discrete_Random (Gen_Integer);
+
+   --------------
+   --  Gen_Id  --
+   --------------
+   function Gen_Id (Prefix : League.Strings.Universal_String)
+      return League.Strings.Universal_String is
+
+      Gen : RND.Generator;
+
+      A : Wide_Wide_Character;
+      B : Wide_Wide_Character;
+      C : Wide_Wide_Character;
+
+      function Image (J : Gen_Integer) return Wide_Wide_String;
+
+      -------------
+      --  Image  --
+      -------------
+      function Image (J : Gen_Integer) return Wide_Wide_String is
+         S : constant Wide_Wide_String
+           := Gen_Integer'Wide_Wide_Image (J);
+
+      begin
+         return S (S'First + 1 .. S'Last);
+      end Image;
+
+   begin
+      A := Wide_Wide_Character'Val (RND.Random (Gen));
+      RND.Reset (Gen);
+
+      B := Wide_Wide_Character'Val (RND.Random (Gen));
+      RND.Reset (Gen);
+
+      C := Wide_Wide_Character'Val (RND.Random (Gen));
+      RND.Reset (Gen);
+
+      return Prefix
+        & "_"
+        & A
+        & B
+        & C
+        & "_"
+        & Image (RND.Random (Gen));
+   end Gen_Id;
 
    -------------------------------
    --  To_Stream_Element_Array  --

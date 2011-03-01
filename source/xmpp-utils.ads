@@ -34,10 +34,14 @@
 --  $Date$
 ------------------------------------------------------------------------------
 with Ada.Streams;
+with League.Strings;
 
 package XMPP.Utils is
 
    function To_Stream_Element_Array (Value : String)
       return Ada.Streams.Stream_Element_Array;
+
+   function Gen_Id (Prefix : League.Strings.Universal_String)
+     return League.Strings.Universal_String;
 
 end XMPP.Utils;
