@@ -712,13 +712,12 @@ package body XMPP.Sessions is
    --  Request_Roster  --
    ----------------------
    procedure Request_Roster (Self : not null access XMPP_Session) is
+      R : XMPP.Rosters.XMPP_Roster;
+
    begin
-      Self.Send_Wide_Wide_String
-        ("<iq from='"
-           & Self.JID.To_Wide_Wide_String
-           & "' type='get' id='roster_1'>"
-           & " <query xmlns='jabber:iq:roster'/>"
-           & "</iq>");
+      R.Set_From (Self.JID);
+      R.Set_IQ_Kind (XMPP.IQS.Get);
+      Self.Send_Object (R);
    end Request_Roster;
 
    -----------------------
