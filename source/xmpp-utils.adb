@@ -47,14 +47,11 @@ package body XMPP.Utils is
    --------------
    --  Gen_Id  --
    --------------
-   function Gen_Id (Prefix : League.Strings.Universal_String)
+   function Gen_Id (Prefix : League.Strings.Universal_String
+                      := League.Strings.Empty_Universal_String)
       return League.Strings.Universal_String is
 
       Gen : RND.Generator;
-
-      A : Wide_Wide_Character;
-      B : Wide_Wide_Character;
-      C : Wide_Wide_Character;
 
       function Image (J : Gen_Integer) return Wide_Wide_String;
 
@@ -69,23 +66,20 @@ package body XMPP.Utils is
          return S (S'First + 1 .. S'Last);
       end Image;
 
+      Tmp : League.Strings.Universal_String := Prefix;
+
    begin
-      A := Wide_Wide_Character'Val (RND.Random (Gen));
+      if Tmp.Is_Empty then
+         Tmp := Tmp & Wide_Wide_Character'Val (RND.Random (Gen));
+         RND.Reset (Gen);
+
+         Tmp := Tmp & Wide_Wide_Character'Val (RND.Random (Gen));
+         RND.Reset (Gen);
+      end if;
+
       RND.Reset (Gen);
 
-      B := Wide_Wide_Character'Val (RND.Random (Gen));
-      RND.Reset (Gen);
-
-      C := Wide_Wide_Character'Val (RND.Random (Gen));
-      RND.Reset (Gen);
-
-      return Prefix
-        & "_"
-        & A
-        & B
-        & C
-        & "_"
-        & Image (RND.Random (Gen));
+      return Tmp & Image (RND.Random (Gen));
    end Gen_Id;
 
    -------------------------------
