@@ -38,6 +38,7 @@ with League.Strings;
 with XML.SAX.Pretty_Writers;
 
 with XMPP.Objects;
+with XMPP.Utils;
 
 package XMPP.IQS is
 
@@ -104,7 +105,7 @@ private
 
    type XMPP_IQ is new XMPP.Objects.XMPP_Object with
    record
-      Id         : League.Strings.Universal_String;
+      Id         : League.Strings.Universal_String := XMPP.Utils.Gen_Id;
       Kind_Of_IQ : IQ_Kind := Result;
       To         : League.Strings.Universal_String;
       From       : League.Strings.Universal_String;
