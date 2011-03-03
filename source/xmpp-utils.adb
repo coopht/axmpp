@@ -33,16 +33,13 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
-with Ada.Numerics.Discrete_Random;
 with Ada.Unchecked_Conversion;
 
 package body XMPP.Utils is
 
    use League.Strings;
 
-   type Gen_Integer is new Integer range 97 .. 122;
-
-   package RND is new Ada.Numerics.Discrete_Random (Gen_Integer);
+   Int_Id : Integer := 0;
 
    --------------
    --  Gen_Id  --
@@ -51,16 +48,14 @@ package body XMPP.Utils is
                       := League.Strings.Empty_Universal_String)
       return League.Strings.Universal_String is
 
-      Gen : RND.Generator;
-
-      function Image (J : Gen_Integer) return Wide_Wide_String;
+      function Image (J : Integer) return Wide_Wide_String;
 
       -------------
       --  Image  --
       -------------
-      function Image (J : Gen_Integer) return Wide_Wide_String is
+      function Image (J : Integer) return Wide_Wide_String is
          S : constant Wide_Wide_String
-           := Gen_Integer'Wide_Wide_Image (J);
+           := Integer'Wide_Wide_Image (J);
 
       begin
          return S (S'First + 1 .. S'Last);
@@ -69,17 +64,17 @@ package body XMPP.Utils is
       Tmp : League.Strings.Universal_String := Prefix;
 
    begin
-      if Tmp.Is_Empty then
-         Tmp := Tmp & Wide_Wide_Character'Val (RND.Random (Gen));
-         RND.Reset (Gen);
+      Int_Id := Int_Id + 1;
 
-         Tmp := Tmp & Wide_Wide_Character'Val (RND.Random (Gen));
-         RND.Reset (Gen);
+      if Int_Id > 1000 then
+         Int_Id := 0;
       end if;
 
-      RND.Reset (Gen);
+      if Tmp.Is_Empty then
+         Tmp := Tmp & "aa";
+      end if;
 
-      return Tmp & Image (RND.Random (Gen));
+      return Tmp & Image (Int_Id);
    end Gen_Id;
 
    -------------------------------
