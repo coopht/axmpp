@@ -43,6 +43,15 @@ with XMPP.Roster_Items;
 
 package XMPP.Rosters is
 
+   Query_Element    : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("query");
+
+   Roster_Element : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("roster");
+
+   Roster_URI : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("jabber:iq:roster");
+
    type XMPP_Roster is new XMPP.IQS.XMPP_IQ with private;
 
    type XMPP_Roster_Access is access all XMPP_Roster'Class;

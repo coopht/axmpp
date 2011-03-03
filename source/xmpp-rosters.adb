@@ -91,11 +91,21 @@ package body XMPP.Rosters is
    overriding procedure Serialize
     (Self   : XMPP_Roster;
      Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class) is
-      pragma Unreferenced (Self);
-      pragma Unreferenced (Writer);
 
    begin
-      raise Program_Error with "Not yet implemented";
+      Self.Start_IQ (Writer);
+
+      Writer.Start_Prefix_Mapping (Namespace_URI => Roster_URI);
+
+      Writer.Start_Element (Namespace_URI => Roster_URI,
+                            Local_Name => Query_Element);
+
+      Writer.End_Element (Namespace_URI => Roster_URI,
+                          Local_Name => Query_Element);
+
+      Writer.End_Prefix_Mapping;
+
+      Self.End_IQ (Writer);
    end Serialize;
 
    -------------------
