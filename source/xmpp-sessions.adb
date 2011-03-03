@@ -86,9 +86,6 @@ package body XMPP.Sessions is
       Bind_Object.Set_IQ_Kind (XMPP.IQS.Set);
       Bind_Object.Set_Resource (Resource_Id);
 
-      Bind_Object.Set_Id (+"bind_1");
-      --  Bind_IQ.Append_Item (Bind_Object);
-
       Self.Send_Object (Bind_Object);
    end Bind_Resource;
 
@@ -132,10 +129,7 @@ package body XMPP.Sessions is
       D.Set_Type (XMPP.Services_Features.Protocol_Disco_Info);
       D.Set_From (Self.JID);
       D.Set_To (JID);
-      D.Set_Id (+"info1");
 
-      --  XXX: removed hardcoded ID;
-      --  D.Append_Item (D);
       Self.Send_Object (D);
    end Discover_Information;
 
@@ -151,7 +145,6 @@ package body XMPP.Sessions is
       D.Set_Type (XMPP.Services_Features.Protocol_Disco_Items);
       D.Set_From (Self.JID);
       D.Set_To (JID);
-      D.Set_Id (+"info1");
 
       --  XXX: removed hardcoded ID;
       --  IQ.Append_Item (D);
@@ -410,7 +403,6 @@ package body XMPP.Sessions is
       S.Set_To (Self.Host);
       S.Set_From (Self.JID);
       S.Set_IQ_Kind (XMPP.IQS.Set);
-      S.Set_Id (+"sess_1");
       Self.Send_Object (S);
    end Establish_IQ_Session;
 
@@ -742,7 +734,6 @@ package body XMPP.Sessions is
       Ver.Set_To (XMPP_Entity);
       Ver.Set_From (Self.JID);
       Ver.Set_IQ_Kind (XMPP.IQS.Get);
-      Ver.Set_Id (+"ver_1");
 
       Self.Send_Object (Ver);
    end Request_Version;
