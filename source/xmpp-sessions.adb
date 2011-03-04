@@ -853,8 +853,8 @@ package body XMPP.Sessions is
          end if;
 
       --  For XMPP_Stream_Feature
-      elsif Namespace_URI = +"urn:ietf:params:xml:ns:xmpp-bind" then
-         if Local_Name = +"bind" then
+      elsif Namespace_URI = XMPP.Binds.Bind_URI then
+         if Local_Name = XMPP.Binds.Bind_Element then
 
             --  If bind for iq object, than create new bind object
             --  and push it into stack
@@ -945,24 +945,24 @@ package body XMPP.Sessions is
          end if;
 
       --  working with roster
-      elsif Namespace_URI = +"jabber:iq:roster" then
+      elsif Namespace_URI = XMPP.Rosters.Roster_URI then
          --  if query found within jabber:iq:roster namespace, then
          --  creating a roster list.
-         if Local_Name = +"query" then
+         if Local_Name = XMPP.Rosters.Query_Element then
 
             Self.Stack.Append
               (XMPP.Objects.XMPP_Object_Access (XMPP.Rosters.Create));
 
          --  if item found within jabber:iq:roster namespace, then
          --  creating a roster item.
-         elsif Local_Name = +"item" then
+         elsif Local_Name = XMPP.Roster_Items.Item_Element then
             if Self.Stack.Last_Element.Get_Kind = Objects.Roster then
                Self.Stack.Append
                  (XMPP.Objects.XMPP_Object_Access (XMPP.Roster_Items.Create));
             end if;
 
          --  nothing to do here for group tag
-         elsif Local_Name = +"group" then
+         elsif Local_Name = XMPP.Roster_Items.Group_Element then
             null;
          end if;
 
@@ -1053,10 +1053,10 @@ package body XMPP.Sessions is
          end if;
 
       --  working with version
-      elsif Namespace_URI = +"jabber:iq:version" then
+      elsif Namespace_URI = XMPP.Versions.Version_URI then
          --  if query found within jabber:iq:version namespace, then
          --  creating a version object.
-         if Local_Name = +"query" then
+         if Local_Name = XMPP.Versions.Query_Element then
             Self.Stack.Append
               (XMPP.Objects.XMPP_Object_Access (XMPP.Versions.Create));
          end if;
