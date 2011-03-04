@@ -45,8 +45,8 @@ project Con_Cli is
    for Object_Dir use ".objs";
    for Exec_Dir use "../testsuite/con_cli";
 
-   for Source_Dirs use ("../testsuite/con_cli");
-   for Object_Dir use "../testsuite/con_cli/.objs";
+   for Source_Dirs use ("../examples/con_cli");
+   for Object_Dir use "../examples/con_cli/.objs";
 
    package Compiler is
       for Default_Switches ("Ada") use AXMPP_Config.Default_Switches;
