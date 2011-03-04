@@ -249,42 +249,6 @@ package body XMPP.Sessions is
             Self.On_Connect;
          end if;
 
-      --  For IQ
-      elsif Namespace_URI = +"urn:ietf:params:xml:ns:xmpp-bind" then
-
-         --  XXX: ugly code
-         if Local_Name = +"bind" then
-            null;
-            --  Adding bind body for IQ object
-            --  if Previous (Current) /= No_Element then
-            --   if Self.Stack.Element (To_Index (Previous (Current))).Get_Kind
-            --       = XMPP.Objects.Bind then
-            --        Self.Stream_Handler.Bind_Resource_State
-            --          (XMPP.Binds.XMPP_Bind_Access
-            --            (Self.Stack.Last_Element).Get_JID,
-            --           XMPP.Binds.Success);
-                  --  XMPP.IQS.XMPP_IQ_Access
-                  --    (Self.Stack.Element (To_Index (Previous (Current))))
-                  --     .Append_Item (Self.Stack.Last_Element);
-
-            --  Self.Stack.Delete_Last;
-            --     end if;
-            --  end if;
-         end if;
-
-      --  For IQ
-      elsif Namespace_URI = +"urn:ietf:params:xml:ns:xmpp-session" then
-
-         --  Nothing to process here
-
-         null;
-
-      elsif Namespace_URI = +"jabber:iq:version" then
-
-         --  Nothing to process here
-
-         null;
-
       elsif Namespace_URI = +"jabber:iq:roster" then
 
          --  Adding item to the roster
