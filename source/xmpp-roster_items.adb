@@ -33,6 +33,8 @@
 --  $Revision$ $Author$
 --  $Date$
 ------------------------------------------------------------------------------
+with XML.SAX.Attributes;
+
 with XMPP.Logger;
 
 package body XMPP.Roster_Items is
@@ -110,10 +112,32 @@ package body XMPP.Roster_Items is
    overriding procedure Serialize
     (Self   : XMPP_Roster_Item;
      Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class) is
-      pragma Unreferenced (Self);
-      pragma Unreferenced (Writer);
+
+      Attrs   : XML.SAX.Attributes.SAX_Attributes;
+
    begin
-      raise Program_Error with "Not yet implemented";
+      if not Self.JID.Is_Empty then
+         Attrs.Set_Value (Qualified_Name => JID_Attribute,
+                          Value          => Self.JID);
+      end if;
+
+      if not Self.Name.Is_Empty then
+         Attrs.Set_Value (Qualified_Name => Name_Attribute,
+                          Value          => Self.Name);
+      end if;
+
+      Writer.Start_Element (Qualified_Name => Item_Element,
+                            Attributes     => Attrs);
+
+      for J in 0 .. Self.Groups.Length - 1 loop
+         if not Self.Groups.Is_Empty then
+            Writer.Start_Element (Qualified_Name => Group_Element);
+            Writer.Characters (Self.Groups.Element (J));
+            Writer.End_Element (Qualified_Name => Group_Element);
+         end if;
+      end loop;
+
+      Writer.End_Element (Qualified_Name => Item_Element);
    end Serialize;
 
    -------------------

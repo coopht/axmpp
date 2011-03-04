@@ -42,12 +42,63 @@ with XMPP.Objects;
 
 package XMPP.Roster_Items is
 
+   Item_Element : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("item");
+
+   Group_Element : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("group");
+
+   JID_Attribute : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("jid");
+
+   Name_Attribute : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("name");
+
+   Subscription_Attribute : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("subscription");
+
    type Subscription_Type is (Both, None);
 
    type XMPP_Roster_Item is new XMPP.Objects.XMPP_Object with private;
 
    type XMPP_Roster_Item_Access is access all XMPP_Roster_Item'Class;
 
+   --  Public API
+   procedure Set_Subscription (Self  : in out XMPP_Roster_Item;
+                               Value : Subscription_Type);
+   --  Sets subscribtion type
+
+   function Get_Subscription (Self : XMPP_Roster_Item)
+      return Subscription_Type;
+   --  Returns subscribtion type
+
+   function Get_JID (Self : XMPP_Roster_Item)
+      return League.Strings.Universal_String;
+   --  Returns items identifier
+
+   function Get_Name (Self : XMPP_Roster_Item)
+      return League.Strings.Universal_String;
+   --  Returns items name
+
+   procedure Set_JID (Self : in out XMPP_Roster_Item;
+                      Value : League.Strings.Universal_String);
+   --  Sets items id
+
+   procedure Set_Name (Self  : in out XMPP_Roster_Item;
+                       Value : League.Strings.Universal_String);
+   --  Sets items name
+
+   function Create return not null XMPP_Roster_Item_Access;
+   --  returns heap allocated object
+
+   procedure Append_Group (Self  : in out XMPP_Roster_Item;
+                           Value : League.Strings.Universal_String);
+
+   function Get_Groups (Self : XMPP_Roster_Item)
+     return League.String_Vectors.Universal_String_Vector;
+
+   --  Private API
+   --  Should not be used in application
    overriding function Get_Kind (Self : XMPP_Roster_Item)
       return Objects.Object_Kind;
 
@@ -59,32 +110,6 @@ package XMPP.Roster_Items is
    procedure Set_Content (Self      : in out XMPP_Roster_Item;
                           Parameter : League.Strings.Universal_String;
                           Value     : League.Strings.Universal_String);
-
-   procedure Set_Subscription (Self  : in out XMPP_Roster_Item;
-                               Value : Subscription_Type);
-
-   function Get_Subscription (Self : XMPP_Roster_Item)
-      return Subscription_Type;
-
-   function Get_JID (Self : XMPP_Roster_Item)
-      return League.Strings.Universal_String;
-
-   function Get_Name (Self : XMPP_Roster_Item)
-      return League.Strings.Universal_String;
-
-   procedure Set_JID (Self : in out XMPP_Roster_Item;
-                      Value : League.Strings.Universal_String);
-
-   procedure Set_Name (Self  : in out XMPP_Roster_Item;
-                       Value : League.Strings.Universal_String);
-
-   function Create return not null XMPP_Roster_Item_Access;
-
-   procedure Append_Group (Self  : in out XMPP_Roster_Item;
-                           Value : League.Strings.Universal_String);
-
-   function Get_Groups (Self : XMPP_Roster_Item)
-     return League.String_Vectors.Universal_String_Vector;
 
 private
 
