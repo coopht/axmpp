@@ -44,8 +44,12 @@ with XMPP.Sessions;
 package Con_Cli is
 
    type Session is limited new XMPP.Sessions.XMPP_Session with private;
+   --  Declare XMPP session type, which is derived from XMPP_Sesssion.
+   --  Further objects, of Session type will be used for sending requests
+   --  to xmpp servers and clients.
 
    type Session_Access is access all Session'Class;
+   --  Define access type
 
    procedure Test (X : Session);
 

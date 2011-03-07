@@ -50,6 +50,12 @@ with XMPP.Stream_Features;
 
 limited with Con_Cli;
 
+--  Con_Cli_Handlers - package, contains Con_Cli_Handler type, inherited from
+--  XMPP.Stream_Handlers.XMPP_Stream_Handler.
+--  XMPP_Stream_Handler should be inherited and some handlers
+--  should be overriden, if we whant to react for some events, issued
+--  in AXMPP library.
+
 package Con_Cli_Handlers is
 
    type Con_Cli_Handler is limited new XMPP.Stream_Handlers.XMPP_Stream_Handler
@@ -60,33 +66,41 @@ package Con_Cli_Handlers is
    overriding procedure Connected
      (Self   : in out Con_Cli_Handler;
       Object : XMPP.Stream_Features.XMPP_Stream_Feature'Class);
+   --  We whant to handle connected event.
 
    overriding procedure Start_Stream
      (Self   : in out Con_Cli_Handler;
       Object : XMPP.Streams.XMPP_Stream'Class);
+   --  We whant to handle Start_Stream event.
 
    overriding procedure Stream_Features
      (Self   : in out Con_Cli_Handler;
       Object : XMPP.Stream_Features.XMPP_Stream_Feature'Class);
+   --  We whant to get stream features.
 
    overriding procedure Presence
      (Self : in out Con_Cli_Handler;
       Data : XMPP.Presences.XMPP_Presence'Class);
-
-   procedure Set_Session_Object
-     (Self   : in out Con_Cli_Handler;
-      Object : not null access Con_Cli.Session'Class);
-
-   procedure Set_Presence (Self : in out Con_Cli_Handler);
+   --  We whant to receive presence events.
 
    overriding procedure Bind_Resource_State
      (Self   : in out Con_Cli_Handler;
       JID    : League.Strings.Universal_String;
       Status : XMPP.Binds.Bind_State);
+   --  We whant to know, what resource was binded, and if it was successfull.
 
    overriding procedure Session_State
      (Self   : in out Con_Cli_Handler;
       Status : XMPP.IQ_Sessions.Session_State);
+   --  We whant to get information about session state.
+
+   procedure Set_Session_Object
+     (Self   : in out Con_Cli_Handler;
+      Object : not null access Con_Cli.Session'Class);
+   --  Function to set session object in handler.
+
+   procedure Set_Presence (Self : in out Con_Cli_Handler);
+   --  Declaring function to set presence.
 
 private
 

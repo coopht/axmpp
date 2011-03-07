@@ -45,14 +45,23 @@ with Con_Cli_Handlers;
 with League.Strings;
 
 procedure Main is
+
+   --  Creating XMPP Session object.
+
    S : constant not null Con_Cli.Session_Access := new Con_Cli.Session;
+
+   --  Creating stream handler object.
+
    H : constant not null Con_Cli_Handlers.Con_Cli_Handler_Access
      := new Con_Cli_Handlers.Con_Cli_Handler;
 
 begin
-   S.Set_JID (League.Strings.To_Universal_String ("uim-test"));
+   --  Setting jabber id.
 
-   --  For local testing
+   S.Set_JID (League.Strings.To_Universal_String ("uim-test@zion"));
+
+   --  Setting password for jabber id.
+
    S.Set_Password (League.Strings.To_Universal_String ("123"));
 
    --  for jabber.ru testing
@@ -60,7 +69,16 @@ begin
    --  S.Set_Password (League.Strings.To_Universal_String ("123456"));
    --  S.Set_Host_Addr (League.Strings.To_Universal_String ("77.88.57.177"));
 
+   --  Setting stream handler.
+
    S.Set_Stream_Handler (H);
+
+   --  Setting session object for session handler.
    H.Set_Session_Object (S);
+
+   --  Openning connection to jabber server.
+   --  Starting from this moment we will receive overriden events in
+   --  Con_Cli_Handler, and for successfull work we should properly react
+   --  to them.
    S.Open;
 end Main;
