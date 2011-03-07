@@ -41,7 +41,7 @@
 ##############################################################################
 #!/bin/sh
 
-BUILD=/tmp/axmpp
+BUILD=axmpp
 VERSION=$1
 
 if [ x$VERSION = x"" ]; then
@@ -50,13 +50,13 @@ if [ x$VERSION = x"" ]; then
 fi
 
 
-if [ -d $BUILD-$VERSION ]; then
+if [ -d /tmp/$BUILD-$VERSION ]; then
     rm -rfv $BUILD-$VERSION;
 fi
 
-cp -rv ../axmpp $BUILD-$VERSION
+cp -rv ../axmpp /tmp/$BUILD-$VERSION
 
-cd $BUILD-$VERSION
+cd /tmp/$BUILD-$VERSION
 
 rm -rfv `find . -name .svn`
 rm -rfv `find . -name .objs`
