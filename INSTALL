@@ -1,0 +1,30 @@
+==  Dependencies:
+    AXMPP library depends on the following software:
+        * gnutls library (http://www.gnu.org/software/gnutls)
+	* GNAT GPL 2010  (www.adacore.com)
+	* matreshka (http://adaforge.qtada.com/cgi-bin/tracker.fcgi/matreshka)
+
+== How to build and install:
+   1. gnutls installation:
+      Install gnutls development files  (library and includes) according to
+      official instructions of your distribution.
+
+   2. GNAT GPL 2010 installation:
+      Install GNAT GPL accroding to GNAT GPL instructions.
+
+   3. matreshka installation:
+      Install matreshka accroding to matreshka package instructions.
+
+   4. AXMPP installation:
+      a. Make sure that gprbuild installed, and set up properly.
+
+      b. Check if path to matreshka gpr files is present in ADA_PROJECT_PATH
+         environment variable.
+
+      c. Unpack axmpp library:
+         tar xf axmpp-0.0.1.tar.gz
+
+      d. Go to axmpp-0.0.1 directory and build it:
+         make
+
+      e. Add path to axmpp project files to ADA_PROJECT_PATH
