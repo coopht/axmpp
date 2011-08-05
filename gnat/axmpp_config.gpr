@@ -45,7 +45,7 @@ project AXMPP_Config is
       := ("-g",
           "-gnato",
           "-fstack-check",
-          "-gnat05",
+          "-gnat12",
           "-gnatW8",
           "-gnatwae",
           "-gnatyaAbcdefhiIkmnoOprsStux");

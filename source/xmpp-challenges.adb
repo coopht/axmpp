@@ -44,6 +44,8 @@ with Ada.Streams;
 
 with GNAT.MD5;
 
+with League.String_Vectors;
+
 with XMPP.Base64;
 with XMPP.Logger;
 with XMPP.Utils;
@@ -333,7 +335,7 @@ package body XMPP.Challenges is
    ---------------
    procedure Set_JID (Self : in out XMPP_Challenge;
                       JID  : League.Strings.Universal_String) is
-      Vec : constant League.Strings.Universal_String_Vector
+      Vec : constant League.String_Vectors.Universal_String_Vector
         := JID.Split ('@');
 
    begin

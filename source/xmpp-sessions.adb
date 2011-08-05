@@ -44,6 +44,7 @@ with Ada.Exceptions;
 with Ada.Streams;
 
 with League.Text_Codecs;
+with League.String_Vectors;
 
 with XML.SAX.Readers;
 
@@ -752,7 +753,7 @@ package body XMPP.Sessions is
    ---------------
    procedure Set_JID (Self : in out XMPP_Session;
                       JID  : League.Strings.Universal_String) is
-      Vec : constant League.Strings.Universal_String_Vector
+      Vec : constant League.String_Vectors.Universal_String_Vector
         := JID.Split ('@');
 
    begin
