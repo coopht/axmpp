@@ -63,8 +63,6 @@ package XMPP.IQS is
    IQ_From_Attribute : constant League.Strings.Universal_String
      := League.Strings.To_Universal_String ("from");
 
-   type IQ_Kind is (Error, Get, Result, Set);
-
    type XMPP_IQ is new XMPP.Objects.XMPP_Object with private;
 
    type XMPP_IQ_Access is access all XMPP_IQ'Class;

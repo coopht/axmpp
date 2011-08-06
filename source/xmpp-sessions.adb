@@ -73,7 +73,7 @@ package body XMPP.Sessions is
    use XMPP.Objects.Object_Vectors;
 
    use type Ada.Streams.Stream_Element_Offset;
-   use type XMPP.IQS.IQ_Kind;
+   use type XMPP.IQ_Kind;
 
    function "+" (Item : Wide_Wide_String) return Universal_String
      renames League.Strings.To_Universal_String;
@@ -90,7 +90,7 @@ package body XMPP.Sessions is
    begin
       Bind_Object.Set_To (Self.Host);
       Bind_Object.Set_From (Self.JID);
-      Bind_Object.Set_IQ_Kind (XMPP.IQS.Set);
+      Bind_Object.Set_IQ_Kind (XMPP.Set);
 
       --  overwriting default resource name here.
       if not Resource_Id.Is_Empty then
@@ -138,7 +138,7 @@ package body XMPP.Sessions is
       D : XMPP.Services.XMPP_Service;
 
    begin
-      D.Set_IQ_Kind (XMPP.IQS.Get);
+      D.Set_IQ_Kind (XMPP.Get);
       D.Set_Type (XMPP.Services_Features.Protocol_Disco_Info);
       D.Set_From (Self.JID);
       D.Set_To (JID);
@@ -154,7 +154,7 @@ package body XMPP.Sessions is
       D : XMPP.Services.XMPP_Service;
 
    begin
-      D.Set_IQ_Kind (XMPP.IQS.Get);
+      D.Set_IQ_Kind (XMPP.Get);
       D.Set_Type (XMPP.Services_Features.Protocol_Disco_Items);
       D.Set_From (Self.JID);
       D.Set_To (JID);
@@ -380,7 +380,7 @@ package body XMPP.Sessions is
    begin
       S.Set_To (Self.Host);
       S.Set_From (Self.JID);
-      S.Set_IQ_Kind (XMPP.IQS.Set);
+      S.Set_IQ_Kind (XMPP.Set);
       Self.Send_Object (S);
    end Establish_IQ_Session;
 
@@ -620,7 +620,7 @@ package body XMPP.Sessions is
       Log (Self.IQ_Header.Get_To);
       Log (Self.IQ_Header.Get_From);
       Log (Self.IQ_Header.Get_Id);
-      Log (XMPP.IQS.IQ_Kind'Wide_Wide_Image (Self.IQ_Header.Get_IQ_Kind));
+      Log (XMPP.IQ_Kind'Wide_Wide_Image (Self.IQ_Header.Get_IQ_Kind));
 
       XMPP.IQS.XMPP_IQ_Access (IQ).Set_To (Self.IQ_Header.Get_To);
       XMPP.IQS.XMPP_IQ_Access (IQ).Set_From (Self.IQ_Header.Get_From);
@@ -653,11 +653,11 @@ package body XMPP.Sessions is
          when XMPP.Objects.Version =>
 
             case XMPP.IQS.XMPP_IQ_Access (IQ).Get_IQ_Kind is
-               when XMPP.IQS.Result =>
+               when XMPP.Result =>
                   Self.Stream_Handler.Version
                     (XMPP.Versions.XMPP_Version_Access (IQ).all);
 
-               when XMPP.IQS.Get =>
+               when XMPP.Get =>
                   Self.Stream_Handler.Version_Request
                     (XMPP.Versions.XMPP_Version_Access (IQ).all);
 
@@ -672,7 +672,7 @@ package body XMPP.Sessions is
       Self.IQ_Header.Set_To (+"");
       Self.IQ_Header.Set_From (+"");
       Self.IQ_Header.Set_Id (+"");
-      Self.IQ_Header.Set_IQ_Kind (XMPP.IQS.Get);
+      Self.IQ_Header.Set_IQ_Kind (XMPP.Get);
    end Process_IQ;
 
    -----------------
@@ -693,7 +693,7 @@ package body XMPP.Sessions is
 
    begin
       R.Set_From (Self.JID);
-      R.Set_IQ_Kind (XMPP.IQS.Get);
+      R.Set_IQ_Kind (XMPP.Get);
       Self.Send_Object (R);
    end Request_Roster;
 
@@ -709,7 +709,7 @@ package body XMPP.Sessions is
    begin
       Ver.Set_To (XMPP_Entity);
       Ver.Set_From (Self.JID);
-      Ver.Set_IQ_Kind (XMPP.IQS.Get);
+      Ver.Set_IQ_Kind (XMPP.Get);
 
       Self.Send_Object (Ver);
    end Request_Version;

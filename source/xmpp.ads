@@ -43,4 +43,6 @@ package XMPP is
 
    type Bind_State is (Success, Error);
 
+   type IQ_Kind is (Error, Get, Result, Set);
+
 end XMPP;
