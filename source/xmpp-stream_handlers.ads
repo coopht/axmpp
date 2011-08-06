@@ -41,7 +41,6 @@
 ------------------------------------------------------------------------------
 with League.Strings;
 
-with XMPP.Binds;
 with XMPP.IQ_Sessions;
 with XMPP.IQS;
 with XMPP.Messages;
@@ -87,7 +86,7 @@ package XMPP.Stream_Handlers is
    not overriding procedure Bind_Resource_State
      (Self   : in out XMPP_Stream_Handler;
       JID    : League.Strings.Universal_String;
-      Status : XMPP.Binds.Bind_State) is null;
+      Status : Bind_State) is null;
    --  Handler is called when resusts of resource binding arrived.
 
    not overriding procedure Session_State

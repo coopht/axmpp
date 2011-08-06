@@ -41,7 +41,6 @@
 ------------------------------------------------------------------------------
 with League.Strings;
 
-with XMPP.Binds;
 with XMPP.IQ_Sessions;
 with XMPP.Presences;
 with XMPP.Stream_Handlers;
@@ -86,7 +85,7 @@ package Con_Cli_Handlers is
    overriding procedure Bind_Resource_State
      (Self   : in out Con_Cli_Handler;
       JID    : League.Strings.Universal_String;
-      Status : XMPP.Binds.Bind_State);
+      Status : XMPP.Bind_State);
    --  We whant to know, what resource was binded, and if it was successfull.
 
    overriding procedure Session_State

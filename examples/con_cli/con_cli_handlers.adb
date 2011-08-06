@@ -56,7 +56,7 @@ package body Con_Cli_Handlers is
    use XMPP.IQS;
    use XMPP.Objects;
 
-   use type XMPP.Binds.Bind_State;
+   use type XMPP.Bind_State;
    use type XMPP.IQ_Sessions.Session_State;
 
    ---------------------------
@@ -65,9 +65,9 @@ package body Con_Cli_Handlers is
    overriding procedure Bind_Resource_State
      (Self   : in out Con_Cli_Handler;
       JID    : League.Strings.Universal_String;
-      Status : XMPP.Binds.Bind_State) is
+      Status : XMPP.Bind_State) is
    begin
-      if Status = XMPP.Binds.Success then
+      if Status = XMPP.Success then
          Ada.Wide_Wide_Text_IO.Put_Line
            ("Resource Binded Success: " & JID.To_Wide_Wide_String);
 

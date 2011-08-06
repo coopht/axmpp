@@ -41,4 +41,6 @@
 ------------------------------------------------------------------------------
 package XMPP is
 
+   type Bind_State is (Success, Error);
+
 end XMPP;

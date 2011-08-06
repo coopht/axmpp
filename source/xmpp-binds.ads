@@ -57,8 +57,6 @@ package XMPP.Binds is
    Resource_Element : constant League.Strings.Universal_String
      := League.Strings.To_Universal_String ("resource");
 
-   type Bind_State is (Success, Error);
-
    type XMPP_Bind is new XMPP.IQS.XMPP_IQ with private;
 
    type XMPP_Bind_Access is access all XMPP_Bind'Class;

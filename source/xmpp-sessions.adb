@@ -625,8 +625,7 @@ package body XMPP.Sessions is
          --  Resource Binded
          when XMPP.Objects.Bind =>
             Self.Stream_Handler.Bind_Resource_State
-              (XMPP.Binds.XMPP_Bind_Access (IQ).Get_JID,
-               XMPP.Binds.Success);
+              (XMPP.Binds.XMPP_Bind_Access (IQ).Get_JID, Success);
 
          --  Session established
          when XMPP.Objects.IQ_Session =>
