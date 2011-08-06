@@ -76,6 +76,9 @@ begin
    --  Setting session object for session handler.
    H.Set_Session_Object (S);
 
+   --  Setting resource name
+   S.Set_Resource (League.Strings.To_Universal_String ("con_cli"));
+
    --  Openning connection to jabber server.
    --  Starting from this moment we will receive overriden events in
    --  Con_Cli_Handler, and for successfull work we should properly react

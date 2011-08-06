@@ -91,7 +91,13 @@ package body XMPP.Sessions is
       Bind_Object.Set_To (Self.Host);
       Bind_Object.Set_From (Self.JID);
       Bind_Object.Set_IQ_Kind (XMPP.IQS.Set);
-      Bind_Object.Set_Resource (Resource_Id);
+
+      --  overwriting default resource name here.
+      if not Resource_Id.Is_Empty then
+         Self.Resource_Id := Resource_Id;
+      end if;
+
+      Bind_Object.Set_Resource (Self.Resource_Id);
 
       Self.Send_Object (Bind_Object);
    end Bind_Resource;
@@ -194,6 +200,7 @@ package body XMPP.Sessions is
                   (Self.Stack.Last_Element).all);
 
             else
+               Self.Bind_Resource;
                Self.Stream_Handler.Connected
                  (XMPP.Stream_Features.XMPP_Stream_Feature_Access
                     (Self.Stack.Last_Element).all);
@@ -773,6 +780,16 @@ package body XMPP.Sessions is
    begin
       Self.Password := Password;
    end Set_Password;
+
+   ------------------
+   -- Set_Resource --
+   ------------------
+   procedure Set_Resource (Self        : not null access XMPP_Session;
+                           Resource_Id : League.Strings.Universal_String)
+   is
+   begin
+      Self.Resource_Id := Resource_Id;
+   end Set_Resource;
 
    --------------------------
    --  Set_Stream_Handler  --

@@ -83,10 +83,9 @@ package body Con_Cli_Handlers is
      (Self    : in out Con_Cli_Handler;
       Object  : XMPP.Stream_Features.XMPP_Stream_Feature'Class) is
       pragma Unreferenced (Object);
+      pragma Unreferenced (Self);
    begin
       Ada.Wide_Wide_Text_IO.Put_Line ("Yeah, we are connected");
-      Self.Object.Bind_Resource
-        (League.Strings.To_Universal_String ("con_cli_resource"));
    end Connected;
 
    ----------------

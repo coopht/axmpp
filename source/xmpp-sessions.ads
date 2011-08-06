@@ -102,6 +102,8 @@ package XMPP.Sessions is
      Addr            : League.Strings.Universal_String;
      In_IQ_Mode      : Boolean := False;
      IQ_Header       : XMPP.IQS.XMPP_IQ;
+     Resource_Id     : League.Strings.Universal_String
+       := League.Strings.To_Universal_String ("axmpp");
    end record;
 
    type XMPP_Session_Access is access all XMPP_Session;
@@ -166,6 +168,11 @@ package XMPP.Sessions is
      Handler : not null access XMPP.Raw_Handlers.XMPP_Raw_Handler)
    is null;
    --  If application whants recieve RAW XML data, it should set Raw_Handler
+
+   procedure Set_Resource (Self        : not null access XMPP_Session;
+                           Resource_Id : League.Strings.Universal_String);
+   --  Function sets resource name which will be binded when client
+   --  is connected to server.
 
    procedure Set_Stream_Handler
     (Self    : not null access XMPP_Session;
