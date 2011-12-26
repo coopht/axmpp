@@ -127,7 +127,7 @@ package body XMPP.Sessions is
    -------------
    procedure Close (Self : in out XMPP_Session) is
       Close_Stream : constant Universal_String
-        := League.Strings.To_Universal_String ("</stream:stream>");
+        := +"</stream:stream>";
 
    begin
       --  Log (" !!! Closing Stream !!!");
