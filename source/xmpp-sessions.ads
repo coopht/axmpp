@@ -118,7 +118,7 @@ package XMPP.Sessions is
 
    procedure Close (Self : in out XMPP_Session);
    --  Closes XMPP session. Application should use this function to end
-   --  data exchange wit xmpp server
+   --  data exchange with xmpp server
 
    procedure Discover_Information (Self : in out XMPP_Session;
                                    JID  : League.Strings.Universal_String);
