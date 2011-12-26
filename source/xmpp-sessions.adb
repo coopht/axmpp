@@ -126,8 +126,17 @@ package body XMPP.Sessions is
    --  Close  --
    -------------
    procedure Close (Self : in out XMPP_Session) is
+      Close_Stream : constant Universal_String
+        := League.Strings.To_Universal_String ("</stream:stream>");
+
    begin
-      null;
+      --  Log (" !!! Closing Stream !!!");
+      --  Sending close stream stanza
+      Self.Send
+        (XMPP.Utils.To_Stream_Element_Array
+           (Ada.Characters.Conversions.To_String
+              (Close_Stream.To_Wide_Wide_String)),
+         Self.Source.Is_TLS_Established);
    end Close;
 
    ----------------------------
@@ -192,6 +201,9 @@ package body XMPP.Sessions is
             --  TODO:
             --  Free (Self.Current);
             Self.Stack.Delete_Last;
+
+            delay 1.0;
+            Self.Disconnect;
 
          elsif Local_Name = +"features" then
             if not Self.Authenticated then
