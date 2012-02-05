@@ -842,6 +842,10 @@ package XMPP is
 
    type Mechanism is (PLAIN, DIGEST_MD5);
 
+   type MUC_Affilation is (Admin, Member, None, Outcast, Owner);
+
+   type MUC_Role is (Moderator, None, Participant, Visitor);
+
    type Object_Kind is
      (Bind,
       Challenge,

@@ -54,9 +54,6 @@ package XMPP.MUCS is
      := League.Strings.To_Universal_String
          ("http://jabber.org/protocol/muc");
 
-   type MUC_Affilation is (Admin, Member, None, Outcast, Owner);
-   type MUC_Role is (Moderator, None, Participant, Visitor);
-
    type MUC_Item is record
       Affilation : MUC_Affilation := None;
       Role       : MUC_Role := None;

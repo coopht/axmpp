@@ -1061,26 +1061,26 @@ package body XMPP.Sessions is
                begin
                   --  Setting affilation
                   if Affilation = +"admin" then
-                     Item.Affilation := XMPP.MUCS.Admin;
+                     Item.Affilation := Admin;
                   elsif Affilation = +"member" then
-                     Item.Affilation := XMPP.MUCS.Member;
+                     Item.Affilation := Member;
                   elsif Affilation = +"none" then
-                     Item.Affilation := XMPP.MUCS.None;
+                     Item.Affilation := None;
                   elsif Affilation = +"outcast" then
-                     Item.Affilation := XMPP.MUCS.Outcast;
+                     Item.Affilation := Outcast;
                   elsif Affilation = +"owner" then
-                     Item.Affilation := XMPP.MUCS.Owner;
+                     Item.Affilation := Owner;
                   end if;
 
                   --  Setting role
                   if Role = +"moderator" then
-                     Item.Role := XMPP.MUCS.Moderator;
+                     Item.Role := Moderator;
                   elsif Role = +"none" then
-                     Item.Role := XMPP.MUCS.None;
+                     Item.Role := None;
                   elsif Role = +"participant" then
-                     Item.Role := XMPP.MUCS.Participant;
+                     Item.Role := Participant;
                   elsif Role = +"visitor" then
-                     Item.Role := XMPP.MUCS.Visitor;
+                     Item.Role := Visitor;
                   end if;
 
                   XMPP.MUCS.XMPP_MUC_Access
