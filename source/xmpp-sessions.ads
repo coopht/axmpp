@@ -102,7 +102,6 @@ package XMPP.Sessions is
      Host            : League.Strings.Universal_String;
      Port            : Natural := 5222;
 
-     Addr            : League.Strings.Universal_String;
      In_IQ_Mode      : Boolean := False;
      IQ_Header       : XMPP.IQS.XMPP_IQ;
      Resource_Id     : League.Strings.Universal_String
