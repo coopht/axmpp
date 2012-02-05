@@ -66,18 +66,6 @@ package XMPP.Presences is
    Show_Element        : constant League.Strings.Universal_String
      := League.Strings.To_Universal_String ("show");
 
-   type Show_Kind is (Away, Chat, DND, XA, Online);
-
-   type Presence_Type is (Error,
-                          Probe,
-                          Subscribe,
-                          Subscribed,
-                          Unavailable,
-                          Unsubscribe,
-                          Unsubscribed);
-
-   type Priority_Type is new Integer range -129 .. 127;
-
    type XMPP_Presence is new XMPP.Objects.XMPP_Object with private;
 
    type XMPP_Presence_Access is access all XMPP_Presence'Class;

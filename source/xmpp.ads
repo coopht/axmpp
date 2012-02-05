@@ -41,7 +41,7 @@
 ------------------------------------------------------------------------------
 package XMPP is
 
-      --  The "account" category is to be used by a server when responding
+   --  The "account" category is to be used by a server when responding
    --  to a disco request sent to the bare JID (user@host addresss)
    --  of an account hosted by the server.
    type Account_Type is
@@ -859,6 +859,17 @@ package XMPP is
       Stream_Featuress,
       Version);
 
+   type Presence_Type is
+     (Error,
+      Probe,
+      Subscribe,
+      Subscribed,
+      Unavailable,
+      Unsubscribe,
+      Unsubscribed);
+
+   type Priority_Type is new Integer range -129 .. 127;
+
    --  The "proxy" category consists of servers or services that act as
    --  special-purpose proxies or intermediaries between two or more XMPP
    --  endpoints.
@@ -875,6 +886,13 @@ package XMPP is
    --  The "server" category consists of any Jabber/XMPP server.
    type Server_Type is
      (IM);
+
+   type Show_Kind is
+     (Away,
+      Chat,
+      DND,
+      XA,
+      Online);
 
    --  The "store" category consists of internal server components that
    --  provide data storage and retrieval services.

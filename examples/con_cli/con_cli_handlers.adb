@@ -102,7 +102,7 @@ package body Con_Cli_Handlers is
         ("User "
            & Data.Get_From.To_Wide_Wide_String
            & " is "
-           & XMPP.Presences.Show_Kind'Wide_Wide_Image (Data.Get_Show)
+           & XMPP.Show_Kind'Wide_Wide_Image (Data.Get_Show)
            & "(" & Data.Get_Status.To_Wide_Wide_String & ")");
    end Presence;
 
