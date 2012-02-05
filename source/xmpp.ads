@@ -887,4 +887,6 @@ package XMPP is
       Oracle,
       Postgres);
 
+   type Subscription_Type is (Both, None);
+
 end XMPP;

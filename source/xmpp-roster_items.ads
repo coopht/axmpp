@@ -63,8 +63,6 @@ package XMPP.Roster_Items is
    Subscription_Attribute : constant League.Strings.Universal_String
      := League.Strings.To_Universal_String ("subscription");
 
-   type Subscription_Type is (Both, None);
-
    type XMPP_Roster_Item is new XMPP.Objects.XMPP_Object with private;
 
    type XMPP_Roster_Item_Access is access all XMPP_Roster_Item'Class;
