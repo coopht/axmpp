@@ -44,7 +44,6 @@ with Ada.Exceptions;
 with Ada.Streams;
 
 with League.Text_Codecs;
-with League.String_Vectors;
 
 with XML.SAX.Readers;
 
@@ -483,7 +482,7 @@ package body XMPP.Sessions is
          Log ("Connecting");
          Self.Connect (Ada.Characters.Conversions.To_String
                         (Self.Host.To_Wide_Wide_String),
-                       5222);
+                       Self.Port);
          Log ("Starting idle");
          Self.Idle;
       end if;
@@ -766,22 +765,22 @@ package body XMPP.Sessions is
          Self.Source.Is_TLS_Established);
    end Send_Wide_Wide_String;
 
+   ----------------
+   --  Set_Host  --
+   ----------------
+   procedure Set_Host (Self : not null access XMPP_Session;
+                       Host : League.Strings.Universal_String) is
+   begin
+      Self.Host := Host;
+   end Set_Host;
+
    ---------------
    --  Set_JID  --
    ---------------
    procedure Set_JID (Self : in out XMPP_Session;
                       JID  : League.Strings.Universal_String) is
-      Vec : constant League.String_Vectors.Universal_String_Vector
-        := JID.Split ('@');
-
    begin
       Self.JID := JID;
-      if Vec.Length /= 2 then
-         raise Program_Error with "Wrong jid specfified";
-
-      else
-         Self.Host := Vec.Element (2);
-      end if;
    end Set_JID;
 
    --------------------
@@ -792,6 +791,15 @@ package body XMPP.Sessions is
    begin
       Self.Password := Password;
    end Set_Password;
+
+   ----------------
+   --  Set_Port  --
+   ----------------
+   procedure Set_Port (Self : not null access XMPP_Session;
+                       Port : Natural) is
+   begin
+      Self.Port := Port;
+   end Set_Port;
 
    ------------------
    -- Set_Resource --

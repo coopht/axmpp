@@ -97,8 +97,11 @@ package XMPP.Sessions is
      Authenticated   : Boolean := False;
 
      JID             : League.Strings.Universal_String;
-     Host            : League.Strings.Universal_String;
      Password        : League.Strings.Universal_String;
+
+     Host            : League.Strings.Universal_String;
+     Port            : Natural := 5222;
+
      Addr            : League.Strings.Universal_String;
      In_IQ_Mode      : Boolean := False;
      IQ_Header       : XMPP.IQS.XMPP_IQ;
@@ -178,6 +181,14 @@ package XMPP.Sessions is
     (Self    : not null access XMPP_Session;
      Handler : not null access XMPP.Stream_Handlers.XMPP_Stream_Handler'Class);
    --  Application must set stream handler for the axmpp library.
+
+   procedure Set_Host (Self : not null access XMPP_Session;
+                       Host : League.Strings.Universal_String);
+   --  Sets xmpp server host
+
+   procedure Set_Port (Self : not null access XMPP_Session;
+                       Port : Natural);
+   --  Sets xmpp server port
 
 private
 
