@@ -721,13 +721,13 @@ package XMPP is
       IQ_Session,
       Error,
       Message,
-      Object_MUC,
+      MUC,
       Null_Object,
       Presence,
       Roster,
       Roster_Item,
       Stream,
-      Object_Stream_Features,
+      Stream_Featuress,
       Version);
 
 end XMPP;

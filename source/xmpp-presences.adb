@@ -77,7 +77,7 @@ package body XMPP.Presences is
    ---------------
    --  Get_MUC  --
    ---------------
-   function Get_MUC (Self : XMPP_Presence) return XMPP.MUC.XMPP_MUC is
+   function Get_MUC (Self : XMPP_Presence) return XMPP.MUCS.XMPP_MUC is
    begin
       return Self.MUC;
    end Get_MUC;
@@ -281,7 +281,7 @@ package body XMPP.Presences is
    --  Set_Multi_Chat  --
    ----------------------
    procedure Set_Multi_Chat (Self : in out XMPP_Presence;
-                             MUC  : XMPP.MUC.XMPP_MUC) is
+                             MUC  : XMPP.MUCS.XMPP_MUC) is
    begin
       Self.MUC := MUC;
       Self.Multi_Chat := True;

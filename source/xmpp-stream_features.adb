@@ -78,7 +78,7 @@ package body XMPP.Stream_Features is
       return XMPP.Object_Kind is
       pragma Unreferenced (Self);
    begin
-      return Object_Stream_Features;
+      return Stream_Featuress;
    end Get_Kind;
 
    -------------------------

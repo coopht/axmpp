@@ -53,7 +53,7 @@ with XMPP.Services_Identities;
 with XMPP.IQ_Sessions;
 with XMPP.Logger;
 with XMPP.Messages;
-with XMPP.MUC;
+with XMPP.MUCS;
 with XMPP.Presences;
 with XMPP.Roster_Items;
 with XMPP.Rosters;
@@ -303,14 +303,14 @@ package body XMPP.Sessions is
 
       elsif Namespace_URI = +"http://jabber.org/protocol/muc#user" then
          if Local_Name = +"x" then
-            if Self.Stack.Last_Element.Get_Kind = Object_MUC then
+            if Self.Stack.Last_Element.Get_Kind = MUC then
                if Previous (Current) /= No_Element then
                   if Self.Stack.Element
                     (To_Index (Previous (Current))).Get_Kind = Presence
                   then
                      declare
-                        M : constant access XMPP.MUC.XMPP_MUC
-                          := XMPP.MUC.XMPP_MUC_Access
+                        M : constant access XMPP.MUCS.XMPP_MUC
+                          := XMPP.MUCS.XMPP_MUC_Access
                           (Self.Stack.Last_Element);
 
                         P : constant XMPP.Presences.XMPP_Presence_Access
@@ -434,7 +434,7 @@ package body XMPP.Sessions is
      Server    : League.Strings.Universal_String;
      Nick_Name : League.Strings.Universal_String) is
       P : XMPP.Presences.XMPP_Presence;
-      M : XMPP.MUC.XMPP_MUC;
+      M : XMPP.MUCS.XMPP_MUC;
 
    begin
       P.Set_From (Self.JID);
@@ -904,8 +904,7 @@ package body XMPP.Sessions is
                  (XMPP.Objects.XMPP_Object_Access (XMPP.Binds.Create));
 
             else
-               if Self.Stack.Last_Element.Get_Kind
-                 = Object_Stream_Features then
+               if Self.Stack.Last_Element.Get_Kind = Stream_Featuress then
                   --  Setting bind feature to stream feature object
                   Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
 
@@ -929,7 +928,7 @@ package body XMPP.Sessions is
             Self.Stack.Append
               (XMPP.Objects.XMPP_Object_Access (XMPP.IQ_Sessions.Create));
 
-         elsif Self.Stack.Last_Element.Get_Kind = Object_Stream_Features then
+         elsif Self.Stack.Last_Element.Get_Kind = Stream_Featuress then
 
            Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
 
@@ -1047,12 +1046,12 @@ package body XMPP.Sessions is
          if Local_Name = +"x" then
             if Self.Stack.Last_Element.Get_Kind = Presence then
                Self.Stack.Append
-                (XMPP.Objects.XMPP_Object_Access (XMPP.MUC.Create));
+                (XMPP.Objects.XMPP_Object_Access (XMPP.MUCS.Create));
             end if;
          elsif Local_Name = +"item" then
-            if Self.Stack.Last_Element.Get_Kind = Object_MUC then
+            if Self.Stack.Last_Element.Get_Kind = MUC then
                declare
-                  Item       : XMPP.MUC.MUC_Item;
+                  Item       : XMPP.MUCS.MUC_Item;
                   Affilation : constant Universal_String
                     := Attributes.Value (+"affilation");
 
@@ -1062,29 +1061,29 @@ package body XMPP.Sessions is
                begin
                   --  Setting affilation
                   if Affilation = +"admin" then
-                     Item.Affilation := XMPP.MUC.Admin;
+                     Item.Affilation := XMPP.MUCS.Admin;
                   elsif Affilation = +"member" then
-                     Item.Affilation := XMPP.MUC.Member;
+                     Item.Affilation := XMPP.MUCS.Member;
                   elsif Affilation = +"none" then
-                     Item.Affilation := XMPP.MUC.None;
+                     Item.Affilation := XMPP.MUCS.None;
                   elsif Affilation = +"outcast" then
-                     Item.Affilation := XMPP.MUC.Outcast;
+                     Item.Affilation := XMPP.MUCS.Outcast;
                   elsif Affilation = +"owner" then
-                     Item.Affilation := XMPP.MUC.Owner;
+                     Item.Affilation := XMPP.MUCS.Owner;
                   end if;
 
                   --  Setting role
                   if Role = +"moderator" then
-                     Item.Role := XMPP.MUC.Moderator;
+                     Item.Role := XMPP.MUCS.Moderator;
                   elsif Role = +"none" then
-                     Item.Role := XMPP.MUC.None;
+                     Item.Role := XMPP.MUCS.None;
                   elsif Role = +"participant" then
-                     Item.Role := XMPP.MUC.Participant;
+                     Item.Role := XMPP.MUCS.Participant;
                   elsif Role = +"visitor" then
-                     Item.Role := XMPP.MUC.Visitor;
+                     Item.Role := XMPP.MUCS.Visitor;
                   end if;
 
-                  XMPP.MUC.XMPP_MUC_Access
+                  XMPP.MUCS.XMPP_MUC_Access
                    (Self.Stack.Last_Element).Set_Item (Item);
                   return;
                end;

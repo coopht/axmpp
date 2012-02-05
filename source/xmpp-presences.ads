@@ -43,7 +43,7 @@ with League.Strings;
 
 with XML.SAX.Pretty_Writers;
 
-with XMPP.MUC;
+with XMPP.MUCS;
 with XMPP.Objects;
 
 package XMPP.Presences is
@@ -133,10 +133,10 @@ package XMPP.Presences is
    --  Returns if it is a multichat presence
 
    procedure Set_Multi_Chat (Self : in out XMPP_Presence;
-                             MUC  : XMPP.MUC.XMPP_MUC);
+                             MUC  : XMPP.MUCS.XMPP_MUC);
    --  Sets multichat presence
 
-   function Get_MUC (Self : XMPP_Presence) return XMPP.MUC.XMPP_MUC;
+   function Get_MUC (Self : XMPP_Presence) return XMPP.MUCS.XMPP_MUC;
    --  Returns multichat object, associated with presence
 
    --  private API, should not be used by application
@@ -161,7 +161,7 @@ private
       Status           : League.Strings.Universal_String;
       Priority         : Priority_Type := -129;
       Type_Of_Presence : Presence_Type := Unavailable;
-      MUC              : XMPP.MUC.XMPP_MUC;
+      MUC              : XMPP.MUCS.XMPP_MUC;
       Multi_Chat       : Boolean := False;
    end record;
 end XMPP.Presences;

@@ -39,52 +39,61 @@
 ------------------------------------------------------------------------------
 --  $Revision$ $Date$
 ------------------------------------------------------------------------------
-with League.Strings;
+package body XMPP.MUCS is
 
-with XML.SAX.Pretty_Writers;
+   --------------
+   --  Create  --
+   --------------
+   function Create return XMPP_MUC_Access is
+   begin
+      return new XMPP_MUC;
+   end Create;
 
-with XMPP.Objects;
+   ----------------
+   --  Get_Kind  --
+   ----------------
+   overriding function Get_Kind (Self : XMPP_MUC) return Object_Kind is
+      pragma Unreferenced (Self);
 
-package XMPP.MUC is
+   begin
+      return XMPP.MUC;
+   end Get_Kind;
 
-   MUC_Element : constant League.Strings.Universal_String
-     := League.Strings.To_Universal_String ("muc");
-
-   MUC_URI : constant League.Strings.Universal_String
-     := League.Strings.To_Universal_String
-         ("http://jabber.org/protocol/muc");
-
-   type MUC_Affilation is (Admin, Member, None, Outcast, Owner);
-   type MUC_Role is (Moderator, None, Participant, Visitor);
-
-   type MUC_Item is record
-      Affilation : MUC_Affilation := None;
-      Role       : MUC_Role := None;
-   end record;
-
-   type XMPP_MUC is new XMPP.Objects.XMPP_Object with private;
-
-   type XMPP_MUC_Access is access all XMPP_MUC'Class;
-
-   overriding function Get_Kind (Self : XMPP_MUC) return Object_Kind;
-
+   -----------------
+   --  Serialize  --
+   -----------------
    overriding procedure Serialize
     (Self   : XMPP_MUC;
-     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class);
+     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class) is
+      pragma Unreferenced (Self);
 
+   begin
+      Writer.Start_Prefix_Mapping (Namespace_URI => MUC_URI);
+
+      Writer.Start_Element (Namespace_URI => MUC_URI,
+                            Local_Name    => MUC_Element);
+
+      Writer.End_Element (Namespace_URI => MUC_URI,
+                          Local_Name => MUC_Element);
+   end Serialize;
+
+   -------------------
+   --  Set_Content  --
+   -------------------
    overriding procedure Set_Content
      (Self      : in out XMPP_MUC;
       Parameter : League.Strings.Universal_String;
-      Value     : League.Strings.Universal_String);
+      Value     : League.Strings.Universal_String) is
+   begin
+      raise Program_Error with "Not yet implemented";
+   end Set_Content;
 
-   function Create return XMPP_MUC_Access;
+   ----------------
+   --  Set_Item  --
+   ----------------
+   procedure Set_Item (Self : in out XMPP_MUC; Item : MUC_Item) is
+   begin
+      Self.Item := Item;
+   end Set_Item;
 
-   procedure Set_Item (Self : in out XMPP_MUC; Item : MUC_Item);
-
-private
-
-   type XMPP_MUC is new XMPP.Objects.XMPP_Object with
-   record
-      Item : MUC_Item;
-   end record;
-end XMPP.MUC;
+end XMPP.MUCS;
