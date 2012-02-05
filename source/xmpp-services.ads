@@ -82,11 +82,10 @@ package XMPP.Services is
 
    function Create return not null XMPP_Service_Access;
 
-   function Get_Type (Self : XMPP_Service)
-      return XMPP.Services_Features.Feature;
+   function Get_Type (Self : XMPP_Service) return XMPP.Feature;
 
    procedure Set_Type (Self : in out XMPP_Service;
-                       Val  : XMPP.Services_Features.Feature);
+                       Val  : XMPP.Feature);
 
    function Get_Identities (Self : XMPP_Service)
       return XMPP.Services_Identities.Identities_Vector;
@@ -98,7 +97,7 @@ package XMPP.Services is
                            Val  : XMPP.Services_Identities.Identity);
 
    procedure Add_Feature (Self : in out XMPP_Service;
-                          Val  : XMPP.Services_Features.Feature);
+                          Val  : XMPP.Feature);
 
    procedure Add_Feature (Self : in out XMPP_Service;
                           Val  : League.Strings.Universal_String);
@@ -112,7 +111,7 @@ private
 
    type XMPP_Service is new XMPP.IQS.XMPP_IQ with
    record
-      Type_Of_Service : XMPP.Services_Features.Feature;
+      Type_Of_Service : XMPP.Feature;
       Identities      : XMPP.Services_Identities.Identities_Vector;
       Features        : XMPP.Services_Features.Features_Vector;
       Items           : Service_Items_Package.Vector;

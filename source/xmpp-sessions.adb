@@ -49,7 +49,6 @@ with XML.SAX.Readers;
 
 with XMPP.Binds;
 with XMPP.Services;
-with XMPP.Services_Features;
 with XMPP.Services_Identities;
 with XMPP.IQ_Sessions;
 with XMPP.Logger;
@@ -147,7 +146,7 @@ package body XMPP.Sessions is
 
    begin
       D.Set_IQ_Kind (XMPP.Get);
-      D.Set_Type (XMPP.Services_Features.Protocol_Disco_Info);
+      D.Set_Type (XMPP.Protocol_Disco_Info);
       D.Set_From (Self.JID);
       D.Set_To (JID);
 
@@ -163,7 +162,7 @@ package body XMPP.Sessions is
 
    begin
       D.Set_IQ_Kind (XMPP.Get);
-      D.Set_Type (XMPP.Services_Features.Protocol_Disco_Items);
+      D.Set_Type (XMPP.Protocol_Disco_Items);
       D.Set_From (Self.JID);
       D.Set_To (JID);
 
