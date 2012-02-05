@@ -41,7 +41,6 @@
 ------------------------------------------------------------------------------
 with League.Strings;
 
-with XMPP.IQ_Sessions;
 with XMPP.IQS;
 with XMPP.Messages;
 with XMPP.Presences;
@@ -91,7 +90,7 @@ package XMPP.Stream_Handlers is
 
    not overriding procedure Session_State
      (Self   : in out XMPP_Stream_Handler;
-      Status : XMPP.IQ_Sessions.Session_State) is null;
+      Status : Session_State) is null;
    --  Handler is called when information about session state arrived.
 
    not overriding procedure Error

@@ -57,7 +57,7 @@ package body Con_Cli_Handlers is
    use XMPP.Objects;
 
    use type XMPP.Bind_State;
-   use type XMPP.IQ_Sessions.Session_State;
+   use type XMPP.Session_State;
 
    ---------------------------
    --  Bind_Resource_State  --
@@ -111,9 +111,9 @@ package body Con_Cli_Handlers is
    ---------------------
    overriding procedure Session_State
      (Self   : in out Con_Cli_Handler;
-      Status : XMPP.IQ_Sessions.Session_State) is
+      Status : XMPP.Session_State) is
    begin
-      if Status = XMPP.IQ_Sessions.Established then
+      if Status = XMPP.Established then
          Ada.Wide_Wide_Text_IO.Put_Line ("Session established !!!");
 
          Self.Object.Request_Roster;

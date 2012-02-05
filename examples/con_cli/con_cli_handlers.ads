@@ -41,7 +41,6 @@
 ------------------------------------------------------------------------------
 with League.Strings;
 
-with XMPP.IQ_Sessions;
 with XMPP.Presences;
 with XMPP.Stream_Handlers;
 with XMPP.Streams;
@@ -90,7 +89,7 @@ package Con_Cli_Handlers is
 
    overriding procedure Session_State
      (Self   : in out Con_Cli_Handler;
-      Status : XMPP.IQ_Sessions.Session_State);
+      Status : XMPP.Session_State);
    --  We whant to get information about session state.
 
    procedure Set_Session_Object

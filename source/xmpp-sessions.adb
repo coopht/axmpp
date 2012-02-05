@@ -644,8 +644,7 @@ package body XMPP.Sessions is
 
          --  Session established
          when IQ_Session =>
-               Self.Stream_Handler.Session_State
-                 (XMPP.IQ_Sessions.Established);
+               Self.Stream_Handler.Session_State (Established);
 
          --  Roster arrived
          when Roster =>

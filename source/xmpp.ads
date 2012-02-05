@@ -891,6 +891,8 @@ package XMPP is
       Pep,
       Service);
 
+   type Session_State is (Established, Error);
+
    --  The "server" category consists of any Jabber/XMPP server.
    type Server_Type is
      (IM);

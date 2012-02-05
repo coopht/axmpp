@@ -54,8 +54,6 @@ package XMPP.IQ_Sessions is
      := League.Strings.To_Universal_String
          ("urn:ietf:params:xml:ns:xmpp-session");
 
-   type Session_State is (Established, Error);
-
    type XMPP_IQ_Session is new XMPP.IQS.XMPP_IQ with private;
 
    type XMPP_IQ_Session_Access is access all XMPP_IQ_Session'Class;
