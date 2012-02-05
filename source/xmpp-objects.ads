@@ -46,23 +46,6 @@ with XML.SAX.Pretty_Writers;
 
 package XMPP.Objects is
 
-   type Object_Kind is
-     (Bind,
-      Challenge,
-      Disco,
-      IQ,
-      IQ_Session,
-      Error,
-      Message,
-      MUC,
-      Null_Object,
-      Presence,
-      Roster,
-      Roster_Item,
-      Stream,
-      Stream_Features,
-      Version);
-
    type XMPP_Object is limited interface;
 
    type XMPP_Object_Access is access all XMPP_Object'Class;
@@ -74,8 +57,9 @@ package XMPP.Objects is
    --  Get_Kind  --
    ----------------
    not overriding
-   function Get_Kind (Self : XMPP_Object) return XMPP.Objects.Object_Kind
+   function Get_Kind (Self : XMPP_Object) return Object_Kind
       is abstract;
+
    -----------------
    --  Serialize  --
    -----------------

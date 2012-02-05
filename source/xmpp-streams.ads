@@ -53,8 +53,7 @@ package XMPP.Streams is
 
    function Create return XMPP_Stream_Access;
 
-   overriding
-   function Get_Kind (Self : XMPP_Stream) return XMPP.Objects.Object_Kind;
+   overriding function Get_Kind (Self : XMPP_Stream) return XMPP.Object_Kind;
 
    overriding procedure Serialize
     (Self   : XMPP_Stream;

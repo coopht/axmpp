@@ -43,8 +43,6 @@ package XMPP is
 
    type Bind_State is (Success, Error);
 
-   type IQ_Kind is (Error, Get, Result, Set);
-
    type Feature is
      (DNS_Srv,
       --  Support for DNS SRV lookups of XMPP services.
@@ -712,5 +710,24 @@ package XMPP is
       --  as described in RFC 3920.
       --  RFC 3920: XMPP Core
       IQ);
+
+   type IQ_Kind is (Error, Get, Result, Set);
+
+   type Object_Kind is
+     (Bind,
+      Challenge,
+      Disco,
+      IQ,
+      IQ_Session,
+      Error,
+      Message,
+      Object_MUC,
+      Null_Object,
+      Presence,
+      Roster,
+      Roster_Item,
+      Stream,
+      Object_Stream_Features,
+      Version);
 
 end XMPP;

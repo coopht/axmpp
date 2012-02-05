@@ -75,10 +75,10 @@ package body XMPP.Stream_Features is
    --  Get_Kind  --
    ----------------
    overriding function Get_Kind (Self : XMPP_Stream_Feature)
-      return XMPP.Objects.Object_Kind is
+      return XMPP.Object_Kind is
       pragma Unreferenced (Self);
    begin
-      return XMPP.Objects.Stream_Features;
+      return Object_Stream_Features;
    end Get_Kind;
 
    -------------------------

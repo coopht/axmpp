@@ -67,12 +67,11 @@ package body XMPP.Presences is
    ----------------
    --  Get_Kind  --
    ----------------
-   overriding function Get_Kind (Self : XMPP_Presence)
-      return Objects.Object_Kind is
+   overriding function Get_Kind (Self : XMPP_Presence) return Object_Kind is
       pragma Unreferenced (Self);
 
    begin
-      return XMPP.Objects.Presence;
+      return XMPP.Presence;
    end Get_Kind;
 
    ---------------

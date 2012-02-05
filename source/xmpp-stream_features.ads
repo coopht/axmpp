@@ -64,7 +64,7 @@ package XMPP.Stream_Features is
    function Create return XMPP_Stream_Feature_Access;
 
    overriding function Get_Kind (Self : XMPP_Stream_Feature)
-      return XMPP.Objects.Object_Kind;
+      return XMPP.Object_Kind;
 
    overriding procedure Serialize
     (Self   : XMPP_Stream_Feature;

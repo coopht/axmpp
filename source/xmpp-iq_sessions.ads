@@ -44,7 +44,6 @@ with League.Strings;
 with XML.SAX.Pretty_Writers;
 
 with XMPP.IQS;
-with XMPP.Objects;
 
 package XMPP.IQ_Sessions is
 
@@ -61,8 +60,7 @@ package XMPP.IQ_Sessions is
 
    type XMPP_IQ_Session_Access is access all XMPP_IQ_Session'Class;
 
-   overriding function Get_Kind (Self : XMPP_IQ_Session)
-      return Objects.Object_Kind;
+   overriding function Get_Kind (Self : XMPP_IQ_Session) return Object_Kind;
 
    overriding procedure Serialize
     (Self   : XMPP_IQ_Session;

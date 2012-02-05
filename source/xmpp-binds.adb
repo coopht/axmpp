@@ -65,11 +65,11 @@ package body XMPP.Binds is
    ----------------
    --  Get_Kind  --
    ----------------
-   overriding function Get_Kind (Self : XMPP_Bind) return Objects.Object_Kind
+   overriding function Get_Kind (Self : XMPP_Bind) return Object_Kind
    is
       pragma Unreferenced (Self);
    begin
-      return XMPP.Objects.Bind;
+      return XMPP.Bind;
    end Get_Kind;
 
    --------------------

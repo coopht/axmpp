@@ -40,7 +40,6 @@
 --  $Revision$ $Date$
 ------------------------------------------------------------------------------
 with XMPP.IQS;
-with XMPP.Objects;
 
 with League.Strings;
 with XML.SAX.Pretty_Writers;
@@ -80,7 +79,7 @@ package XMPP.Binds is
    --  Returns JID
 
    --  Private API, should not be used by application
-   overriding function Get_Kind (Self : XMPP_Bind) return Objects.Object_Kind;
+   overriding function Get_Kind (Self : XMPP_Bind) return Object_Kind;
 
    overriding procedure Serialize
     (Self   : XMPP_Bind;

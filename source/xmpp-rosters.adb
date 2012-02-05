@@ -64,12 +64,11 @@ package body XMPP.Rosters is
    ----------------
    --  Get_Kind  --
    ----------------
-   overriding function Get_Kind (Self : XMPP_Roster)
-      return Objects.Object_Kind
+   overriding function Get_Kind (Self : XMPP_Roster) return Object_Kind
    is
       pragma Unreferenced (Self);
    begin
-      return XMPP.Objects.Roster;
+      return XMPP.Roster;
    end Get_Kind;
 
    ---------------

@@ -140,8 +140,7 @@ package XMPP.Presences is
    --  Returns multichat object, associated with presence
 
    --  private API, should not be used by application
-   overriding function Get_Kind (Self : XMPP_Presence)
-      return Objects.Object_Kind;
+   overriding function Get_Kind (Self : XMPP_Presence) return Object_Kind;
 
    overriding procedure Serialize
     (Self   : XMPP_Presence;

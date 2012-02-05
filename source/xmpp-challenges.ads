@@ -54,7 +54,7 @@ package XMPP.Challenges is
    function Create return XMPP_Challenge_Access;
 
    overriding
-   function Get_Kind (Self : XMPP_Challenge) return XMPP.Objects.Object_Kind;
+   function Get_Kind (Self : XMPP_Challenge) return XMPP.Object_Kind;
 
    overriding procedure Serialize
     (Self   : XMPP_Challenge;

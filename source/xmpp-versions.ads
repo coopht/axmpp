@@ -44,7 +44,6 @@ with League.Strings;
 with XML.SAX.Pretty_Writers;
 
 with XMPP.IQS;
-with XMPP.Objects;
 
 package XMPP.Versions is
 
@@ -108,8 +107,7 @@ package XMPP.Versions is
                           Parameter : League.Strings.Universal_String;
                           Value     : League.Strings.Universal_String);
 
-   overriding function Get_Kind (Self : XMPP_Version)
-      return Objects.Object_Kind;
+   overriding function Get_Kind (Self : XMPP_Version) return Object_Kind;
 
    overriding procedure Serialize
     (Self   : XMPP_Version;

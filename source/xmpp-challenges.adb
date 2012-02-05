@@ -175,11 +175,11 @@ package body XMPP.Challenges is
    --  Get_Kind  --
    ----------------
    overriding
-   function Get_Kind (Self : XMPP_Challenge) return XMPP.Objects.Object_Kind is
+   function Get_Kind (Self : XMPP_Challenge) return XMPP.Object_Kind is
       pragma Unreferenced (Self);
 
    begin
-      return XMPP.Objects.Challenge;
+      return XMPP.Challenge;
    end Get_Kind;
 
    -----------------------

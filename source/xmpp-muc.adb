@@ -52,11 +52,11 @@ package body XMPP.MUC is
    ----------------
    --  Get_Kind  --
    ----------------
-   overriding function Get_Kind (Self : XMPP_MUC) return Objects.Object_Kind is
+   overriding function Get_Kind (Self : XMPP_MUC) return Object_Kind is
       pragma Unreferenced (Self);
 
    begin
-      return XMPP.Objects.MUC;
+      return XMPP.Object_MUC;
    end Get_Kind;
 
    -----------------

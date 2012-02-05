@@ -94,11 +94,11 @@ package body XMPP.Messages is
    --  Get_Kind  --
    ----------------
    overriding function Get_Kind (Self : XMPP_Message)
-      return Objects.Object_Kind is
+      return Object_Kind is
       pragma Unreferenced (Self);
 
    begin
-      return XMPP.Objects.Message;
+      return XMPP.Message;
    end Get_Kind;
 
    -------------------

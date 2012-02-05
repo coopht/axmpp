@@ -162,8 +162,7 @@ package XMPP.Messages is
    --  End of public API  --
 
    --  Private API, should not be used by application
-   overriding function Get_Kind (Self : XMPP_Message)
-      return Objects.Object_Kind;
+   overriding function Get_Kind (Self : XMPP_Message) return Object_Kind;
 
    overriding procedure Serialize
     (Self   : XMPP_Message;

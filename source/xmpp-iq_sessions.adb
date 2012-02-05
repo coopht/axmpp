@@ -54,12 +54,11 @@ package body XMPP.IQ_Sessions is
    ----------------
    --  Get_Kind  --
    ----------------
-   overriding function Get_Kind (Self : XMPP_IQ_Session)
-      return Objects.Object_Kind is
+   overriding function Get_Kind (Self : XMPP_IQ_Session) return Object_Kind is
       pragma Unreferenced (Self);
 
    begin
-      return XMPP.Objects.IQ_Session;
+      return IQ_Session;
    end Get_Kind;
 
    -----------------

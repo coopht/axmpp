@@ -105,8 +105,7 @@ package XMPP.Roster_Items is
 
    --  Private API
    --  Should not be used in application
-   overriding function Get_Kind (Self : XMPP_Roster_Item)
-      return Objects.Object_Kind;
+   overriding function Get_Kind (Self : XMPP_Roster_Item) return Object_Kind;
 
    overriding procedure Serialize
     (Self : XMPP_Roster_Item;

@@ -67,7 +67,7 @@ package XMPP.IQS is
 
    type XMPP_IQ_Access is access all XMPP_IQ'Class;
 
-   overriding function Get_Kind (Self : XMPP_IQ) return Objects.Object_Kind;
+   overriding function Get_Kind (Self : XMPP_IQ) return Object_Kind;
 
    overriding procedure Serialize
     (Self   : XMPP_IQ;

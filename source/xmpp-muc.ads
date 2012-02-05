@@ -66,7 +66,7 @@ package XMPP.MUC is
 
    type XMPP_MUC_Access is access all XMPP_MUC'Class;
 
-   overriding function Get_Kind (Self : XMPP_MUC) return Objects.Object_Kind;
+   overriding function Get_Kind (Self : XMPP_MUC) return Object_Kind;
 
    overriding procedure Serialize
     (Self   : XMPP_MUC;

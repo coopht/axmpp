@@ -86,11 +86,11 @@ package body XMPP.IQS is
    ----------------
    --  Get_Kind  --
    ----------------
-   overriding function Get_Kind (Self : XMPP_IQ) return Objects.Object_Kind is
+   overriding function Get_Kind (Self : XMPP_IQ) return Object_Kind is
       pragma Unreferenced (Self);
 
    begin
-      return Objects.IQ;
+      return XMPP.IQ;
    end Get_Kind;
 
    --------------

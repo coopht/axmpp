@@ -53,12 +53,11 @@ package body XMPP.Streams is
    ----------------
    --  Get_Kind  --
    ----------------
-   overriding
-   function Get_Kind (Self : XMPP_Stream) return XMPP.Objects.Object_Kind is
+   overriding function Get_Kind (Self : XMPP_Stream) return XMPP.Object_Kind is
       pragma Unreferenced (Self);
 
    begin
-      return XMPP.Objects.Stream;
+      return XMPP.Stream;
    end Get_Kind;
 
    -----------------

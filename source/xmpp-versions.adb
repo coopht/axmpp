@@ -56,11 +56,10 @@ package body XMPP.Versions is
    --  Get_Kind  --
    ----------------
 
-   overriding function Get_Kind (Self : XMPP_Version)
-      return Objects.Object_Kind is
+   overriding function Get_Kind (Self : XMPP_Version) return Object_Kind is
       pragma Unreferenced (Self);
    begin
-      return XMPP.Objects.Version;
+      return XMPP.Version;
    end Get_Kind;
 
    ----------------

@@ -46,7 +46,6 @@ with League.Strings;
 with XML.SAX.Pretty_Writers;
 
 with XMPP.IQS;
-with XMPP.Objects;
 with XMPP.Services_Features;
 with XMPP.Services_Identities;
 
@@ -68,8 +67,7 @@ package XMPP.Services is
 
    type XMPP_Service_Access is access all XMPP_Service'Class;
 
-   overriding function Get_Kind (Self : XMPP_Service)
-      return Objects.Object_Kind;
+   overriding function Get_Kind (Self : XMPP_Service) return Object_Kind;
 
    overriding procedure Serialize
     (Self   : XMPP_Service;

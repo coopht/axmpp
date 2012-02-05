@@ -45,12 +45,11 @@ package body XMPP.Null_Objects is
    --  Set_Kind  --
    ----------------
    overriding
-   function Get_Kind (Self : XMPP_Null_Object) return XMPP.Objects.Object_Kind
-   is
+   function Get_Kind (Self : XMPP_Null_Object) return XMPP.Object_Kind is
       pragma Unreferenced (Self);
 
    begin
-      return XMPP.Objects.Null_Object;
+      return XMPP.Null_Object;
    end Get_Kind;
 
    -----------------

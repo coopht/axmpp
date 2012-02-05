@@ -348,12 +348,11 @@ package body XMPP.Services is
    ----------------
    --  Get_Kind  --
    ----------------
-   overriding function Get_Kind (Self : XMPP_Service)
-      return Objects.Object_Kind is
+   overriding function Get_Kind (Self : XMPP_Service) return Object_Kind is
       pragma Unreferenced (Self);
 
    begin
-      return XMPP.Objects.Disco;
+      return XMPP.Disco;
    end Get_Kind;
 
    ----------------

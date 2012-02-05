@@ -277,11 +277,10 @@ package body XMPP.Sessions is
 
          --  Adding item to the roster
          if Local_Name = +"item" then
-            if Self.Stack.Last_Element.Get_Kind = Objects.Roster_Item then
+            if Self.Stack.Last_Element.Get_Kind = Roster_Item then
                if Previous (Current) /= No_Element then
                   if Self.Stack.Element
-                    (To_Index
-                      (Previous (Current))).Get_Kind = XMPP.Objects.Roster
+                    (To_Index (Previous (Current))).Get_Kind = Roster
                   then
                      XMPP.Rosters.XMPP_Roster_Access
                        (Self.Stack.Element (To_Index (Previous (Current))))
@@ -304,11 +303,10 @@ package body XMPP.Sessions is
 
       elsif Namespace_URI = +"http://jabber.org/protocol/muc#user" then
          if Local_Name = +"x" then
-            if Self.Stack.Last_Element.Get_Kind = XMPP.Objects.MUC then
+            if Self.Stack.Last_Element.Get_Kind = Object_MUC then
                if Previous (Current) /= No_Element then
                   if Self.Stack.Element
-                    (To_Index (Previous (Current))).Get_Kind
-                                                        = XMPP.Objects.Presence
+                    (To_Index (Previous (Current))).Get_Kind = Presence
                   then
                      declare
                         M : constant access XMPP.MUC.XMPP_MUC
@@ -640,27 +638,27 @@ package body XMPP.Sessions is
       case IQ.Get_Kind is
 
          --  Resource Binded
-         when XMPP.Objects.Bind =>
+         when Bind =>
             Self.Stream_Handler.Bind_Resource_State
               (XMPP.Binds.XMPP_Bind_Access (IQ).Get_JID, Success);
 
          --  Session established
-         when XMPP.Objects.IQ_Session =>
+         when IQ_Session =>
                Self.Stream_Handler.Session_State
                  (XMPP.IQ_Sessions.Established);
 
          --  Roster arrived
-         when XMPP.Objects.Roster =>
+         when Roster =>
             Self.Stream_Handler.Roster
               (XMPP.Rosters.XMPP_Roster_Access (IQ).all);
 
          --  Discover information arrived
-         when XMPP.Objects.Disco =>
+         when Disco =>
             Self.Stream_Handler.Service_Information
               (XMPP.Services.XMPP_Service_Access (IQ).all);
 
          --  Software version information arrived
-         when XMPP.Objects.Version =>
+         when Version =>
 
             case XMPP.IQS.XMPP_IQ_Access (IQ).Get_IQ_Kind is
                when XMPP.Result =>
@@ -907,7 +905,7 @@ package body XMPP.Sessions is
 
             else
                if Self.Stack.Last_Element.Get_Kind
-                 = Objects.Stream_Features then
+                 = Object_Stream_Features then
                   --  Setting bind feature to stream feature object
                   Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
 
@@ -931,8 +929,7 @@ package body XMPP.Sessions is
             Self.Stack.Append
               (XMPP.Objects.XMPP_Object_Access (XMPP.IQ_Sessions.Create));
 
-         elsif Self.Stack.Last_Element.Get_Kind
-           = XMPP.Objects.Stream_Features then
+         elsif Self.Stack.Last_Element.Get_Kind = Object_Stream_Features then
 
            Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
 
@@ -981,7 +978,7 @@ package body XMPP.Sessions is
            or Local_Name = +"composing"
            or Local_Name = +"paused"
          then
-            if Self.Stack.Last_Element.Get_Kind = Objects.Message then
+            if Self.Stack.Last_Element.Get_Kind = Message then
                Self.Stack.Last_Element.Set_Content (Local_Name, Local_Name);
             end if;
          end if;
@@ -998,7 +995,7 @@ package body XMPP.Sessions is
          --  if item found within jabber:iq:roster namespace, then
          --  creating a roster item.
          elsif Local_Name = XMPP.Roster_Items.Item_Element then
-            if Self.Stack.Last_Element.Get_Kind = Objects.Roster then
+            if Self.Stack.Last_Element.Get_Kind = Roster then
                Self.Stack.Append
                  (XMPP.Objects.XMPP_Object_Access (XMPP.Roster_Items.Create));
             end if;
@@ -1014,7 +1011,7 @@ package body XMPP.Sessions is
               (XMPP.Objects.XMPP_Object_Access (XMPP.Services.Create));
 
          elsif Local_Name = +"identity" then
-            if Self.Stack.Last_Element.Get_Kind = Objects.Disco then
+            if Self.Stack.Last_Element.Get_Kind = Disco then
                XMPP.Services.XMPP_Service_Access
                  (Self.Stack.Last_Element).Add_Identity
                   (XMPP.Services_Identities.Create
@@ -1023,7 +1020,7 @@ package body XMPP.Sessions is
             end if;
 
          elsif Local_Name = +"feature" then
-            if Self.Stack.Last_Element.Get_Kind = Objects.Disco then
+            if Self.Stack.Last_Element.Get_Kind = Disco then
                XMPP.Services.XMPP_Service_Access
                  (Self.Stack.Last_Element).Add_Feature (Attributes.Value (1));
                return;
@@ -1036,7 +1033,7 @@ package body XMPP.Sessions is
               (XMPP.Objects.XMPP_Object_Access (XMPP.Services.Create));
 
          elsif Local_Name = +"item" then
-            if Self.Stack.Last_Element.Get_Kind = Objects.Disco then
+            if Self.Stack.Last_Element.Get_Kind = Disco then
                XMPP.Services.XMPP_Service_Access
                  (Self.Stack.Last_Element).Add_Item
                  ((JID => Attributes.Value (+"jid"),
@@ -1048,12 +1045,12 @@ package body XMPP.Sessions is
 
       elsif Namespace_URI = +"http://jabber.org/protocol/muc#user" then
          if Local_Name = +"x" then
-            if Self.Stack.Last_Element.Get_Kind = Objects.Presence then
+            if Self.Stack.Last_Element.Get_Kind = Presence then
                Self.Stack.Append
                 (XMPP.Objects.XMPP_Object_Access (XMPP.MUC.Create));
             end if;
          elsif Local_Name = +"item" then
-            if Self.Stack.Last_Element.Get_Kind = Objects.MUC then
+            if Self.Stack.Last_Element.Get_Kind = Object_MUC then
                declare
                   Item       : XMPP.MUC.MUC_Item;
                   Affilation : constant Universal_String
@@ -1120,7 +1117,7 @@ package body XMPP.Sessions is
          end loop;
 
          --  Hack for stream:stream stanza, which does not have close tag
-         if Self.Stack.Last_Element.Get_Kind = XMPP.Objects.Stream then
+         if Self.Stack.Last_Element.Get_Kind = Stream then
             Self.Stream_Handler.Start_Stream
               (XMPP.Streams.XMPP_Stream_Access (Self.Stack.Last_Element).all);
             Self.Stack.Delete_Last;
