@@ -41,7 +41,95 @@
 ------------------------------------------------------------------------------
 package XMPP is
 
+      --  The "account" category is to be used by a server when responding
+   --  to a disco request sent to the bare JID (user@host addresss)
+   --  of an account hosted by the server.
+   type Account_Type is
+     (Admin,
+      Anonymous,
+      Registered);
+
+   --  The "auth" category consists of server components that provide
+   --  authentication services within a server implementation.
+   type Auth_Type is
+     (Cert,
+      Generic_Auth,
+      LDAP,
+      NTLM,
+      PAM,
+      Radius);
+
+   --  The "automation" category consists of entities and nodes that provide
+   --  automated or programmed interaction.
+   type Automation_Type is
+     (Command_List,
+      Command_Node,
+      RPC,
+      SOAP,
+      Translation);
+
    type Bind_State is (Success, Error);
+
+   --  The "client" category consists of different types
+   --  of clients, mostly for instant messaging.
+   type Client_Type is
+     (Bot,
+      Console,
+      Handheld,
+      Pc,
+      Phone,
+      Web);
+
+   --  The "collaboration" category consists of services that enable multiple
+   --  individuals to work together in real time.
+   type Collaboration_Type is
+     (Whiteboard);
+
+   --  The "component" category consists of services that are internal to
+   --  server implementations and not normally exposed outside a server.
+   type Component_Type is
+     (Archive,
+      C2S,
+      Generic_Component,
+      Load,
+      Log,
+      Presence,
+      Router,
+      S2S,
+      SM,
+      Stats);
+
+   --  The "conference" category consists of online conference services such
+   --  as multi-user chatroom services.
+   type Conference_Type is
+     (IRC,
+      Text);
+
+   type Category_Type is
+     (Account,
+      Auth,
+      Automation,
+      Client,
+      Collaboration,
+      Component,
+      Conference,
+      Directory,
+      Gateway,
+      Headline,
+      Hierarchy,
+      Proxy,
+      Pubsub,
+      Server,
+      Store);
+
+   --  The "directory" category consists of information retrieval services
+   --  that enable users to search online directories or otherwise be
+   --  informed about the existence of other XMPP entities.
+   type Directory_Type is
+     (Chatroom,
+      Group,
+      User,
+      Waitinglist);
 
    type Feature is
      (DNS_Srv,
@@ -711,6 +799,45 @@ package XMPP is
       --  RFC 3920: XMPP Core
       IQ);
 
+   --  The "gateway" category consists of translators between Jabber/XMPP
+   --  services and non-XMPP services.
+   type Gateway_Type is
+     (AIM,
+      Facebook,
+      Gadu_Gadu,
+      HTTP_WS,
+      ICQ,
+      IRC,
+      LCS,
+      MRIM,
+      MSN,
+      Myspaceim,
+      OCS,
+      QQ,
+      Sametime,
+      Simple,
+      Skype,
+      SMS,
+      SMTP,
+      Tlen,
+      Xfire,
+      XMPP_Gateway,
+      Yahoo);
+
+   --  The "headline" category consists of services that provide real-time
+   --  news or information (often but not necessarily in a message of type
+   --  "headline").
+   type Headline_Type is
+     (Newmail,
+      Rss,
+      weather);
+
+   --  The "hierarchy" category is used to describe nodes within a hierarchy
+   --  of nodes; the "branch" and "leaf" types are exhaustive.
+   type Hierarchy_Type is
+     (Branch,
+      Leaf);
+
    type IQ_Kind is (Error, Get, Result, Set);
 
    type Mechanism is (PLAIN, DIGEST_MD5);
@@ -731,5 +858,33 @@ package XMPP is
       Stream,
       Stream_Featuress,
       Version);
+
+   --  The "proxy" category consists of servers or services that act as
+   --  special-purpose proxies or intermediaries between two or more XMPP
+   --  endpoints.
+   type Proxy_Type is
+     (Bytestreams);
+
+   --  Services and nodes that adhere to XEP-0060.
+   type Pubsub_Type is
+     (Collection,
+      Leaf,
+      Pep,
+      Service);
+
+   --  The "server" category consists of any Jabber/XMPP server.
+   type Server_Type is
+     (IM);
+
+   --  The "store" category consists of internal server components that
+   --  provide data storage and retrieval services.
+   type Store_Type is
+     (Berkeley,
+      File,
+      Generic_Store,
+      Ldap,
+      Mysql,
+      Oracle,
+      Postgres);
 
 end XMPP;
