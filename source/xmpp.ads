@@ -842,6 +842,10 @@ package XMPP is
 
    type Mechanism is (PLAIN, DIGEST_MD5);
 
+   type Message_Type is (Chat, Error, Group_Chat, Headline, Normal);
+
+   type Chat_State_Type is (Active, Composing, Paused, Inactive, Gone);
+
    type MUC_Affilation is (Admin, Member, None, Outcast, Owner);
 
    type MUC_Role is (Moderator, None, Participant, Visitor);

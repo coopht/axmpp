@@ -78,12 +78,6 @@ package XMPP.Messages is
    Thread_Element         : constant League.Strings.Universal_String
      := League.Strings.To_Universal_String ("thread");
 
-   type Message_Type is (Chat, Error, Group_Chat, Headline, Normal);
-
-   type Chat_State_Type is (Active, Composing, Paused, Inactive, Gone);
-
-   type Priority_Type is new Integer range -128 .. 127;
-
    type XMPP_Message is new XMPP.Objects.XMPP_Object with private;
 
    type XMPP_Message_Access is access all XMPP_Message'Class;
