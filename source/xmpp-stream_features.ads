@@ -53,8 +53,6 @@ package XMPP.Stream_Features is
 
    type XMPP_Stream_Feature_Access is access all XMPP_Stream_Feature'Class;
 
-   type Mechanism is (PLAIN, DIGEST_MD5);
-
    package Mechanisms_Vectors is
       new Ada.Containers.Vectors (Natural, Mechanism);
 

@@ -713,6 +713,8 @@ package XMPP is
 
    type IQ_Kind is (Error, Get, Result, Set);
 
+   type Mechanism is (PLAIN, DIGEST_MD5);
+
    type Object_Kind is
      (Bind,
       Challenge,
