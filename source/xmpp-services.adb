@@ -60,7 +60,9 @@ package body XMPP.Services is
    --  Add_Feature  --
    -------------------
    procedure Add_Feature (Self : in out XMPP_Service;
-                          Val  : League.Strings.Universal_String) is
+                          Val  : League.Strings.Universal_String)
+   is
+      pragma Style_Checks (Off);
    begin
       if Val = To_Universal_String ("http://jabber.org/protocol/commands") then
          Self.Add_Feature (XMPP.Protocol_Commands);

@@ -507,9 +507,7 @@ package body GNUTLS is
       Length := 0;
 
       for I in Data'Range loop
-         N_Read := gnutls_record_recv (S,
-                                       Data (I).Base,
-                                       Interfaces.C.size_t (Data (I).Length));
+         N_Read := gnutls_record_recv (S, Data (I).Base, Data (I).Length);
 
          if N_Read = 0 then
             gnutls_perror (Interfaces.C.int (N_Read));
@@ -518,7 +516,7 @@ package body GNUTLS is
 
          Length := Length + Ada.Streams.Stream_Element_Count (N_Read);
 
-         if N_Read < Interfaces.C.size_t (Data (I).Length) then
+         if N_Read < Data (I).Length then
             --  nothing to read
             return;
          end if;
@@ -539,9 +537,7 @@ package body GNUTLS is
       Length := 0;
 
       for I in Data'Range loop
-         N_Write := gnutls_record_send (S,
-                                        Data (I).Base,
-                                        Interfaces.C.size_t (Data (I).Length));
+         N_Write := gnutls_record_send (S, Data (I).Base, Data (I).Length);
 
          if N_Write = 0 then
             raise GNUTLS_Error with "Data written = 0";
@@ -549,7 +545,7 @@ package body GNUTLS is
 
          Length := Length + Ada.Streams.Stream_Element_Count (N_Write);
 
-         if N_Write < Interfaces.C.size_t (Data (I).Length) then
+         if N_Write < Data (I).Length then
             --  nothing to write
             return;
          end if;

@@ -62,8 +62,6 @@ with XMPP.Stream_Features;
 with XMPP.Utils;
 with XMPP.Versions;
 
-with XML.SAX.String_Output_Destinations;
-
 package body XMPP.Sessions is
 
    use League.Strings;
@@ -240,7 +238,8 @@ package body XMPP.Sessions is
          end if;
 
       elsif Namespace_URI = +"urn:ietf:params:xml:ns:xmpp-tls"
-        and Local_Name = +"proceed" then
+        and Local_Name = +"proceed"
+      then
          if not Self.Source.Is_TLS_Established then
             Self.Proceed_TLS_Auth;
          end if;
@@ -297,7 +296,8 @@ package body XMPP.Sessions is
 
       --  Service discovery
       elsif Namespace_URI = +"http://jabber.org/protocol/disco#info" or
-        Namespace_URI = +"http://jabber.org/protocol/disco#items" then
+        Namespace_URI = +"http://jabber.org/protocol/disco#items"
+      then
 
          --  Nothing to process here
 
@@ -864,7 +864,8 @@ package body XMPP.Sessions is
             --  nothing todo here, just send required data to server in
             --  End_Element callback
          elsif Namespace_URI = +"urn:ietf:params:xml:ns:xmpp-tls"
-           and Local_Name = +"proceed" then
+           and Local_Name = +"proceed"
+         then
             null;
          end if;
 
@@ -922,7 +923,8 @@ package body XMPP.Sessions is
 
       --  For XMPP_Stream_Feature
       elsif Namespace_URI = +"urn:ietf:params:xml:ns:xmpp-session"
-        and Local_Name = +"session" then
+        and Local_Name = +"session"
+      then
          --  Setting session feature to stream feature object
          if Self.Stack.Is_Empty then
             Self.Stack.Append
@@ -970,7 +972,8 @@ package body XMPP.Sessions is
          end if;
 
       elsif Namespace_URI
-        = +"http://jabber.org/protocol/chatstates" then
+        = +"http://jabber.org/protocol/chatstates"
+      then
          if Local_Name = +"active"
            or Local_Name = +"inactive"
            or Local_Name = +"gone"
