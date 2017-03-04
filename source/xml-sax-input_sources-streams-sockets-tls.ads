@@ -55,13 +55,6 @@ package XML.SAX.Input_Sources.Streams.Sockets.TLS is
       Object      : access XMPP.Networks.Notification'Class;
    end record;
 
-   --  just for debuggig
-   overriding procedure Next
-    (Self        : in out TLS_Socket_Input_Source;
-     Buffer      : in out
-       not null Matreshka.Internals.Strings.Shared_String_Access;
-     End_Of_Data : out Boolean);
-
    overriding procedure Read
     (Self        : in out TLS_Socket_Input_Source;
      Buffer      : out Ada.Streams.Stream_Element_Array;

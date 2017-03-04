@@ -41,8 +41,6 @@
 ------------------------------------------------------------------------------
 with Ada.Characters.Conversions;
 with Ada.Text_IO;
-with Matreshka.Internals.Strings.Operations;
-with Matreshka.Internals.Utf16;
 
 with XMPP.Logger;
 with XMPP.Networks;
@@ -57,35 +55,6 @@ package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
    begin
       return Self.TLS_State = TLS;
    end Is_TLS_Established;
-
-   ----------
-   -- Next --
-   ----------
-
-   overriding procedure Next
-    (Self        : in out TLS_Socket_Input_Source;
-     Buffer      : in out
-       not null Matreshka.Internals.Strings.Shared_String_Access;
-     End_Of_Data : out Boolean)
-   is
-      use type Matreshka.Internals.Utf16.Utf16_String_Index;
-
-      Old_Unused : constant Matreshka.Internals.Utf16.Utf16_String_Index
-        := Buffer.Unused;
-      Old_Length : constant Natural := Buffer.Length;
-      New_Data   : Matreshka.Internals.Strings.Shared_String_Access;
-      pragma Unreferenced (New_Data);
-
-   begin
-      Socket_Input_Source (Self).Next (Buffer, End_Of_Data);
-      New_Data :=
-        Matreshka.Internals.Strings.Operations.Slice
-         (Buffer,
-          Old_Unused,
-          Buffer.Unused - Old_Unused,
-          Buffer.Length - Old_Length);
-      --  XMPP.Sessions.Put_Line (League.Strings.Internals.Wrap (New_Data));
-   end Next;
 
    ------------
    --  Read  --
@@ -191,14 +160,5 @@ package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
             (GNUTLS.IO_Direction'Image
               (GNUTLS.Get_Direction (Self.TLS_Session))));
    end Start_Handshake;
-
-   ---------------------------
-   --  Set_TLS_Established  --
-   ---------------------------
---     procedure Set_TLS_Established (Self  : in out TLS_Socket_Input_Source;
---                                    Value : Boolean) is
---     begin
---        Self.TLS_Established := Value;
---     end Set_TLS_Established;
 
 end XML.SAX.Input_Sources.Streams.Sockets.TLS;
