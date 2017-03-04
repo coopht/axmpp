@@ -468,13 +468,6 @@ package body XMPP.Sessions is
       --  After we connected, initialize parser.
 
       Log ("On_Connect!");
-      if not Self.Source.Is_TLS_Established then
-
-         Log ("Reset Parser");
-
-         Self.Source.Set_Socket (Self.Get_Socket);
-      end if;
-
       Self.Open_Stream;
    end On_Connect;
 
@@ -497,6 +490,7 @@ package body XMPP.Sessions is
          Self.Connect (Ada.Characters.Conversions.To_String
                         (Self.Host.To_Wide_Wide_String),
                        Self.Port);
+         Self.Source.Set_Socket (Self.Get_Socket);
          Log ("Starting idle");
          Self.Idle_Task.Start;
       end if;
