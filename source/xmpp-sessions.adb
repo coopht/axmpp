@@ -351,8 +351,12 @@ package body XMPP.Sessions is
             --        & XMPP.Objects.Object_Kind'Wide_Wide_Image
             --           (Self.Stack.Last_Element.Get_Kind));
 
-            Self.Process_IQ (Self.Stack.Last_Element);
-            Self.Stack.Delete_Last;
+            if Self.Stack.Is_Empty then
+               Self.Process_IQ (null);
+            else
+               Self.Process_IQ (Self.Stack.Last_Element);
+               Self.Stack.Delete_Last;
+            end if;
 
          --  Calling Presence Handler
          elsif Local_Name = +"presence" then
@@ -630,7 +634,7 @@ package body XMPP.Sessions is
    --  Process_IQ  --
    ------------------
    procedure Process_IQ (Self : in out XMPP_Session;
-                         IQ   : not null XMPP.Objects.XMPP_Object_Access) is
+                         IQ   : XMPP.Objects.XMPP_Object_Access) is
    begin
       --  Log ("XMPP.Session.Process_IQ : IQ arrived : "
       --         & XMPP.IQS.IQ_Kind'Wide_Wide_Image (IQ.Get_IQ_Kind));
@@ -643,51 +647,57 @@ package body XMPP.Sessions is
       Log (Self.IQ_Header.Get_Id);
       Log (XMPP.IQ_Kind'Wide_Wide_Image (Self.IQ_Header.Get_IQ_Kind));
 
-      XMPP.IQS.XMPP_IQ_Access (IQ).Set_To (Self.IQ_Header.Get_To);
-      XMPP.IQS.XMPP_IQ_Access (IQ).Set_From (Self.IQ_Header.Get_From);
-      XMPP.IQS.XMPP_IQ_Access (IQ).Set_Id (Self.IQ_Header.Get_Id);
-      XMPP.IQS.XMPP_IQ_Access (IQ).Set_IQ_Kind (Self.IQ_Header.Get_IQ_Kind);
+      if IQ = null then
+         --  Response to session iq has no nested element
+         Self.Stream_Handler.Session_State (Established);
 
-      case IQ.Get_Kind is
+      else
+         XMPP.IQS.XMPP_IQ_Access (IQ).Set_To (Self.IQ_Header.Get_To);
+         XMPP.IQS.XMPP_IQ_Access (IQ).Set_From (Self.IQ_Header.Get_From);
+         XMPP.IQS.XMPP_IQ_Access (IQ).Set_Id (Self.IQ_Header.Get_Id);
+         XMPP.IQS.XMPP_IQ_Access (IQ).Set_IQ_Kind (Self.IQ_Header.Get_IQ_Kind);
 
-         --  Resource Binded
-         when Bind =>
-            Self.Stream_Handler.Bind_Resource_State
-              (XMPP.Binds.XMPP_Bind_Access (IQ).Get_JID, Success);
+         case IQ.Get_Kind is
 
-         --  Session established
-         when IQ_Session =>
+            --  Resource Binded
+            when Bind =>
+               Self.Stream_Handler.Bind_Resource_State
+                 (XMPP.Binds.XMPP_Bind_Access (IQ).Get_JID, Success);
+
+               --  Session established
+            when IQ_Session =>
                Self.Stream_Handler.Session_State (Established);
 
-         --  Roster arrived
-         when Roster =>
-            Self.Stream_Handler.Roster
-              (XMPP.Rosters.XMPP_Roster_Access (IQ).all);
+               --  Roster arrived
+            when Roster =>
+               Self.Stream_Handler.Roster
+                 (XMPP.Rosters.XMPP_Roster_Access (IQ).all);
 
-         --  Discover information arrived
-         when Disco =>
-            Self.Stream_Handler.Service_Information
-              (XMPP.Services.XMPP_Service_Access (IQ).all);
+               --  Discover information arrived
+            when Disco =>
+               Self.Stream_Handler.Service_Information
+                 (XMPP.Services.XMPP_Service_Access (IQ).all);
 
-         --  Software version information arrived
-         when Version =>
+               --  Software version information arrived
+            when Version =>
 
-            case XMPP.IQS.XMPP_IQ_Access (IQ).Get_IQ_Kind is
-               when XMPP.Result =>
-                  Self.Stream_Handler.Version
-                    (XMPP.Versions.XMPP_Version_Access (IQ).all);
+               case XMPP.IQS.XMPP_IQ_Access (IQ).Get_IQ_Kind is
+                  when XMPP.Result =>
+                     Self.Stream_Handler.Version
+                       (XMPP.Versions.XMPP_Version_Access (IQ).all);
 
-               when XMPP.Get =>
-                  Self.Stream_Handler.Version_Request
-                    (XMPP.Versions.XMPP_Version_Access (IQ).all);
+                  when XMPP.Get =>
+                     Self.Stream_Handler.Version_Request
+                       (XMPP.Versions.XMPP_Version_Access (IQ).all);
 
-               when others =>
-                  null;
-            end case;
+                  when others =>
+                     null;
+               end case;
 
-         when others =>
-            null;
-      end case;
+            when others =>
+               null;
+         end case;
+      end if;
 
       Self.IQ_Header.Set_To (+"");
       Self.IQ_Header.Set_From (+"");

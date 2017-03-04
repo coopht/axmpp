@@ -243,7 +243,8 @@ private
                                     Str  : Wide_Wide_String);
 
    procedure Process_IQ (Self : in out XMPP_Session;
-                         IQ   : not null XMPP.Objects.XMPP_Object_Access);
+                         IQ   : XMPP.Objects.XMPP_Object_Access);
+   --  IQ empty in case of result of session.
 
    procedure Proceed_TLS_Auth (Self : not null access XMPP_Session);
 
