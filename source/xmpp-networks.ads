@@ -50,10 +50,8 @@ with XML.SAX.Input_Sources.Streams.TLS_Sockets;
 
 package XMPP.Networks is
 
-   type Notification is limited interface;
-
-   not overriding
-   procedure On_Connect (Self : not null access Notification) is abstract;
+   type Notification is limited interface
+     and XML.SAX.Input_Sources.Streams.TLS_Sockets.Notification;
 
    not overriding
    procedure On_Disconnect (Self : not null access Notification) is abstract;
@@ -87,7 +85,6 @@ package XMPP.Networks is
    procedure Task_Stopped (Self : not null access Network'Class);
    --  Close socket and call On_Disconnect
 
-   --  XXX: this function must be removed.
    function Get_Socket (Self : not null access Network'Class)
       return Socket_Type;
 

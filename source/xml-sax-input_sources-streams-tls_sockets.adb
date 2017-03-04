@@ -43,7 +43,6 @@ with Ada.Characters.Conversions;
 with Ada.Text_IO;
 
 with XMPP.Logger;
-with XMPP.Networks;
 
 package body XML.SAX.Input_Sources.Streams.TLS_Sockets is
 

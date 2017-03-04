@@ -41,13 +41,17 @@
 ------------------------------------------------------------------------------
 with GNUTLS;
 with GNAT.Sockets;
-limited with XMPP.Networks;
 
 package XML.SAX.Input_Sources.Streams.TLS_Sockets is
 
-   type TLS_Socket_Input_Source
-     (Object : access XMPP.Networks.Notification'Class) is
-       new Stream_Input_Source with private;
+   type Notification is limited interface;
+
+   not overriding procedure On_Connect
+     (Self : not null access Notification) is abstract;
+   --  This procedure called (from Read) when TLS Handshake completed
+
+   type TLS_Socket_Input_Source (Object : access Notification'Class) is
+     new Stream_Input_Source with private;
 
    procedure Start_Handshake
      (Self    : in out TLS_Socket_Input_Source;
@@ -61,8 +65,7 @@ private
      (Handshake, --  SSL/TLS handshake in progress
       TLS);      --  Protected data sent/received through socket connection.
 
-   type TLS_Socket_Input_Source
-     (Object : access XMPP.Networks.Notification'Class) is
+   type TLS_Socket_Input_Source (Object : access Notification'Class) is
      new Stream_Input_Source with
    record
       TLS_State   : Source_State := Handshake;
