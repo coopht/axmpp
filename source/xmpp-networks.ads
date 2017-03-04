@@ -90,9 +90,6 @@ package XMPP.Networks is
    function Get_Socket (Self : not null access Network'Class)
       return Socket_Type;
 
-   procedure Set_TLS_Session (Self : not null access Network'Class;
-                              S    : GNUTLS.Session);
-
    function Is_TLS_Established (Self : Network) return Boolean;
    procedure Start_Handshake (Self : in out Network);
 
@@ -110,7 +107,8 @@ private
       WSet         : Socket_Set_Type;
       RSet         : Socket_Set_Type;
       Status       : Selector_Status;
-      TLS          : GNUTLS.Session;
+      TLS_Session  : GNUTLS.Session;
+      Credential   : GNUTLS.Certificate_Client_Credentials;
       Source  :
         aliased
           XML.SAX.Input_Sources.Streams.Sockets.TLS.TLS_Socket_Input_Source;

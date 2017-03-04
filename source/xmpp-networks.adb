@@ -216,7 +216,7 @@ package body XMPP.Networks is
 
          begin
             P (0) := E;
-            GNUTLS.Record_Send (Self.TLS, P, L);
+            GNUTLS.Record_Send (Self.TLS_Session, P, L);
          end;
       end if;
 
@@ -225,23 +225,70 @@ package body XMPP.Networks is
          Log  (+Ada.Exceptions.Exception_Information (E));
    end Send;
 
-   -----------------------
-   --  Set_TLS_Session  --
-   -----------------------
-   procedure Set_TLS_Session
-     (Self : not null access Network'Class;
-      S    : GNUTLS.Session) is
-   begin
-      Self.TLS := S;
-      Self.Source.Set_TLS_Session (S);
-   end Set_TLS_Session;
-
    ---------------------
    -- Start_Handshake --
    ---------------------
 
    procedure Start_Handshake (Self : in out Network) is
+      KX_Priority     : constant GNUTLS.KX_Algorithm_Array
+        := (GNUTLS.GNUTLS_KX_RSA, 0);
+
+      Proto_Priority  : constant GNUTLS.Protocol_Array
+        := (GNUTLS.GNUTLS_TLS1, GNUTLS.GNUTLS_SSL3, 0);
+
+      Cipher_Priority : constant GNUTLS.Cipher_Algorithm_Array
+        := (GNUTLS.GNUTLS_CIPHER_3DES_CBC, GNUTLS.GNUTLS_CIPHER_ARCFOUR, 0);
+
+      --  Comp_Priority   : GNUTLS.Compression_Method_Array
+      --    := (GNUTLS.GNUTLS_COMP_ZLIB, GNUTLS.GNUTLS_COMP_NULL, 0);
+
+      --  Mac_Priority    : GNUTLS.Mac_Algorithm_Array
+      --    := (GNUTLS.GNUTLS_MAC_SHA, GNUTLS.GNUTLS_MAC_MD5, 0);
+
    begin
+      Log ("GNUTLS.Anon_Allocate_Client_Credentials");
+
+      GNUTLS.Certificate_Allocate_Credentials (Self.Credential);
+      --  GNUTLS.Anon_Allocate_Client_Credentials (Self.Cred);
+
+      --  Initialize TLS session
+      Log ("Init");
+      GNUTLS.Init (Self.TLS_Session, GNUTLS.GNUTLS_CLIENT);
+
+      GNUTLS.Protocol_Set_Priority (Self.TLS_Session, Proto_Priority);
+      GNUTLS.Cipher_Set_Priority (Self.TLS_Session, Cipher_Priority);
+
+      --  GNUTLS.Compression_Set_Priority (Self.TLS_Session, Comp_Priority);
+
+      --  GNUTLS.Mac_Set_Priority (Self.TLS_Session, Mac_Priority);
+
+      GNUTLS.Credentials_Set (Self.TLS_Session,
+                              GNUTLS.GNUTLS_CRD_CERTIFICATE,
+                              Self.Credential);
+
+      GNUTLS.Set_Default_Priority (Self.TLS_Session);
+      GNUTLS.KX_Set_Priority (Self.TLS_Session, KX_Priority);
+
+      --  GNUTLS.Credentials_Set (Self.TLS_Session,
+      --                          GNUTLS.GNUTLS_CRD_ANON,
+      --                          Self.Cred);
+
+      Log ("GNUTLS.Transport_Set_Ptr");
+      GNUTLS.Transport_Set_Ptr (Self.TLS_Session, Self.Get_Socket);
+
+      Log ("GNUTLS.Handshake");
+--        begin
+--           GNUTLS.Handshake (Self.TLS_Session);
+--
+--        exception
+--           when others =>
+--              Log (GNUTLS.IO_Direction'Image
+--                    (GNUTLS.Get_Direction (Self.TLS_Session)));
+--        end;
+--        Log ("End of GNUTLS.Handshake");
+--
+      Self.Source.Set_TLS_Session (Self.TLS_Session);
+
       Self.Source.Start_Handshake;
    end Start_Handshake;
 

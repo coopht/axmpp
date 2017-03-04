@@ -39,7 +39,6 @@
 ------------------------------------------------------------------------------
 --  $Revision$ $Date$
 ------------------------------------------------------------------------------
-with GNUTLS;
 
 with League.Strings;
 
@@ -185,8 +184,6 @@ private
      Stack   : XMPP.Objects.Object_Vectors.Vector;
 
      Idle_Task       : XMPP.Idle_Tasks.Reader_Task;
-     TLS_Session     : GNUTLS.Session;
-     Credential      : GNUTLS.Certificate_Client_Credentials;
      Authenticated   : Boolean := False;
 
      JID             : League.Strings.Universal_String;
