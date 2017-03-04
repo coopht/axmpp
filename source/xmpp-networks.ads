@@ -86,10 +86,6 @@ package XMPP.Networks is
    function Get_Socket (Self : not null access Network'Class)
       return Socket_Type;
 
-   --  XXX: this function must be removed.
-   function Get_Channel (Self : not null access Network'Class)
-      return Stream_Access;
-
    procedure Set_TLS_Session (Self : not null access Network'Class;
                               S    : GNUTLS.Session);
 

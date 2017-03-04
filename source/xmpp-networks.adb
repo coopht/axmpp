@@ -94,15 +94,6 @@ package body XMPP.Networks is
          Log (+Ada.Exceptions.Exception_Information (E));
    end Connect;
 
-   -------------------
-   --  Get_Channel  --
-   -------------------
-   function Get_Channel (Self : not null access Network'Class)
-      return Stream_Access is
-   begin
-      return Self.Channel;
-   end Get_Channel;
-
    ------------------
    --  Get_Socket  --
    ------------------
