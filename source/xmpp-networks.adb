@@ -87,6 +87,8 @@ package body XMPP.Networks is
       Empty (Self.RSet);
       Empty (Self.WSet);
 
+      Self.Source.Set_Socket (Self.Sock);
+      Self.Source.Object := Self.Target;
       Self.Target.On_Connect;
 
    exception
@@ -102,6 +104,25 @@ package body XMPP.Networks is
    begin
       return Self.Sock;
    end Get_Socket;
+
+   ----------------
+   -- Get_Source --
+   ----------------
+
+   function Get_Source (Self : not null access Network)
+     return not null access XML.SAX.Input_Sources.SAX_Input_Source'Class is
+   begin
+      return Self.Source'Access;
+   end Get_Source;
+
+   ------------------------
+   -- Is_TLS_Established --
+   ------------------------
+
+   function Is_TLS_Established (Self : Network) return Boolean is
+   begin
+      return Self.Source.Is_TLS_Established;
+   end Is_TLS_Established;
 
    -------------------------
    --  Read_Data_Wrapper  --
@@ -164,10 +185,9 @@ package body XMPP.Networks is
    ------------
    procedure Send
     (Self   : not null access Network'Class;
-     Data   : Ada.Streams.Stream_Element_Array;
-     Via_TLS : Boolean := False) is
+     Data   : Ada.Streams.Stream_Element_Array) is
    begin
-      if not Via_TLS then
+      if not Self.Source.Is_TLS_Established then
          Self.Channel.Write (Data);
 
       else
@@ -202,7 +222,17 @@ package body XMPP.Networks is
       S    : GNUTLS.Session) is
    begin
       Self.TLS := S;
+      Self.Source.Set_TLS_Session (S);
    end Set_TLS_Session;
+
+   ---------------------
+   -- Start_Handshake --
+   ---------------------
+
+   procedure Start_Handshake (Self : in out Network) is
+   begin
+      Self.Source.Start_Handshake;
+   end Start_Handshake;
 
    --------------------
    --  Task_Stopped  --

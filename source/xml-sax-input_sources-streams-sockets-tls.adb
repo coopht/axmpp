@@ -45,6 +45,7 @@ with Matreshka.Internals.Strings.Operations;
 with Matreshka.Internals.Utf16;
 
 with XMPP.Logger;
+with XMPP.Networks;
 
 package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
 

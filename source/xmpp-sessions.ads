@@ -53,7 +53,6 @@ with XML.SAX.DTD_Handlers;
 with XML.SAX.Declaration_Handlers;
 with XML.SAX.Entity_Resolvers;
 with XML.SAX.Error_Handlers;
-with XML.SAX.Input_Sources.Streams.Sockets.TLS;
 with XML.SAX.Lexical_Handlers;
 with XML.SAX.Locators;
 with XML.SAX.Parse_Exceptions;
@@ -175,9 +174,6 @@ private
      Tag     : League.Strings.Universal_String;
 
      Network : aliased XMPP.Networks.Network (XMPP_Session'Unchecked_Access);
-     Source  :
-       aliased
-         XML.SAX.Input_Sources.Streams.Sockets.TLS.TLS_Socket_Input_Source;
      Reader  : aliased XML.SAX.Simple_Readers.Simple_Reader;
      Writer  : XML.SAX.Pretty_Writers.XML_Pretty_Writer;
      Output  :

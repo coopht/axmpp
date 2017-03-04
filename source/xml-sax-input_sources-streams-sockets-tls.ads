@@ -40,7 +40,7 @@
 --  $Revision$ $Date$
 ------------------------------------------------------------------------------
 with GNUTLS;
-with XMPP.Networks;
+limited with XMPP.Networks;
 
 package XML.SAX.Input_Sources.Streams.Sockets.TLS is
 

@@ -45,6 +45,8 @@ with GNAT.Sockets;
 
 with GNUTLS;
 
+with XML.SAX.Input_Sources.Streams.Sockets.TLS;
+
 package XMPP.Networks is
 
    type Notification is limited interface;
@@ -73,8 +75,7 @@ package XMPP.Networks is
                       Port : Natural);
 
    procedure Send (Self    : not null access Network'Class;
-                   Data    : Ada.Streams.Stream_Element_Array;
-                   Via_TLS : Boolean := False);
+                   Data    : Ada.Streams.Stream_Element_Array);
 
    --  These two subprograms are called by Idle task
    function Recieve (Self : not null access Network'Class) return Boolean;
@@ -89,6 +90,12 @@ package XMPP.Networks is
    procedure Set_TLS_Session (Self : not null access Network'Class;
                               S    : GNUTLS.Session);
 
+   function Is_TLS_Established (Self : Network) return Boolean;
+   procedure Start_Handshake (Self : in out Network);
+
+   function Get_Source (Self : not null access Network)
+     return not null access XML.SAX.Input_Sources.SAX_Input_Source'Class;
+
 private
 
    type Network (Target : not null access Notification'Class) is tagged limited
@@ -101,6 +108,9 @@ private
       RSet         : Socket_Set_Type;
       Status       : Selector_Status;
       TLS          : GNUTLS.Session;
+      Source  :
+        aliased
+          XML.SAX.Input_Sources.Streams.Sockets.TLS.TLS_Socket_Input_Source;
    end record;
 
    function Read_Data_Wrapper (Self : not null access Network'Class)

@@ -133,8 +133,7 @@ package body XMPP.Sessions is
       Self.Network.Send
         (XMPP.Utils.To_Stream_Element_Array
            (Ada.Characters.Conversions.To_String
-              (Close_Stream.To_Wide_Wide_String)),
-         Self.Source.Is_TLS_Established);
+              (Close_Stream.To_Wide_Wide_String)));
    end Close;
 
    ------------------
@@ -233,7 +232,7 @@ package body XMPP.Sessions is
             --  to start tls negotiation
             --  XXX: may be XMPP object for xmpp-tls name
             --  space should be created
-            if not Self.Source.Is_TLS_Established then
+            if not Self.Network.Is_TLS_Established then
                Log ("Sending starttls");
                Self.Send_Wide_Wide_String
                  ("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
@@ -253,7 +252,7 @@ package body XMPP.Sessions is
       elsif Namespace_URI = +"urn:ietf:params:xml:ns:xmpp-tls"
         and Local_Name = +"proceed"
       then
-         if not Self.Source.Is_TLS_Established then
+         if not Self.Network.Is_TLS_Established then
             Self.Proceed_TLS_Auth;
          end if;
 
@@ -489,7 +488,6 @@ package body XMPP.Sessions is
          Log ("Connecting");
          Self.Network.Connect
            (Self.Host.To_UTF_8_String, Self.Port);
-         Self.Source.Set_Socket (Self.Network.Get_Socket);
          Log ("Starting idle");
          Self.Idle_Task.Start (Self.Network'Unchecked_Access);
       end if;
@@ -515,14 +513,13 @@ package body XMPP.Sessions is
       --  We need to reset parser each time we start new xml stream
       Self.Reader.Set_Content_Handler
         (XML.SAX.Readers.SAX_Content_Handler_Access (Self));
-      Self.Reader.Set_Input_Source (Self.Source'Access);
+      Self.Reader.Set_Input_Source (Self.Network.Get_Source);
 
       --  Sending open stream stanza
       Self.Network.Send
         (XMPP.Utils.To_Stream_Element_Array
            (Ada.Characters.Conversions.To_String
-              (Open_Stream.To_Wide_Wide_String)),
-         Self.Source.Is_TLS_Established);
+              (Open_Stream.To_Wide_Wide_String)));
    end Open_Stream;
 
    -------------------------
@@ -605,10 +602,8 @@ package body XMPP.Sessions is
 --        Log ("End of GNUTLS.Handshake");
 --
       Self.Network.Set_TLS_Session (Self.TLS_Session);
-      Self.Source.Set_TLS_Session (Self.TLS_Session);
-      Self.Source.Object := Self.all'Unchecked_Access;
 
-      Self.Source.Start_Handshake;
+      Self.Network.Start_Handshake;
 
       --  On Success handshake,
       --  we should reopen stream via TLS session.
@@ -753,8 +748,7 @@ package body XMPP.Sessions is
       Log ("Sending Data : " & Self.Output.Get_Text);
 
       Self.Network.Send
-        (UTF_8_Codec.Encode (Self.Output.Get_Text).To_Stream_Element_Array,
-         Self.Source.Is_TLS_Established);
+        (UTF_8_Codec.Encode (Self.Output.Get_Text).To_Stream_Element_Array);
 
        --  Self.Send_Wide_Wide_String (Self.Writer.Text.To_Wide_Wide_String);
 
@@ -774,8 +768,7 @@ package body XMPP.Sessions is
 
       Self.Network.Send
         (XMPP.Utils.To_Stream_Element_Array
-           (Ada.Characters.Conversions.To_String (Str)),
-         Self.Source.Is_TLS_Established);
+           (Ada.Characters.Conversions.To_String (Str)));
    end Send_Wide_Wide_String;
 
    ----------------
