@@ -6,7 +6,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --                                                                          --
--- Copyright © 2011, Alexander Basov <coopht@gmail.com>                     --
+-- Copyright © 2017, Alexander Basov <coopht@gmail.com>                     --
 -- All rights reserved.                                                     --
 --                                                                          --
 -- Redistribution and use in source and binary forms, with or without       --
@@ -39,74 +39,19 @@
 ------------------------------------------------------------------------------
 --  $Revision$ $Date$
 ------------------------------------------------------------------------------
-with Ada.Streams;
 
-with GNAT.Sockets;
+with XMPP.Networks;
 
-with GNUTLS;
+package XMPP.Idle_Tasks is
 
-package XMPP.Networks is
+   -------------------
+   --  Reader_Task  --
+   -------------------
+   task type Reader_Task
+     (Object : not null access XMPP.Networks.Network'Class)
+   is
+      entry Start;
+      entry Stop;
+   end Reader_Task;
 
-   use GNAT.Sockets;
-
-   type Network is abstract tagged limited private;
-
-   type Network_Access is access all Network'Class;
-
-   --  functions, which should be overriden
-   not overriding
-   procedure On_Connect (Self : not null access Network) is abstract;
-
-   not overriding
-   procedure On_Disconnect (Self : not null access Network) is abstract;
-
-   not overriding function Read_Data (Self : not null access Network)
-      return Boolean is abstract;
-   --  This function is called (from Receive) when there is some data in
-   --  the socket. It should read the data from the socket and return True if
-   --  ok or False in case of an unrecoverable error.
-
-   --  end of functions, which should be overriden
-
-   procedure Connect (Self : not null access Network'Class;
-                      Host : String;
-                      Port : Natural);
-
-   procedure Send (Self    : not null access Network'Class;
-                   Data    : Ada.Streams.Stream_Element_Array;
-                   Via_TLS : Boolean := False);
-
-   --  These two subprograms are called by Idle task
-   function Recieve (Self : not null access Network'Class) return Boolean;
-   --  Wait for some data in the socket and read them. Return False is error
-   procedure Task_Stopped (Self : not null access Network'Class);
-   --  Close socket and call On_Disconnect
-
-   --  XXX: this function must be removed.
-   function Get_Socket (Self : not null access Network'Class)
-      return Socket_Type;
-
-   --  XXX: this function must be removed.
-   function Get_Channel (Self : not null access Network'Class)
-      return Stream_Access;
-
-   procedure Set_TLS_Session (Self : not null access Network'Class;
-                              S    : GNUTLS.Session);
-
-private
-
-   type Network is abstract tagged limited record
-      Addr         : Sock_Addr_Type;
-      Sock         : Socket_Type;
-      Channel      : Stream_Access;
-      Selector     : Selector_Type;
-      WSet         : Socket_Set_Type;
-      RSet         : Socket_Set_Type;
-      Status       : Selector_Status;
-      TLS          : GNUTLS.Session;
-   end record;
-
-   function Read_Data_Wrapper (Self : not null access Network'Class)
-      return Boolean;
-
-end XMPP.Networks;
+end XMPP.Idle_Tasks;

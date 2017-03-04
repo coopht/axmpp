@@ -65,6 +65,7 @@ with XMPP.IQS;
 with XMPP.Challenges;
 with XMPP.Null_Objects;
 with XMPP.Objects;
+with XMPP.Idle_Tasks;
 
 package XMPP.Sessions is
 
@@ -109,6 +110,8 @@ package XMPP.Sessions is
      IQ_Header       : XMPP.IQS.XMPP_IQ;
      Resource_Id     : League.Strings.Universal_String
        := League.Strings.To_Universal_String ("axmpp");
+
+     Idle_Task : XMPP.Idle_Tasks.Reader_Task (XMPP_Session'Unchecked_Access);
    end record;
 
    type XMPP_Session_Access is access all XMPP_Session;
@@ -247,5 +250,7 @@ private
    procedure Proceed_SASL_Auth
      (Self   : not null access XMPP_Session;
       Object : not null XMPP.Challenges.XMPP_Challenge_Access);
+
+   procedure Disconnect (Self : in out XMPP_Session);
 
 end XMPP.Sessions;

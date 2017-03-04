@@ -137,6 +137,19 @@ package body XMPP.Sessions is
          Self.Source.Is_TLS_Established);
    end Close;
 
+   ------------------
+   --  Disconnect  --
+   ------------------
+   procedure Disconnect (Self : in out XMPP_Session) is
+      function "+" (Item : String) return Wide_Wide_String
+        renames Ada.Characters.Conversions.To_Wide_Wide_String;
+   begin
+      Self.Idle_Task.Stop;
+   exception
+      when E : others =>
+         Log  (+Ada.Exceptions.Exception_Information (E));
+   end Disconnect;
+
    ----------------------------
    --  Discover_Information  --
    ----------------------------
@@ -481,7 +494,7 @@ package body XMPP.Sessions is
                         (Self.Host.To_Wide_Wide_String),
                        Self.Port);
          Log ("Starting idle");
-         Self.Idle;
+         Self.Idle_Task.Start;
       end if;
    end Open;
 

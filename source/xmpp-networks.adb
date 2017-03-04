@@ -52,47 +52,6 @@ package body XMPP.Networks is
    function "+" (Item : String) return Wide_Wide_String
      renames Ada.Characters.Conversions.To_Wide_Wide_String;
 
-   -------------------
-   --  Reader_Task  --
-   -------------------
-   task type Reader_Task (Object : not null access Network) is
-      entry Stop;
-   end Reader_Task;
-
-   -------------------
-   --  Reader_Task  --
-   -------------------
-   --  FIXME: correct task termination using Stop entry
-   task body Reader_Task is
-      Time_To_Stop : Boolean := False;
-
-   begin
-      loop
-         exit when Time_To_Stop;
-
-         select
-            accept Stop do
-               Time_To_Stop := True;
-            end Stop;
-         or
-            delay 0.0;
-
-            exit when not Object.Recieve;
-         end select;
-
-      end loop;
-
-      Object.Task_Stopped;
-
-   exception
-      when E : others =>
-         Log (+Ada.Exceptions.Exception_Information (E));
-   end Reader_Task;
-
-   type Reader_Task_Access is access Reader_Task;
-
-   RT : Reader_Task_Access;
-
    ---------------
    --  Connect  --
    ---------------
@@ -135,20 +94,6 @@ package body XMPP.Networks is
          Log (+Ada.Exceptions.Exception_Information (E));
    end Connect;
 
-   ------------------
-   --  Disconnect  --
-   ------------------
-   procedure Disconnect (Self : not null access Network'Class) is
-      pragma Unreferenced (Self);
-   begin
-      if RT /= null then
-         RT.Stop;
-      end if;
-   exception
-      when E : others =>
-         Log  (+Ada.Exceptions.Exception_Information (E));
-   end Disconnect;
-
    -------------------
    --  Get_Channel  --
    -------------------
@@ -166,37 +111,6 @@ package body XMPP.Networks is
    begin
       return Self.Sock;
    end Get_Socket;
-
-   ------------
-   --  Idle  --
-   ------------
-   procedure Idle (Self : in out Network) is
-   begin
-      RT := new Reader_Task (Self'Unchecked_Access);
-   end Idle;
-
-   -----------------
-   --  Read_Data  --
-   -----------------
-   not overriding function Read_Data (Self : not null access Network)
-     return Boolean is
-     Buffer : Ada.Streams.Stream_Element_Array (1 .. 4096);
-     Last   : Ada.Streams.Stream_Element_Count := 0;
-
-   begin
-      GNAT.Sockets.Receive_Socket (Self.Sock, Buffer, Last);
-
-      Log ("XMPP.Networks.Read_Data: Offset = "
-             & Ada.Streams.Stream_Element_Count'Wide_Wide_Image (Last));
-
-      Self.On_Recieve (Buffer (1 .. Last));
-      return True;
-   exception
-      when E : others =>
-         Log  (+Ada.Exceptions.Exception_Information (E));
-         Self.On_Recieve (Buffer (1 .. 1));
-         return False;
-   end Read_Data;
 
    -------------------------
    --  Read_Data_Wrapper  --
