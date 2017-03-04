@@ -47,15 +47,6 @@ with XMPP.Networks;
 
 package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
 
-   --------------------------
-   --  Is_TLS_Established  --
-   --------------------------
-   function Is_TLS_Established (Self : TLS_Socket_Input_Source) return Boolean
-   is
-   begin
-      return Self.TLS_State = TLS;
-   end Is_TLS_Established;
-
    ------------
    --  Read  --
    ------------
@@ -72,9 +63,6 @@ package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
       GNAT.Sockets.Control_Socket (Self.Socket, X);
       if X.Size > 0 then
          case Self.TLS_State is
-            when Raw =>
-               GNAT.Sockets.Receive_Socket (Self.Socket, Buffer, Last);
-
             when Handshake =>
                Last := Buffer'First - 1;
 

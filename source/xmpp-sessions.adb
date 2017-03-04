@@ -254,6 +254,9 @@ package body XMPP.Sessions is
       then
          if not Self.Network.Is_TLS_Established then
             Self.Proceed_TLS_Auth;
+            --  Stop XML parsing immediately to avoid XML reading from TLS
+            --  handshake dialog
+            Success := False;
          end if;
 
       --  Proceed with SASL Authentication
@@ -376,8 +379,6 @@ package body XMPP.Sessions is
       elsif Namespace_URI = +"http://jabber.org/protocol/chatstates" then
          null;
       end if;
-
-      Success := True;
 
       --  Log ("Stack size at end : "
       --        & Integer'Wide_Wide_Image (Integer (Self.Stack.Length)));
@@ -541,6 +542,11 @@ package body XMPP.Sessions is
    procedure Proceed_TLS_Auth (Self : not null access XMPP_Session) is
    begin
       Self.Network.Start_Handshake;
+
+      --  Now reset XML parset to begin read TLS stream
+      Self.Reader.Set_Content_Handler
+        (XML.SAX.Readers.SAX_Content_Handler_Access (Self));
+      Self.Reader.Set_Input_Source (Self.Network.Get_Source);
 
       --  On Success handshake,
       --  we should reopen stream via TLS session.

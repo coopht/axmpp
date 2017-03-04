@@ -109,7 +109,10 @@ private
       Status       : Selector_Status;
       TLS_Session  : GNUTLS.Session;
       Credential   : GNUTLS.Certificate_Client_Credentials;
-      Source  :
+      Use_TSL      : Boolean := False;
+      Plain_Input  :
+        aliased XML.SAX.Input_Sources.Streams.Sockets.Socket_Input_Source;
+      TLS_Input    :
         aliased
           XML.SAX.Input_Sources.Streams.Sockets.TLS.TLS_Socket_Input_Source;
    end record;

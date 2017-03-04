@@ -87,10 +87,11 @@ package body XMPP.Networks is
       Empty (Self.RSet);
       Empty (Self.WSet);
 
-      Self.Source.Set_Socket (Self.Sock);
-      Self.Source.Object := Self.Target;
+      Self.TLS_Input.Set_Socket (Self.Sock);
+      Self.TLS_Input.Object := Self.Target;
       Self.Target.On_Connect;
 
+      Self.Plain_Input.Set_Socket (Self.Sock);
    exception
       when E : others =>
          Log (+Ada.Exceptions.Exception_Information (E));
@@ -112,7 +113,11 @@ package body XMPP.Networks is
    function Get_Source (Self : not null access Network)
      return not null access XML.SAX.Input_Sources.SAX_Input_Source'Class is
    begin
-      return Self.Source'Access;
+      if Self.Use_TSL then
+         return Self.TLS_Input'Access;
+      else
+         return Self.Plain_Input'Access;
+      end if;
    end Get_Source;
 
    ----------------
@@ -132,7 +137,7 @@ package body XMPP.Networks is
 
    function Is_TLS_Established (Self : Network) return Boolean is
    begin
-      return Self.Source.Is_TLS_Established;
+      return Self.Use_TSL;
    end Is_TLS_Established;
 
    -------------------------
@@ -198,7 +203,7 @@ package body XMPP.Networks is
     (Self   : not null access Network'Class;
      Data   : Ada.Streams.Stream_Element_Array) is
    begin
-      if not Self.Source.Is_TLS_Established then
+      if not Self.Use_TSL then
          Self.Channel.Write (Data);
 
       else
@@ -287,9 +292,10 @@ package body XMPP.Networks is
 --        end;
 --        Log ("End of GNUTLS.Handshake");
 --
-      Self.Source.Set_TLS_Session (Self.TLS_Session);
+      Self.TLS_Input.Set_TLS_Session (Self.TLS_Session);
 
-      Self.Source.Start_Handshake;
+      Self.TLS_Input.Start_Handshake;
+      Self.Use_TSL := True;
    end Start_Handshake;
 
    --------------------
