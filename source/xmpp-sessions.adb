@@ -284,7 +284,7 @@ package body XMPP.Sessions is
             Self.Stack.Delete_Last;
             Log ("Authentification successfull !!");
             Self.Authenticated := True;
-            Self.On_Connect;
+            Self.Open_Stream;
          end if;
 
       elsif Namespace_URI = +"jabber:iq:roster" then
