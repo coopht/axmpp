@@ -63,56 +63,18 @@ with XML.SAX.String_Output_Destinations;
 
 with XMPP.IQS;
 with XMPP.Challenges;
-with XMPP.Null_Objects;
 with XMPP.Objects;
 with XMPP.Idle_Tasks;
 
 package XMPP.Sessions is
 
-   Null_X : XMPP.Objects.XMPP_Object_Access
-     := new XMPP.Null_Objects.XMPP_Null_Object;
-
-   type XMPP_Session is limited new XMPP.Networks.Network
-     and XML.SAX.Content_Handlers.SAX_Content_Handler
+   type XMPP_Session is limited
+     new XML.SAX.Content_Handlers.SAX_Content_Handler
      and XML.SAX.Declaration_Handlers.SAX_Declaration_Handler
      and XML.SAX.DTD_Handlers.SAX_DTD_Handler
      and XML.SAX.Entity_Resolvers.SAX_Entity_Resolver
      and XML.SAX.Error_Handlers.SAX_Error_Handler
-     and XML.SAX.Lexical_Handlers.SAX_Lexical_Handler with
-   record
-     Session_Opened : Boolean := False;
-     Stream_Handler : XMPP.Stream_Handlers.XMPP_Stream_Handler_Access;
-
-     Locator : XML.SAX.Locators.SAX_Locator;
-     Tag     : League.Strings.Universal_String;
-
-     Source  :
-       aliased
-         XML.SAX.Input_Sources.Streams.Sockets.TLS.TLS_Socket_Input_Source;
-     Reader  : aliased XML.SAX.Simple_Readers.Simple_Reader;
-     Writer  : XML.SAX.Pretty_Writers.XML_Pretty_Writer;
-     Output  :
-       aliased XML.SAX.String_Output_Destinations.String_Output_Destination;
-
-     Stack   : XMPP.Objects.Object_Vectors.Vector;
-
-     TLS_Session     : GNUTLS.Session;
-     Credential      : GNUTLS.Certificate_Client_Credentials;
-     Authenticated   : Boolean := False;
-
-     JID             : League.Strings.Universal_String;
-     Password        : League.Strings.Universal_String;
-
-     Host            : League.Strings.Universal_String;
-     Port            : Natural := 5222;
-
-     In_IQ_Mode      : Boolean := False;
-     IQ_Header       : XMPP.IQS.XMPP_IQ;
-     Resource_Id     : League.Strings.Universal_String
-       := League.Strings.To_Universal_String ("axmpp");
-
-     Idle_Task : XMPP.Idle_Tasks.Reader_Task (XMPP_Session'Unchecked_Access);
-   end record;
+     and XML.SAX.Lexical_Handlers.SAX_Lexical_Handler with private;
 
    type XMPP_Session_Access is access all XMPP_Session;
 
@@ -148,7 +110,7 @@ package XMPP.Sessions is
 
    procedure Open (Self : not null access XMPP_Session);
    --  Initiates XMPP session. Application should use this function to start
-   --  data exchange wit xmpp server
+   --  data exchange with xmpp server
 
    procedure Request_Roster (Self : not null access XMPP_Session);
    --  Requests roster from server
@@ -196,6 +158,48 @@ package XMPP.Sessions is
    --  Sets xmpp server port
 
 private
+
+   type XMPP_Session is limited new XMPP.Networks.Network
+     and XML.SAX.Content_Handlers.SAX_Content_Handler
+     and XML.SAX.Declaration_Handlers.SAX_Declaration_Handler
+     and XML.SAX.DTD_Handlers.SAX_DTD_Handler
+     and XML.SAX.Entity_Resolvers.SAX_Entity_Resolver
+     and XML.SAX.Error_Handlers.SAX_Error_Handler
+     and XML.SAX.Lexical_Handlers.SAX_Lexical_Handler with
+   record
+     Session_Opened : Boolean := False;
+     Stream_Handler : XMPP.Stream_Handlers.XMPP_Stream_Handler_Access;
+
+     Locator : XML.SAX.Locators.SAX_Locator;
+     Tag     : League.Strings.Universal_String;
+
+     Source  :
+       aliased
+         XML.SAX.Input_Sources.Streams.Sockets.TLS.TLS_Socket_Input_Source;
+     Reader  : aliased XML.SAX.Simple_Readers.Simple_Reader;
+     Writer  : XML.SAX.Pretty_Writers.XML_Pretty_Writer;
+     Output  :
+       aliased XML.SAX.String_Output_Destinations.String_Output_Destination;
+
+     Stack   : XMPP.Objects.Object_Vectors.Vector;
+
+     TLS_Session     : GNUTLS.Session;
+     Credential      : GNUTLS.Certificate_Client_Credentials;
+     Authenticated   : Boolean := False;
+
+     JID             : League.Strings.Universal_String;
+     Password        : League.Strings.Universal_String;
+
+     Host            : League.Strings.Universal_String;
+     Port            : Natural := 5222;
+
+     In_IQ_Mode      : Boolean := False;
+     IQ_Header       : XMPP.IQS.XMPP_IQ;
+     Resource_Id     : League.Strings.Universal_String
+       := League.Strings.To_Universal_String ("axmpp");
+
+     Idle_Task : XMPP.Idle_Tasks.Reader_Task (XMPP_Session'Unchecked_Access);
+   end record;
 
    --  overriding from SAX.Reader
    overriding procedure Characters
