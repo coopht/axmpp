@@ -6,7 +6,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --                                                                          --
--- Copyright © 2011, Alexander Basov <coopht@gmail.com>                     --
+-- Copyright © 2011-2016, Alexander Basov <coopht@gmail.com>                --
 -- All rights reserved.                                                     --
 --                                                                          --
 -- Redistribution and use in source and binary forms, with or without       --
@@ -71,7 +71,7 @@ package XMPP.Services is
 
    overriding procedure Serialize
     (Self   : XMPP_Service;
-     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class);
+     Writer : in out XML.SAX.Pretty_Writers.XML_Pretty_Writer'Class);
 
    overriding
    procedure Set_Content (Self      : in out XMPP_Service;

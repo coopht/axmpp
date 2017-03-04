@@ -6,7 +6,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --                                                                          --
--- Copyright © 2011, Alexander Basov <coopht@gmail.com>                     --
+-- Copyright © 2011-2016, Alexander Basov <coopht@gmail.com>                --
 -- All rights reserved.                                                     --
 --                                                                          --
 -- Redistribution and use in source and binary forms, with or without       --
@@ -59,6 +59,7 @@ with XML.SAX.Locators;
 with XML.SAX.Parse_Exceptions;
 with XML.SAX.Pretty_Writers;
 with XML.SAX.Simple_Readers;
+with XML.SAX.String_Output_Destinations;
 
 with XMPP.IQS;
 with XMPP.Challenges;
@@ -87,8 +88,10 @@ package XMPP.Sessions is
      Source  :
        aliased
          XML.SAX.Input_Sources.Streams.Sockets.TLS.TLS_Socket_Input_Source;
-     Reader  : aliased XML.SAX.Simple_Readers.SAX_Simple_Reader;
-     Writer  : XML.SAX.Pretty_Writers.SAX_Pretty_Writer;
+     Reader  : aliased XML.SAX.Simple_Readers.Simple_Reader;
+     Writer  : XML.SAX.Pretty_Writers.XML_Pretty_Writer;
+     Output  :
+       aliased XML.SAX.String_Output_Destinations.String_Output_Destination;
 
      Stack   : XMPP.Objects.Object_Vectors.Vector;
 
@@ -209,8 +212,7 @@ private
 
    overriding procedure Fatal_Error
     (Self       : in out XMPP_Session;
-     Occurrence : XML.SAX.Parse_Exceptions.SAX_Parse_Exception;
-     Success    : in out Boolean);
+     Occurrence : XML.SAX.Parse_Exceptions.SAX_Parse_Exception);
 
    overriding procedure Start_Element
      (Self           : in out XMPP_Session;

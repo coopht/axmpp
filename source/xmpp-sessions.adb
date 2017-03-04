@@ -6,7 +6,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --                                                                          --
--- Copyright © 2011, Alexander Basov <coopht@gmail.com>                     --
+-- Copyright © 2011-2016, Alexander Basov <coopht@gmail.com>                --
 -- All rights reserved.                                                     --
 --                                                                          --
 -- Redistribution and use in source and binary forms, with or without       --
@@ -61,6 +61,8 @@ with XMPP.Streams;
 with XMPP.Stream_Features;
 with XMPP.Utils;
 with XMPP.Versions;
+
+with XML.SAX.String_Output_Destinations;
 
 package body XMPP.Sessions is
 
@@ -396,10 +398,8 @@ package body XMPP.Sessions is
    --  Fatal_Error  --
    -------------------
    overriding procedure Fatal_Error
-    (Self       : in out XMPP_Session;
-     Occurrence : XML.SAX.Parse_Exceptions.SAX_Parse_Exception;
-     Success    : in out Boolean) is
-      pragma Unreferenced (Success);
+     (Self       : in out XMPP_Session;
+      Occurrence : XML.SAX.Parse_Exceptions.SAX_Parse_Exception) is
 
    begin
       Log ("Fatal_Error: " & Occurrence.Message);
@@ -731,17 +731,18 @@ package body XMPP.Sessions is
         := League.Text_Codecs.Codec (+"UTF-8");
 
    begin
+      Self.Writer.Set_Output_Destination (Self.Output'Unchecked_Access);
       Object.Serialize (Self.Writer);
 
-      Log ("Sending Data : " & Self.Writer.Text);
+      Log ("Sending Data : " & Self.Output.Get_Text);
 
       Self.Send
-        (UTF_8_Codec.Encode (Self.Writer.Text).To_Stream_Element_Array,
+        (UTF_8_Codec.Encode (Self.Output.Get_Text).To_Stream_Element_Array,
          Self.Source.Is_TLS_Established);
 
        --  Self.Send_Wide_Wide_String (Self.Writer.Text.To_Wide_Wide_String);
 
-      Self.Writer.Reset;
+      Self.Output.Clear;
 
       Log ("Data Sent");
    end Send_Object;

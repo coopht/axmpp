@@ -6,7 +6,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --                                                                          --
--- Copyright © 2011, Alexander Basov <coopht@gmail.com>                     --
+-- Copyright © 2011-2016, Alexander Basov <coopht@gmail.com>                --
 -- All rights reserved.                                                     --
 --                                                                          --
 -- Redistribution and use in source and binary forms, with or without       --
@@ -102,7 +102,7 @@ package body XMPP.Stream_Features is
    -----------------
    overriding procedure Serialize
     (Self   : XMPP_Stream_Feature;
-     Writer : in out XML.SAX.Pretty_Writers.SAX_Pretty_Writer'Class) is
+     Writer : in out XML.SAX.Pretty_Writers.XML_Pretty_Writer'Class) is
 
       pragma Unreferenced (Self);
       pragma Unreferenced (Writer);
