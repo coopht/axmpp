@@ -45,7 +45,8 @@ with GNAT.Sockets;
 
 with GNUTLS;
 
-with XML.SAX.Input_Sources.Streams.Sockets.TLS;
+with XML.SAX.Input_Sources.Streams.Sockets;
+with XML.SAX.Input_Sources.Streams.TLS_Sockets;
 
 package XMPP.Networks is
 
@@ -113,8 +114,8 @@ private
       Plain_Input  :
         aliased XML.SAX.Input_Sources.Streams.Sockets.Socket_Input_Source;
       TLS_Input    :
-        aliased
-          XML.SAX.Input_Sources.Streams.Sockets.TLS.TLS_Socket_Input_Source;
+        aliased XML.SAX.Input_Sources.Streams.TLS_Sockets
+                      .TLS_Socket_Input_Source (Target);
    end record;
 
    function Read_Data_Wrapper (Self : not null access Network'Class)

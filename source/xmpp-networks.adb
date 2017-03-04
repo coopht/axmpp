@@ -87,8 +87,6 @@ package body XMPP.Networks is
       Empty (Self.RSet);
       Empty (Self.WSet);
 
-      Self.TLS_Input.Set_Socket (Self.Sock);
-      Self.TLS_Input.Object := Self.Target;
       Self.Target.On_Connect;
 
       Self.Plain_Input.Set_Socket (Self.Sock);
@@ -292,9 +290,7 @@ package body XMPP.Networks is
 --        end;
 --        Log ("End of GNUTLS.Handshake");
 --
-      Self.TLS_Input.Set_TLS_Session (Self.TLS_Session);
-
-      Self.TLS_Input.Start_Handshake;
+      Self.TLS_Input.Start_Handshake (Self.Sock, Self.TLS_Session);
       Self.Use_TSL := True;
    end Start_Handshake;
 

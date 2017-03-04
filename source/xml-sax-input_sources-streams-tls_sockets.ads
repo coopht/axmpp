@@ -40,18 +40,34 @@
 --  $Revision$ $Date$
 ------------------------------------------------------------------------------
 with GNUTLS;
+with GNAT.Sockets;
 limited with XMPP.Networks;
 
-package XML.SAX.Input_Sources.Streams.Sockets.TLS is
+package XML.SAX.Input_Sources.Streams.TLS_Sockets is
 
+   type TLS_Socket_Input_Source
+     (Object : access XMPP.Networks.Notification'Class) is
+       new Stream_Input_Source with private;
+
+   procedure Start_Handshake
+     (Self    : in out TLS_Socket_Input_Source;
+      Socket  : GNAT.Sockets.Socket_Type;
+      Session : GNUTLS.Session);
+   --  Start_Handshake should be called before attempt to read the data from
+   --  the stream.
+
+private
    type Source_State is
      (Handshake, --  SSL/TLS handshake in progress
       TLS);      --  Protected data sent/received through socket connection.
 
-   type TLS_Socket_Input_Source is new Socket_Input_Source with record
+   type TLS_Socket_Input_Source
+     (Object : access XMPP.Networks.Notification'Class) is
+     new Stream_Input_Source with
+   record
       TLS_State   : Source_State := Handshake;
+      Socket      : GNAT.Sockets.Socket_Type;
       TLS_Session : GNUTLS.Session;
-      Object      : access XMPP.Networks.Notification'Class;
    end record;
 
    overriding procedure Read
@@ -60,12 +76,4 @@ package XML.SAX.Input_Sources.Streams.Sockets.TLS is
      Last        : out Ada.Streams.Stream_Element_Offset;
      End_Of_Data : out Boolean);
 
---     procedure Set_TLS_Established (Self  : in out TLS_Socket_Input_Source;
---                                    Value : Boolean);
-
-   procedure Set_TLS_Session (Self  : in out TLS_Socket_Input_Source;
-                              S     : GNUTLS.Session);
-
-   procedure Start_Handshake (Self : in out TLS_Socket_Input_Source);
-
-end XML.SAX.Input_Sources.Streams.Sockets.TLS;
+end XML.SAX.Input_Sources.Streams.TLS_Sockets;

@@ -45,7 +45,7 @@ with Ada.Text_IO;
 with XMPP.Logger;
 with XMPP.Networks;
 
-package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
+package body XML.SAX.Input_Sources.Streams.TLS_Sockets is
 
    ------------
    --  Read  --
@@ -123,23 +123,20 @@ package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
    end Read;
 
    -----------------------
-   --  Set_TLS_Session  --
-   -----------------------
-   procedure Set_TLS_Session (Self  : in out TLS_Socket_Input_Source;
-                              S     : GNUTLS.Session) is
-   begin
-      Self.TLS_Session := S;
-   end Set_TLS_Session;
-
-   -----------------------
    --  Start_Handshake  --
    -----------------------
 
-   procedure Start_Handshake (Self : in out TLS_Socket_Input_Source) is
+   procedure Start_Handshake
+     (Self    : in out TLS_Socket_Input_Source;
+      Socket  : GNAT.Sockets.Socket_Type;
+      Session : GNUTLS.Session) is
    begin
       Self.TLS_State := Handshake;
+      Self.TLS_Session := Session;
+      Self.Socket := Socket;
       GNUTLS.Handshake (Self.TLS_Session);
       Self.TLS_State := TLS;
+      Self.Object.On_Connect;
 
    exception
       when others =>
@@ -149,4 +146,4 @@ package body XML.SAX.Input_Sources.Streams.Sockets.TLS is
               (GNUTLS.Get_Direction (Self.TLS_Session))));
    end Start_Handshake;
 
-end XML.SAX.Input_Sources.Streams.Sockets.TLS;
+end XML.SAX.Input_Sources.Streams.TLS_Sockets;
