@@ -52,7 +52,7 @@ package XML.SAX.Input_Sources.Streams.Sockets.TLS is
    type TLS_Socket_Input_Source is new Socket_Input_Source with record
       TLS_State   : Source_State := Raw;
       TLS_Session : GNUTLS.Session;
-      Object      : access XMPP.Networks.Network'Class;
+      Object      : access XMPP.Networks.Notification'Class;
    end record;
 
    --  just for debuggig

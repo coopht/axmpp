@@ -51,12 +51,15 @@ package body XMPP.Idle_Tasks is
    -------------------
    --  FIXME: correct task termination using Stop entry
    task body Reader_Task is
+      Object       : XMPP.Networks.Network_Access;
       Time_To_Stop : Boolean := False;
 
       function "+" (Item : String) return Wide_Wide_String
                  renames Ada.Characters.Conversions.To_Wide_Wide_String;
    begin
-      accept Start;
+      accept Start (Network : not null XMPP.Networks.Network_Access) do
+         Object := Network;
+      end Start;
 
       loop
          exit when Time_To_Stop;

@@ -87,7 +87,7 @@ package body XMPP.Networks is
       Empty (Self.RSet);
       Empty (Self.WSet);
 
-      Self.On_Connect;
+      Self.Target.On_Connect;
 
    exception
       when E : others =>
@@ -119,7 +119,7 @@ package body XMPP.Networks is
       if X.Size = 0 then
          return False;
       else
-         return Self.Read_Data;
+         return Self.Target.Read_Data;
       end if;
    end Read_Data_Wrapper;
 
@@ -211,7 +211,7 @@ package body XMPP.Networks is
    begin
       Close_Selector (Self.Selector);
       Close_Socket (Self.Sock);
-      Self.On_Disconnect;
+      Self.Target.On_Disconnect;
    end Task_Stopped;
 
 end XMPP.Networks;

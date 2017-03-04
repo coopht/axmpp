@@ -130,7 +130,7 @@ package body XMPP.Sessions is
    begin
       --  Log (" !!! Closing Stream !!!");
       --  Sending close stream stanza
-      Self.Send
+      Self.Network.Send
         (XMPP.Utils.To_Stream_Element_Array
            (Ada.Characters.Conversions.To_String
               (Close_Stream.To_Wide_Wide_String)),
@@ -487,12 +487,11 @@ package body XMPP.Sessions is
    begin
       if not Self.Is_Opened then
          Log ("Connecting");
-         Self.Connect (Ada.Characters.Conversions.To_String
-                        (Self.Host.To_Wide_Wide_String),
-                       Self.Port);
-         Self.Source.Set_Socket (Self.Get_Socket);
+         Self.Network.Connect
+           (Self.Host.To_UTF_8_String, Self.Port);
+         Self.Source.Set_Socket (Self.Network.Get_Socket);
          Log ("Starting idle");
-         Self.Idle_Task.Start;
+         Self.Idle_Task.Start (Self.Network'Unchecked_Access);
       end if;
    end Open;
 
@@ -519,7 +518,7 @@ package body XMPP.Sessions is
       Self.Reader.Set_Input_Source (Self.Source'Access);
 
       --  Sending open stream stanza
-      Self.Send
+      Self.Network.Send
         (XMPP.Utils.To_Stream_Element_Array
            (Ada.Characters.Conversions.To_String
               (Open_Stream.To_Wide_Wide_String)),
@@ -592,7 +591,7 @@ package body XMPP.Sessions is
       --                          Self.Cred);
 
       Log ("GNUTLS.Transport_Set_Ptr");
-      GNUTLS.Transport_Set_Ptr (Self.TLS_Session, Self.Get_Socket);
+      GNUTLS.Transport_Set_Ptr (Self.TLS_Session, Self.Network.Get_Socket);
 
       Log ("GNUTLS.Handshake");
 --        begin
@@ -605,7 +604,7 @@ package body XMPP.Sessions is
 --        end;
 --        Log ("End of GNUTLS.Handshake");
 --
-      Self.Set_TLS_Session (Self.TLS_Session);
+      Self.Network.Set_TLS_Session (Self.TLS_Session);
       Self.Source.Set_TLS_Session (Self.TLS_Session);
       Self.Source.Object := Self.all'Unchecked_Access;
 
@@ -753,7 +752,7 @@ package body XMPP.Sessions is
 
       Log ("Sending Data : " & Self.Output.Get_Text);
 
-      Self.Send
+      Self.Network.Send
         (UTF_8_Codec.Encode (Self.Output.Get_Text).To_Stream_Element_Array,
          Self.Source.Is_TLS_Established);
 
@@ -773,7 +772,7 @@ package body XMPP.Sessions is
       --  DEBUG
       Log ("Sending XML : " & Str);
 
-      Self.Send
+      Self.Network.Send
         (XMPP.Utils.To_Stream_Element_Array
            (Ada.Characters.Conversions.To_String (Str)),
          Self.Source.Is_TLS_Established);

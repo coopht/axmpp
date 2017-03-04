@@ -47,26 +47,26 @@ with GNUTLS;
 
 package XMPP.Networks is
 
-   use GNAT.Sockets;
-
-   type Network is abstract tagged limited private;
-
-   type Network_Access is access all Network'Class;
-
-   --  functions, which should be overriden
-   not overriding
-   procedure On_Connect (Self : not null access Network) is abstract;
+   type Notification is limited interface;
 
    not overriding
-   procedure On_Disconnect (Self : not null access Network) is abstract;
+   procedure On_Connect (Self : not null access Notification) is abstract;
 
-   not overriding function Read_Data (Self : not null access Network)
+   not overriding
+   procedure On_Disconnect (Self : not null access Notification) is abstract;
+
+   not overriding function Read_Data (Self : not null access Notification)
       return Boolean is abstract;
    --  This function is called (from Receive) when there is some data in
    --  the socket. It should read the data from the socket and return True if
    --  ok or False in case of an unrecoverable error.
 
-   --  end of functions, which should be overriden
+   use GNAT.Sockets;
+
+   type Network (Target : not null access Notification'Class) is
+     tagged limited private;
+
+   type Network_Access is access all Network'Class;
 
    procedure Connect (Self : not null access Network'Class;
                       Host : String;
@@ -91,7 +91,8 @@ package XMPP.Networks is
 
 private
 
-   type Network is abstract tagged limited record
+   type Network (Target : not null access Notification'Class) is tagged limited
+   record
       Addr         : Sock_Addr_Type;
       Sock         : Socket_Type;
       Channel      : Stream_Access;

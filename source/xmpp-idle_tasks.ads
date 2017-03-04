@@ -47,10 +47,8 @@ package XMPP.Idle_Tasks is
    -------------------
    --  Reader_Task  --
    -------------------
-   task type Reader_Task
-     (Object : not null access XMPP.Networks.Network'Class)
-   is
-      entry Start;
+   task type Reader_Task is
+      entry Start (Network : not null XMPP.Networks.Network_Access);
       entry Stop;
    end Reader_Task;
 
