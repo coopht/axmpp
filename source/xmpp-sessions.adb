@@ -555,11 +555,6 @@ package body XMPP.Sessions is
       --    := (GNUTLS.GNUTLS_MAC_SHA, GNUTLS.GNUTLS_MAC_MD5, 0);
 
    begin
-      --  Initializing gnutls
-      GNUTLS.Global_Set_Log_Level (65537);
-
-      GNUTLS.Global_Init;
-
       Log ("GNUTLS.Anon_Allocate_Client_Credentials");
 
       GNUTLS.Certificate_Allocate_Credentials (Self.Credential);

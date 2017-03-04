@@ -115,6 +115,17 @@ package body XMPP.Networks is
       return Self.Source'Access;
    end Get_Source;
 
+   ----------------
+   -- Initialize --
+   ----------------
+
+   procedure Initialize is
+   begin
+      --  Initializing gnutls
+      GNUTLS.Global_Set_Log_Level (65537);
+      GNUTLS.Global_Init;
+   end Initialize;
+
    ------------------------
    -- Is_TLS_Established --
    ------------------------

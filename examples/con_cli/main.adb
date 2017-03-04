@@ -41,6 +41,7 @@
 ------------------------------------------------------------------------------
 with Con_Cli;
 with Con_Cli_Handlers;
+with XMPP.Sessions;
 
 with League.Strings;
 
@@ -56,6 +57,9 @@ procedure Main is
      := new Con_Cli_Handlers.Con_Cli_Handler;
 
 begin
+   --  Initialize GnuTLS and other stuff
+   XMPP.Sessions.Initialize;
+
    --  Setting jabber id.
 
    S.Set_JID (League.Strings.To_Universal_String ("uim-test@zion"));

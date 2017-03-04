@@ -67,6 +67,9 @@ with XMPP.Idle_Tasks;
 
 package XMPP.Sessions is
 
+   procedure Initialize renames XMPP.Networks.Initialize;
+   --  This procedure should be called before use of Sessions
+
    type XMPP_Session is limited
      new XMPP.Networks.Notification
      and XML.SAX.Content_Handlers.SAX_Content_Handler

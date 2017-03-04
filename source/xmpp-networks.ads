@@ -63,6 +63,9 @@ package XMPP.Networks is
    --  the socket. It should read the data from the socket and return True if
    --  ok or False in case of an unrecoverable error.
 
+   procedure Initialize;
+   --  This procedure should be called before use of Network
+
    use GNAT.Sockets;
 
    type Network (Target : not null access Notification'Class) is
