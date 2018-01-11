@@ -105,7 +105,7 @@ package body XMPP.MUCS is
       Parameter : League.Strings.Universal_String;
       Value     : League.Strings.Universal_String) is
    begin
-      raise Program_Error with "Not yet implemented";
+      null;
    end Set_Content;
 
    -----------------
