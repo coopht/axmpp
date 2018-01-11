@@ -454,6 +454,7 @@ package body XMPP.Sessions is
       M : XMPP.MUCS.XMPP_MUC;
 
    begin
+      M.Set_History ((Max_Chars => (Is_Set => True, Value => 0)));
       P.Set_From (Self.JID);
       P.Set_To (Room & "@" & Server & "/" & Nick_Name);
       P.Set_Multi_Chat (M);

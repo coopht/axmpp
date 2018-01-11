@@ -54,9 +54,25 @@ package XMPP.MUCS is
      := League.Strings.To_Universal_String
          ("http://jabber.org/protocol/muc");
 
+   History_Element : constant League.Strings.Universal_String
+     := League.Strings.To_Universal_String ("history");
+
    type MUC_Item is record
       Affilation : MUC_Affilation := None;
       Role       : MUC_Role := None;
+   end record;
+
+   type Optional_Integer (Is_Set : Boolean := False) is record
+      case Is_Set is
+         when True =>
+            Value : Integer;
+         when False =>
+            null;
+      end case;
+   end record;
+
+   type MUC_History is record
+      Max_Chars : Optional_Integer;
    end record;
 
    type XMPP_MUC is new XMPP.Objects.XMPP_Object with private;
@@ -77,11 +93,13 @@ package XMPP.MUCS is
    function Create return XMPP_MUC_Access;
 
    procedure Set_Item (Self : in out XMPP_MUC; Item : MUC_Item);
+   procedure Set_History (Self : in out XMPP_MUC; Value : MUC_History);
 
 private
 
    type XMPP_MUC is new XMPP.Objects.XMPP_Object with
    record
-      Item : MUC_Item;
+      Item    : MUC_Item;
+      History : MUC_History;
    end record;
 end XMPP.MUCS;

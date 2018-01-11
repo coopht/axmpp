@@ -6,7 +6,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --                                                                          --
--- Copyright © 2011-2016, Alexander Basov <coopht@gmail.com>                --
+-- Copyright © 2011-2018, Alexander Basov <coopht@gmail.com>                --
 -- All rights reserved.                                                     --
 --                                                                          --
 -- Redistribution and use in source and binary forms, with or without       --
@@ -39,6 +39,8 @@
 ------------------------------------------------------------------------------
 --  $Revision$ $Date$
 ------------------------------------------------------------------------------
+with XML.SAX.Attributes;
+
 package body XMPP.MUCS is
 
    --------------
@@ -64,14 +66,32 @@ package body XMPP.MUCS is
    -----------------
    overriding procedure Serialize
     (Self   : XMPP_MUC;
-     Writer : in out XML.SAX.Pretty_Writers.XML_Pretty_Writer'Class) is
-      pragma Unreferenced (Self);
-
+     Writer : in out XML.SAX.Pretty_Writers.XML_Pretty_Writer'Class)
+   is
+      Attributes : XML.SAX.Attributes.SAX_Attributes;
    begin
       Writer.Start_Prefix_Mapping (Namespace_URI => MUC_URI);
 
       Writer.Start_Element (Namespace_URI => MUC_URI,
                             Local_Name    => MUC_Element);
+
+      if Self.History.Max_Chars.Is_Set then
+         declare
+            Image : constant Wide_Wide_String :=
+              Integer'Wide_Wide_Image (Self.History.Max_Chars.Value);
+         begin
+            Attributes.Set_Value
+              (League.Strings.To_Universal_String ("maxchars"),
+               League.Strings.To_Universal_String (Image (2 .. Image'Last)));
+
+            Writer.Start_Element (Namespace_URI => MUC_URI,
+                                  Local_Name    => History_Element,
+                                  Attributes    => Attributes);
+
+            Writer.End_Element (Namespace_URI => MUC_URI,
+                                Local_Name => History_Element);
+         end;
+      end if;
 
       Writer.End_Element (Namespace_URI => MUC_URI,
                           Local_Name => MUC_Element);
@@ -87,6 +107,14 @@ package body XMPP.MUCS is
    begin
       raise Program_Error with "Not yet implemented";
    end Set_Content;
+
+   -----------------
+   -- Set_History --
+   -----------------
+   procedure Set_History (Self : in out XMPP_MUC; Value : MUC_History) is
+   begin
+      Self.History := Value;
+   end Set_History;
 
    ----------------
    --  Set_Item  --
