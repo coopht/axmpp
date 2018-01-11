@@ -6,7 +6,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --                                                                          --
--- Copyright © 2011-2016, Alexander Basov <coopht@gmail.com>                --
+-- Copyright © 2011-2018, Alexander Basov <coopht@gmail.com>                --
 -- All rights reserved.                                                     --
 --                                                                          --
 -- Redistribution and use in source and binary forms, with or without       --
@@ -48,7 +48,7 @@ with XMPP.Objects;
 package XMPP.MUCS is
 
    MUC_Element : constant League.Strings.Universal_String
-     := League.Strings.To_Universal_String ("muc");
+     := League.Strings.To_Universal_String ("x");
 
    MUC_URI : constant League.Strings.Universal_String
      := League.Strings.To_Universal_String
