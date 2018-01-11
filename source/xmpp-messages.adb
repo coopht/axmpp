@@ -192,10 +192,10 @@ package body XMPP.Messages is
       end case;
 
       --  setting xml:lang attr
-      Attrs.Set_Value
-       (Namespace_URI => XML_URI,
-        Local_Name    => Lang_Attribute,
-        Value         => Self.Language);
+--      Attrs.Set_Value
+--       (Namespace_URI => XML_URI,
+--        Local_Name    => Lang_Attribute,
+--        Value         => Self.Language);
 
       Writer.Start_Element (Qualified_Name => Message_Element,
                             Attributes     => Attrs);
