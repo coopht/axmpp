@@ -39,7 +39,6 @@
 ------------------------------------------------------------------------------
 --  $Revision$ $Date$
 ------------------------------------------------------------------------------
-with System;
 
 package body GNUTLS is
    use type Ada.Streams.Stream_Element_Count;
@@ -74,12 +73,6 @@ package body GNUTLS is
    function gnutls_set_default_priority (S : Session) return Interfaces.C.int;
    pragma Import
      (C, gnutls_set_default_priority, "gnutls_set_default_priority");
-
-   --
-   function gnutls_kx_set_priority
-     (S : Session; Kx_Prio : System.Address)
-      return Interfaces.C.int;
-   pragma Import (C, gnutls_kx_set_priority, "gnutls_kx_set_priority");
 
    --
    function gnutls_credentials_set_anon (S      : Session;
@@ -161,36 +154,6 @@ package body GNUTLS is
                   "gnutls_global_set_log_level");
 
    --
-   function gnutls_cipher_set_priority (S    : Session;
-                                        List : System.Address)
-     return Interfaces.C.int;
-   pragma Import (C, gnutls_cipher_set_priority, "gnutls_cipher_set_priority");
-
-   --
-   function gnutls_protocol_set_priority (S    : Session;
-                                          List : System.Address)
-     return Interfaces.C.int;
-   pragma Import (C,
-                  gnutls_protocol_set_priority,
-                  "gnutls_protocol_set_priority");
-
-   --
-   function gnutls_compression_set_priority
-     (S : Session; List : System.Address)
-      return Interfaces.C.int;
-   pragma Import (C,
-                  gnutls_compression_set_priority,
-                  "gnutls_compression_set_priority");
-
-   --
-   function gnutls_mac_set_priority
-     (S : Session; List : System.Address)
-      return Interfaces.C.int;
-   pragma Import (C,
-                  gnutls_mac_set_priority,
-                  "gnutls_mac_set_priority");
-
-   --
    function gnutls_record_get_direction (S : Session) return Interfaces.C.int;
    pragma Import
      (C, gnutls_record_get_direction, "gnutls_record_get_direction");
@@ -260,38 +223,6 @@ package body GNUTLS is
 
       SC := Tmp;
    end Certificate_Allocate_Credentials;
-
-   ---------------------------
-   --  Cipher_Set_Priority  --
-   ---------------------------
-
-   procedure Cipher_Set_Priority (S : Session; Prio : Cipher_Algorithm_Array)
-   is
-      Ret : constant Interfaces.C.int
-        := gnutls_cipher_set_priority (S, Prio (Prio'First)'Address);
-
-   begin
-      if Ret /= 0 then
-         gnutls_perror (Ret);
-         raise GNUTLS_Error with "Cipher_Set_Priority failed";
-      end if;
-   end Cipher_Set_Priority;
-
-   --------------------------------
-   --  Compression_Set_Priority  --
-   --------------------------------
-
-   procedure Compression_Set_Priority (S  : Session;
-                                       CM : Compression_Method_Array) is
-      Ret : constant Interfaces.C.int
-        := gnutls_compression_set_priority (S, CM (CM'First)'Address);
-
-   begin
-      if Ret /= 0 then
-         gnutls_perror (Ret);
-         raise GNUTLS_Error with "Compression_Set_Priority failed";
-      end if;
-   end Compression_Set_Priority;
 
    -----------------------
    --  Credentials_Set  --
@@ -428,37 +359,6 @@ package body GNUTLS is
       S := Tmp;
    end Init;
 
-   -----------------------
-   --  KX_Set_Priority  --
-   -----------------------
-
-   procedure KX_Set_Priority (S : Session; KX_Prio : KX_Algorithm_Array)
-   is
-      Ret : constant Interfaces.C.int
-        := gnutls_kx_set_priority (S, KX_Prio (KX_Prio'First)'Address);
-
-   begin
-      if Ret /= 0 then
-         gnutls_perror (Ret);
-         raise GNUTLS_Error with "KX_Set_Priority failed";
-      end if;
-   end KX_Set_Priority;
-
-   ------------------------
-   --  Mac_Set_Priority  --
-   ------------------------
-
-   procedure Mac_Set_Priority (S : Session; MA : Mac_Algorithm_Array) is
-      Ret : constant Interfaces.C.int
-        := gnutls_mac_set_priority (S, MA (MA'First)'Address);
-
-   begin
-      if Ret /= 0 then
-         gnutls_perror (Ret);
-         raise GNUTLS_Error with "Mac_Set_Priority failed";
-      end if;
-   end Mac_Set_Priority;
-
    ---------------------------
    --  Priority_Set_Direct  --
    ---------------------------
@@ -478,21 +378,6 @@ package body GNUTLS is
          raise GNUTLS_Error with "Priority_Set_Direct error";
       end if;
    end Priority_Set_Direct;
-
-   -----------------------------
-   --  Protocol_Set_Priority  --
-   -----------------------------
-
-   procedure Protocol_Set_Priority (S : Session; PA : Protocol_Array) is
-      Ret : constant Interfaces.C.int
-        := gnutls_protocol_set_priority (S, PA (PA'First)'Address);
-
-   begin
-      if Ret /= 0 then
-         gnutls_perror (Ret);
-         raise GNUTLS_Error with "Protocol_Set_Priority failed";
-      end if;
-   end Protocol_Set_Priority;
 
    -------------------
    --  Record_Recv  --

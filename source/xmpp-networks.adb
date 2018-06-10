@@ -47,8 +47,6 @@ package body XMPP.Networks is
 
    use XMPP.Logger;
 
-   use type Ada.Streams.Stream_Element_Offset;
-
    function "+" (Item : String) return Wide_Wide_String
      renames Ada.Characters.Conversions.To_Wide_Wide_String;
 
@@ -233,21 +231,6 @@ package body XMPP.Networks is
    ---------------------
 
    procedure Start_Handshake (Self : in out Network) is
-      KX_Priority     : constant GNUTLS.KX_Algorithm_Array
-        := (GNUTLS.GNUTLS_KX_RSA, 0);
-
-      Proto_Priority  : constant GNUTLS.Protocol_Array
-        := (GNUTLS.GNUTLS_TLS1, GNUTLS.GNUTLS_SSL3, 0);
-
-      Cipher_Priority : constant GNUTLS.Cipher_Algorithm_Array
-        := (GNUTLS.GNUTLS_CIPHER_3DES_CBC, GNUTLS.GNUTLS_CIPHER_ARCFOUR, 0);
-
-      --  Comp_Priority   : GNUTLS.Compression_Method_Array
-      --    := (GNUTLS.GNUTLS_COMP_ZLIB, GNUTLS.GNUTLS_COMP_NULL, 0);
-
-      --  Mac_Priority    : GNUTLS.Mac_Algorithm_Array
-      --    := (GNUTLS.GNUTLS_MAC_SHA, GNUTLS.GNUTLS_MAC_MD5, 0);
-
    begin
       Log ("GNUTLS.Anon_Allocate_Client_Credentials");
 
@@ -258,9 +241,6 @@ package body XMPP.Networks is
       Log ("Init");
       GNUTLS.Init (Self.TLS_Session, GNUTLS.GNUTLS_CLIENT);
 
-      GNUTLS.Protocol_Set_Priority (Self.TLS_Session, Proto_Priority);
-      GNUTLS.Cipher_Set_Priority (Self.TLS_Session, Cipher_Priority);
-
       --  GNUTLS.Compression_Set_Priority (Self.TLS_Session, Comp_Priority);
 
       --  GNUTLS.Mac_Set_Priority (Self.TLS_Session, Mac_Priority);
@@ -270,7 +250,6 @@ package body XMPP.Networks is
                               Self.Credential);
 
       GNUTLS.Set_Default_Priority (Self.TLS_Session);
-      GNUTLS.KX_Set_Priority (Self.TLS_Session, KX_Priority);
 
       --  GNUTLS.Credentials_Set (Self.TLS_Session,
       --                          GNUTLS.GNUTLS_CRD_ANON,

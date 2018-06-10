@@ -219,17 +219,6 @@ package GNUTLS is
 
    procedure Set_Default_Priority (S : Session);
 
-   procedure KX_Set_Priority (S : Session; KX_Prio : KX_Algorithm_Array);
-
-   procedure Cipher_Set_Priority (S : Session; Prio : Cipher_Algorithm_Array);
-
-   procedure Protocol_Set_Priority (S : Session; PA : Protocol_Array);
-
-   procedure Compression_Set_Priority (S  : Session;
-                                       CM : Compression_Method_Array);
-
-   procedure Mac_Set_Priority (S : Session; MA : Mac_Algorithm_Array);
-
    procedure Certificate_Allocate_Credentials
      (SC : out Certificate_Client_Credentials);
 
