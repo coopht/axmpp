@@ -6,7 +6,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --                                                                          --
--- Copyright © 2011-2016, Alexander Basov <coopht@gmail.com>                --
+-- Copyright © 2011-2018, Alexander Basov <coopht@gmail.com>                --
 -- All rights reserved.                                                     --
 --                                                                          --
 -- Redistribution and use in source and binary forms, with or without       --
@@ -174,6 +174,7 @@ private
 
      Locator : XML.SAX.Locators.SAX_Locator;
      Tag     : League.Strings.Universal_String;
+     Text    : League.Strings.Universal_String;
 
      Network : aliased XMPP.Networks.Network (XMPP_Session'Unchecked_Access);
      Reader  : aliased XML.SAX.Simple_Readers.Simple_Reader;

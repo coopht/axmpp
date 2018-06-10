@@ -6,7 +6,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 --                                                                          --
--- Copyright © 2011-2016, Alexander Basov <coopht@gmail.com>                --
+-- Copyright © 2011-2018, Alexander Basov <coopht@gmail.com>                --
 -- All rights reserved.                                                     --
 --                                                                          --
 -- Redistribution and use in source and binary forms, with or without       --
@@ -41,7 +41,6 @@
 ------------------------------------------------------------------------------
 with Ada.Characters.Conversions;
 with Ada.Exceptions;
-with Ada.Streams;
 
 with League.Text_Codecs;
 
@@ -69,9 +68,6 @@ package body XMPP.Sessions is
    use XMPP.Logger;
    use XMPP.Objects;
    use XMPP.Objects.Object_Vectors;
-
-   use type Ada.Streams.Stream_Element_Offset;
-   use type XMPP.IQ_Kind;
 
    function "+" (Item : Wide_Wide_String) return Universal_String
      renames League.Strings.To_Universal_String;
@@ -108,16 +104,11 @@ package body XMPP.Sessions is
       Text    : League.Strings.Universal_String;
       Success : in out Boolean)
    is
+      pragma Unreferenced (Success);
    begin
       --  Log ("*** Text = [" & Text & "]");
       --  Log (Self.Tag);
-      if not Self.Tag.Is_Empty and not Text.Is_Empty then
-         if not Self.Stack.Is_Empty then
-            Self.Stack.Last_Element.Set_Content (Self.Tag, Text);
-         end if;
-         Self.Tag.Clear;
-         Success := True;
-      end if;
+      Self.Text.Append (Text);
    end Characters;
 
    -------------
@@ -199,6 +190,14 @@ package body XMPP.Sessions is
       pragma Unreferenced (Qualified_Name);
 
    begin
+      if not Self.Tag.Is_Empty and not Self.Text.Is_Empty then
+         if not Self.Stack.Is_Empty then
+            Self.Stack.Last_Element.Set_Content (Self.Tag, Self.Text);
+         end if;
+         Self.Tag.Clear;
+         Self.Text.Clear;
+      end if;
+
       --  Log ("<<< End_Element_QN = " & Qualified_Name);
       --  Log ("<<< End_Element_URI = " & Namespace_URI);
 
