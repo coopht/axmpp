@@ -128,7 +128,6 @@ package body XMPP.Base64 is
       --  Target'length = Output_Byte_Count + 2 * (Output_Byte_Count / 76)
       --  Constraint_Error will be raised if Target isn't long enough.
       use type Ada.Streams.Stream_Element;
-      use type Ada.Streams.Stream_Element_Offset;
       D       : Six_Bits;
       type Slots is mod 3;
       Slot    : Slots := 0;
