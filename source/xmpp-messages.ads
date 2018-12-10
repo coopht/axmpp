@@ -167,6 +167,11 @@ package XMPP.Messages is
                           Parameter : League.Strings.Universal_String;
                           Value     : League.Strings.Universal_String);
 
+   not overriding procedure Custom_Content
+    (Self   : XMPP_Message;
+     Writer : in out XML.SAX.Pretty_Writers.XML_Pretty_Writer'Class) is null;
+   --  Override this to populate message with custom content
+
 private
 
    type XMPP_Message is new XMPP.Objects.XMPP_Object with

@@ -219,6 +219,8 @@ package body XMPP.Messages is
          Writer.End_Element (Qualified_Name => Thread_Element);
       end if;
 
+      XMPP_Message'Class (Self).Custom_Content (Writer);
+
       Writer.End_Element (Qualified_Name => Message_Element);
    end Serialize;
 
