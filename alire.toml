@@ -1,0 +1,16 @@
+description = "XMPP client library in Ada"
+name = "axmpp"
+version = "1.0.0"
+licenses = ["BSD 3-Clauses"]
+authors = ["Alexander Basov", "Vadim Godunko"]
+website = "https://github.com/coopht/axmpp"
+maintainers = ["Alexander Basov <coopht@gmail.com>", "Max Reznik <reznikmm@gmail.com>"]
+maintainers-logins = ["coopht", "reznikmm"]
+
+project-files = ["gnat/axmpp.gpr"]
+tags = ["xmpp", "jabber", "messaging"]
+
+[[depends-on]]
+libgnutls = "any"
+matreshka_league = "any"
+
